@@ -1,13 +1,13 @@
 #Visual studio
-Debug\
-Release\
-convm\Debug\
-convm\Release\
-convm\x64\
-x64\
-.vs\
+Debug/
+Release/
+convm/Debug/
+convm/Release/
+convm/x64/
+x64/
+.vs/
 
-.klocwork\
+.klocwork/
 
 *.o
 *.d
@@ -17,6 +17,8 @@ x64\
 *.pdb
 
 Finder.Data
+convm/Finder.Data
+unittest/Finder.Data
 
 # Enforce a “no spaces in filenames” policy
 **\ **
