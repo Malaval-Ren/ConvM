@@ -114,11 +114,11 @@ iixPresent=$(where iix)
 if [ -z "$iixPresent" ]
 then
 	echo
-	echo -e $BPurple " Clean Visual Studio folders" $Color_Off
+	echo -e $BPurple " Clean Visual Studio stufs" $Color_Off
 	echo
 else
 echo -e $BPurple
-	iix gothic " Clean Visual Studio folders"
+	iix gothic " Clean Visual Studio stufs"
 echo -e $Color_Off
 fi
 
@@ -127,51 +127,72 @@ project_Name=$(basename "$originFolder")
 
 if [[ -f "$originFolder""/""$project_Name"".sln" ]]
 then
+	echo -e $Green "Deleting files" $Color_Off
+	if [[ -f "$originFolder""/"".data" ]]
+	then
+		rm -f "$originFolder""/"".data"
+	fi
+	if [[ -f "$originFolder""/"".pdata" ]]
+	then
+		rm -f "$originFolder""/"".pdata"
+	fi
+	if [[ -f "$originFolder""/"".rdata" ]]
+	then
+		rm -f "$originFolder""/"".rdata"
+	fi
+	if [[ -f "$originFolder""/"".reloc" ]]
+	then
+		rm -f "$originFolder""/"".reloc"
+	fi
+	if [[ -f "$originFolder""/"".text" ]]
+	then
+		rm -f "$originFolder""/"".text"
+	fi
+
 	echo
 	echo -e $Green "Deleting directories" $Color_Off
 	if [[ -d "$originFolder""/.vs/""$project_Name""/v16" ]]
 	then
 		rm -frd "$originFolder""/.vs/""$project_Name""/v16"
 	fi
-	echo
 	if [[ -d "$originFolder""/""$project_Name""/Debug" ]]
 	then
 		rm -frd "$originFolder""/""$project_Name""/Debug"
 	fi
-	echo
 	if [[ -d "$originFolder""/""$project_Name""/Release" ]]
 	then
 		rm -frd "$originFolder""/""$project_Name""/Release"
 	fi
-	echo
 	if [[ -d "$originFolder""/""$project_Name""/x64" ]]
 	then
 		rm -frd "$originFolder""/""$project_Name""/x64"
 	fi
-	echo
 	if [[ -d "$originFolder""/Debug" ]]
 	then
 		rm -frd "$originFolder""/Debug"
 	fi
-	echo
 	if [[ -d "$originFolder""/Release" ]]
 	then
 		rm -frd "$originFolder""/Release"
 	fi
-	echo
+	if [[ -d "$originFolder""/.rsrc" ]]
+	then
+		rm -frd "$originFolder""/.rsrc"
+	fi
+
 	if [[ -f "$originFolder""/x64/Release/""$project_Name"".exe" ]]
 	then
 		echo -e $Green "Copy release to up directory" $Color_Off
 		cp -fp "$originFolder""/x64/Release/""$project_Name"".exe" "$originFolder""/../""$project_Name"".exe"
 	fi
-	echo
+
 	if [[ -d "$originFolder""/x64" ]]
 	then
 		rm -frd "$originFolder""/x64"
 	fi
 
+	echo
 	echo -e $BGreen "Done" $Color_Off
-
 fi
 
 exit $NO_ERROR
