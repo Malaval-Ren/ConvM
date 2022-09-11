@@ -557,7 +557,14 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                         {
                             if (!directoryExists((const char*)pContext->pOutputPathname))
                             {
-                                exitOnError((char*)"output file does not exist", NULL, argv[uIndex], 2);
+                                if (pathFileExists((const char*)pContext->pOutputPathname))
+                                {
+                                    exitOnError((char*)"output parameter must be a folder", NULL, argv[uIndex], 2);
+                                }
+                                else
+                                {
+                                    exitOnError((char*)"output folder does not exist", NULL, argv[uIndex], 2);
+                                }
                             }
                         }
                         else

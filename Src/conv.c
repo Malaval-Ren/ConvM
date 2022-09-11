@@ -339,7 +339,6 @@ BOOL pathFileExists( const char *pPathname)
     return bFileExists;
 }
 
-
 /**
 * @fn BOOL directoryExists( const char *pAbsolutePath)
 * @brief Check if pAbsolutePath folder exist
@@ -365,7 +364,6 @@ BOOL directoryExists( const char *pAbsolutePath)
 
     return bFolderExists;
 }
-
 
 /**
 * @fn char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned int uCommand, unsigned int uTabColumns, unsigned int *pDataSize)
