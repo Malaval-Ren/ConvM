@@ -6,6 +6,7 @@ convm/Release/
 convm/x64/
 x64/
 .vs/
+.rsrc/
 
 .klocwork/
 
@@ -15,6 +16,11 @@ x64/
 *.sdf
 *.suo
 *.pdb
+.data
+.pdata
+.rdata
+.reloc
+.text
 
 Finder.Data
 convm/Finder.Data
