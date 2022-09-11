@@ -10,7 +10,7 @@ Just a little software to help **Apple IIGS** cross dev
 #help usage :
 
 ```bash
-convm.exe v1.2.0.5, (c) R. Malaval & F. Mure 2022.
+convm.exe v1.2.0.7, (c) R. Malaval & F. Mure 2022.
 
 Usage: convm <convmspec> <option> "<filespec>" "<output folder>"
 
