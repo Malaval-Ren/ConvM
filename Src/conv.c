@@ -429,7 +429,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                         pFollowChar++;
                         if ((*pInputRunner == '\n') && (*pFollowChar == '\n') && (bMultipleSupport == FALSE))
                         {
-                            *pOutputRunner = 13;
+                            *pOutputRunner = 10;
                             bMultipleSupport = TRUE;
                         }
                         else
@@ -450,7 +450,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                         pFollowChar++;
                         if ((*pInputRunner == '\r') && (*pFollowChar == '\r') && (bMultipleSupport == FALSE))
                         {
-                            *pOutputRunner = 10;
+                            *pOutputRunner = 13;
                             bMultipleSupport = TRUE;
                         }
                         else
