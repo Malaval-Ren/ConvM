@@ -431,6 +431,8 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                         {
                             *pOutputRunner = 10;
                             bMultipleSupport = TRUE;
+                            pInputRunner++;
+                            uIndex++;
                         }
                         else
                         {
@@ -452,6 +454,8 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                         {
                             *pOutputRunner = 13;
                             bMultipleSupport = TRUE;
+                            pInputRunner++;
+                            uIndex++;
                         }
                         else
                         {

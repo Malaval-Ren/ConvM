@@ -9,12 +9,12 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>-2bmp ../../dessin_pic/abbaye.ch.pic ../../dessin_bmp/</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-dblf ../../korand.org.aii</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAmpDefaultAccelerator>{ADEFF70D-84BF-47A1-91C3-FF6B0FC71218}</LocalDebuggerAmpDefaultAccelerator>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>-2bmp ../../dessin_pic/abbaye.ch.pic ../../dessin_bmp/</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-dblf ../../korand.org.aii</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

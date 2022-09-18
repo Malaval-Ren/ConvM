@@ -956,7 +956,7 @@ int main(int argc, char* argv[])
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.2.1.7, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
+    printf("\n%s v1.2.2.7, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
