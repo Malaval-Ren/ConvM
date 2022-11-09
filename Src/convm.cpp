@@ -166,7 +166,7 @@ int checkFileExtension( char *pPathFilename, int iCommand)
     BOOL         bErrorExt = FALSE;
     const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-rlec", "-rled", "-2bmp", "-2pic" };
 
-    if ((iCommand == CRLF) || (iCommand == LFCR) || (iCommand == DOUBLE_0A) || (iCommand == DOUBLE_0D) || (iCommand == DETAB) || (iCommand == DUMP))
+    if ((iCommand == CRLF) || (iCommand == LFCR) || (iCommand == DOUBLE_0A) || (iCommand == DOUBLE_0D) || (iCommand == DETAB))
     {
         iError = 0;
     }
@@ -195,7 +195,15 @@ int checkFileExtension( char *pPathFilename, int iCommand)
                 }
                 else if (strlen(pLastPointChar) == 3)
                 {
-                    if (iCommand == RLE_DECO)
+                    if (iCommand == DUMP)
+                    {
+                        if ((strcmp((const char*)pLastPointChar, "scr") != 0) && (strcmp((const char*)pLastPointChar, "pic") != 0) &&
+                            ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0)))
+                        {
+                            bErrorExt = TRUE;
+                        }
+                    }
+                    else if (iCommand == RLE_DECO)
                     {
                         if ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0))
                         {
@@ -956,7 +964,7 @@ int main(int argc, char* argv[])
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.2.2.7, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
+    printf("\n%s v1.3.3.9, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
@@ -1033,7 +1041,8 @@ int main(int argc, char* argv[])
             }
             else
             {
-                printf("CONVM: nothing is done. Dump is only for .shr or .pnt\n");
+                doDumpPic(pInputFileData, uInputFileSize);
+                //printf("CONVM: nothing is done. Dump is only for .shr or .pnt\n");
             }
         }
         else if ((iCommand == RLE_COMP) || (iCommand == RLE_DECO))

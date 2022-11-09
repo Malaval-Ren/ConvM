@@ -10,6 +10,7 @@
 *.filters text
 *.user text
 *.resource.h text
+*.rc text
 *.sln text
 *.vcxproj text
 *.vcxproj.filters text

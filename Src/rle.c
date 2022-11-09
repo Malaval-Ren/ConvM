@@ -325,7 +325,7 @@ static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSiz
                 pFun = pOutputFileData + 0x7D00 + 0xE0;
                 (void)strncpy( pFun, "and", sizeof("and"));
                 pFun = pOutputFileData + 0x7D00 + 0xF0;
-                (void)strncpy( pFun, "Fréderic Mure", sizeof("Fréderic Mure"));
+                (void)strncpy( pFun, "Frederic Mure", sizeof("Frederic Mure"));
 
                 char* pPalette = pOutputFileData + 0x7E00;
                 (void)memcpy(pPalette, pColors, colorLen);
@@ -423,4 +423,126 @@ char *DoRleJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
         }
     }
     return pOutputFileData;
+}
+
+/**
+* @fn void doDumpPic(char* pInputFileData, unsigned int inputFileSize)
+* @brief Dump the content of a pic file
+*
+* @param[in]        pInputFileData
+* @param[in]        inputFileSize
+*
+*/
+void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
+{
+    char           *pInputRunner;
+    unsigned short *pColorRunning;
+    unsigned int    index;
+    unsigned int    loop;
+    unsigned int    uBegin = 0;
+    unsigned int    uEnd = 0;
+    unsigned int    uPalette = 0;
+    unsigned int    uNextLine;
+    char            pString[64] = "";
+    unsigned short  uColorUsed[256];
+
+    if (pInputFileData)
+    {
+        printf("\t- PIXELS -\n\n");
+        pInputRunner = pInputFileData;
+        for (index = 0; index < 200; index++)
+        {
+            uNextLine = 20;
+            (void)printf( "%03d: ", index);
+            for (loop = 0; loop < 160; loop++)
+            {
+                (void)printf("%02d %02d ", ((*pInputRunner & 0xF0) >> 4), (*pInputRunner & 0x0F));
+                pInputRunner++;
+                if (loop == uNextLine - 1)
+                {
+                    (void)printf("\n     ");
+                    uNextLine += 20;
+                }
+            }
+            (void)printf("\n");
+        }
+
+        printf("\n\t- SCBS -\n\n");
+        uBegin = 0;
+        uEnd = 0;
+        uPalette = *pInputRunner;
+        for (index = 0; index < 200; index++)
+        {
+            if ((uPalette != *pInputRunner) || (index == 199) )
+            {
+                (void)printf("Line %03d to %03d use palette %02d\n", uBegin, uEnd, uPalette);
+                uBegin = uEnd + 1;
+                uEnd++;
+                uPalette = *pInputRunner;
+            }
+            else
+            {
+                uEnd++;
+            }
+            pInputRunner++;
+        }
+
+        printf("\n\t- INFO -\n\n");
+        uBegin = 0;
+        for (index = 0; index < 56; index++)
+        {
+            if ((*pInputRunner == 0) && (uBegin == 0))
+            {
+                ;
+            }
+            else if ((*pInputRunner == 0) && (uBegin == 1))
+            {
+                (void)printf("\n");
+                uBegin = 0;
+            }
+            else
+            {
+                (void)printf("%c", *pInputRunner);
+                uBegin = 1;
+            }
+            pInputRunner++;
+        }
+
+        printf("\n\n\t- PALETTE -\n");
+
+        memset( &uColorUsed, 0xFFFF, sizeof(uColorUsed));
+
+        pColorRunning = (unsigned short *)(pInputFileData + 0x7E00);
+        loop = 0;
+        uBegin = 0;
+        uEnd = 1;
+        uColorUsed[loop] = *pColorRunning;
+        for (index = 0; index < 16; index++)
+        {
+            (void)printf("\n%02d: ", index);
+            for (loop = 0; loop < 16; loop++)
+            {
+                (void)printf("0x%04X ", *pColorRunning);
+
+                // Fill array to be able to count number of color used
+                while (uColorUsed[uBegin] != 0xFFFF)
+                {
+                    if (uColorUsed[uBegin] == *pColorRunning)
+                        break;
+                    uBegin++;
+                };
+                if (uColorUsed[uBegin] == 0xFFFF)
+                {
+                    uColorUsed[uBegin] = *pColorRunning;
+                    uEnd++;
+                }
+                uBegin = 0;
+
+                pColorRunning++;
+            }
+        }
+        printf("\n\nNombre de couleur différentes = %d\n\n", uEnd);
+    }
+
+    return;
 }

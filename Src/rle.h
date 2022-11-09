@@ -9,8 +9,9 @@
 extern "C" {
 #endif
     
+    BOOL            CheckShrFileFormat(char* pInputFileData, unsigned int inputFileSize);
     char           *DoRleJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize);
-    BOOL            CheckShrFileFormat( char *pInputFileData, unsigned int inputFileSize);
+    void            doDumpPic(char* pInputFileData, unsigned int inputFileSize);
 
 #ifdef __cplusplus
 }
