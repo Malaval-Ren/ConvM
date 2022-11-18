@@ -54,7 +54,7 @@ static unsigned int convert_to_pic(char* pOutputFileData, unsigned int uOutputFi
         }
 
         char* pFun = pOutputFileData + 0x7D00 + 0xD0;
-        (void)strncpy(pFun, "Fréderic Mure", sizeof("Fréderic Mure"));
+        (void)strncpy(pFun, "Frederic Mure", sizeof("Frederic Mure"));
         pFun = pOutputFileData + 0x7D00 + 0xE0;
         (void)strncpy(pFun, "and", sizeof("and"));
         pFun = pOutputFileData + 0x7D00 + 0xF0;

@@ -419,85 +419,88 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                             *pOutputRunner = *pInputRunner;
                         pOutputRunner++;
                     }
-                break;
+                    break;
 
-                case DOUBLE_0A: /* 10 == 0x0A == LF == Line Feed == '\n' */
-                {
-                    if (uIndex < uInputFileSize)
+                    case DOUBLE_0A: /* 10 == 0x0A == LF == Line Feed == '\n' */
                     {
-                        pFollowChar = pInputRunner;
-                        pFollowChar++;
-                        if ((*pInputRunner == '\n') && (*pFollowChar == '\n') && (bMultipleSupport == FALSE))
+                        if (uIndex < uInputFileSize)
                         {
-                            *pOutputRunner = 10;
-                            bMultipleSupport = TRUE;
-                            pInputRunner++;
-                            uIndex++;
-                        }
-                        else
-                        {
-                            *pOutputRunner = *pInputRunner;
-                            bMultipleSupport = FALSE;
-                        }
-                    }
-                    pOutputRunner++;
-                }
-                break;
-
-                case DOUBLE_0D: /* 13 == 0x0D == CR == Carriage Return == '\r' */
-                {
-                    if (uIndex <= uInputFileSize)
-                    {
-                        pFollowChar = pInputRunner;
-                        pFollowChar++;
-                        if ((*pInputRunner == '\r') && (*pFollowChar == '\r') && (bMultipleSupport == FALSE))
-                        {
-                            *pOutputRunner = 13;
-                            bMultipleSupport = TRUE;
-                            pInputRunner++;
-                            uIndex++;
-                        }
-                        else
-                        {
-                            *pOutputRunner = *pInputRunner;
-                            bMultipleSupport = FALSE;
-                        }
-                    }
-                    pOutputRunner++;
-                }
-                break;
-
-                case DETAB:
-                {
-                    switch (*pInputRunner)
-                    {
-                        case '\t':
-                        {
-                            for (uLoop = (uCurcolumn % uTabColumns); uLoop < uTabColumns; uLoop++)
+                            pFollowChar = pInputRunner;
+                            pFollowChar++;
+                            if ((*pInputRunner == '\n') && (*pFollowChar == '\n') && (bMultipleSupport == FALSE))
                             {
-                                *pOutputRunner = ' ';
-                                uCurcolumn++;
-                                pOutputRunner++;
+                                *pOutputRunner = 10;
+                                bMultipleSupport = TRUE;
+                                pInputRunner++;
+                                uIndex++;
+                            }
+                            else
+                            {
+                                *pOutputRunner = *pInputRunner;
+                                bMultipleSupport = FALSE;
                             }
                         }
-                        break;
-
-                        case '\n':
-                        case '\r':
-                        {
-                            uCurcolumn = -1;
-                        }
-
-                        default:
-                        {
-                            uCurcolumn++;
-                            *pOutputRunner = *pInputRunner;
-                            pOutputRunner++;
-                        }
-                        break;
+                        pOutputRunner++;
                     }
-                }
-                break;
+                    break;
+
+                    case DOUBLE_0D: /* 13 == 0x0D == CR == Carriage Return == '\r' */
+                    {
+                        if (uIndex <= uInputFileSize)
+                        {
+                            pFollowChar = pInputRunner;
+                            pFollowChar++;
+                            if ((*pInputRunner == '\r') && (*pFollowChar == '\r') && (bMultipleSupport == FALSE))
+                            {
+                                *pOutputRunner = 13;
+                                bMultipleSupport = TRUE;
+                                pInputRunner++;
+                                uIndex++;
+                            }
+                            else
+                            {
+                                *pOutputRunner = *pInputRunner;
+                                bMultipleSupport = FALSE;
+                            }
+                        }
+                        pOutputRunner++;
+                    }
+                    break;
+
+                    case DETAB:
+                    {
+                        switch (*pInputRunner)
+                        {
+                            case '\t':
+                            {
+                                for (uLoop = (uCurcolumn % uTabColumns); uLoop < uTabColumns; uLoop++)
+                                {
+                                    *pOutputRunner = ' ';
+                                    uCurcolumn++;
+                                    pOutputRunner++;
+                                }
+                            }
+                            break;
+
+                            case '\n':
+                            case '\r':
+                            {
+                                uCurcolumn = -1;
+                            }
+
+                            default:
+                            {
+                                uCurcolumn++;
+                                *pOutputRunner = *pInputRunner;
+                                pOutputRunner++;
+                            }
+                            break;
+                        }
+                    }
+                    break;
+
+                    default:
+                    break;
                 }
                 pInputRunner++;
                 uIndex++;
