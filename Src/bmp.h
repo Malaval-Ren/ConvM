@@ -6,8 +6,9 @@
 extern "C" {
 #endif
 
-    char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize);
-    BOOL CheckBmpFileFormat(char* pInputFileData, unsigned int inputFileSize);
+    void    doDumpBmp( char *pFilePathname, char  *pInputFileData, unsigned int inputFileSize);
+    char   *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize);
+    BOOL    CheckBmpFileFormat( char *pInputFileData, unsigned int inputFileSize);
 
 #ifdef __cplusplus
 }

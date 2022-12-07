@@ -48,6 +48,15 @@
  * -dblf ../../textes.cc
  *
  * -rled ../../AUBERGIS.shr
+ * 
+ * -dump ../../../Iron_Lord/BootImages/iron_lord_logo_gimpA.pic
+ * -dump ../../../Iron_Lord/BootImages/ironlord_g9.pic
+ * -dump ../../../Iron_Lord/BootImages/ironlord_g9_ex.bmp
+ * 
+ * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/iron_lord_game_20221112_104906.AMm
+ * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/Iron_Lord_fr_sorcier.uss
+ * 
+ * -2bmp ../../../Iron_Lord/BootImages/ironlord_g9.pic
  */
 
 
@@ -60,24 +69,25 @@ void usage()
 {
     printf("Usage: convm <convmspec> <option> \"<filespec>\" \"<output folder>\"\n");
     printf("\n  <convmspec> is one of the following:\n");
-    printf("   -crlf        - convert CR to LF\n");
-    printf("   -lfcr        - convert LF to CR\n");
-    printf("   -dblf        - replace 2 first $0A (LF) by one in a serie\n");
-    printf("   -dbcr        - replace 2 first $0D (CR) by one in a serie\n");
-    printf("   -detab <col> - convert tabs to spaces (tab stop every COL columns)\n");
-    printf("   -dump        - dump content of a supported file format\n");
-    printf("   -rlec        - not implemented\n");
-    printf("   -rled        - decompress with rle algorithms file\n");
-    printf("   -2bmp        - convert .scr, .shr, .pnt, .pic to .bmp\n");
-    printf("   -2pic        - convert .bmp to .pic\n");
+    printf("   -crlf            - convert CR to LF\n");
+    printf("   -lfcr            - convert LF to CR\n");
+    printf("   -dblf            - replace 2 first $0A (LF) by one in a serie\n");
+    printf("   -dbcr            - replace 2 first $0D (CR) by one in a serie\n");
+    printf("   -detab <col>     - convert tabs to spaces (tab stop every COL columns)\n");
+    printf("   -dump            - dump content of a supported file format\n");
+    printf("   -extxt <minlen>  - extract string of minlen from a binary file\n");
+    printf("   -rlec            - not implemented\n");
+    printf("   -rled            - decompress with rle algorithms file\n");
+    printf("   -2bmp            - convert .scr, .shr, .pnt, .pic to .bmp\n");
+    printf("   -2pic            - convert .bmp to .pic\n");
 
     printf("\n  <option> is one of the following:\n");
-    printf("   +lower       - the output file name is in lower case\n");
+    printf("   +lower           - the output file name is in lower case\n");
 
     printf("\n  <filespec> file extension could be:\n");
-    printf("   -crlf to -detab : any type of text\n");
-    printf("   -dump           : any\n");
-    printf("   -rlec -rled     : .scr, .shr, .pnt, .pic\n");
+    printf("   -crlf to -detab  : any type of text\n");
+    printf("   -dump            : any\n");
+    printf("   -rlec -rled      : .scr, .shr, .pnt, .pic\n");
 }
 
 /**
@@ -164,9 +174,9 @@ int checkFileExtension( char *pPathFilename, int iCommand)
     BOOL         bError = FALSE;
     BOOL         bErrorCmd = FALSE;
     BOOL         bErrorExt = FALSE;
-    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-rlec", "-rled", "-2bmp", "-2pic" };
+    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic" };
 
-    if ((iCommand == CRLF) || (iCommand == LFCR) || (iCommand == DOUBLE_0A) || (iCommand == DOUBLE_0D) || (iCommand == DETAB))
+    if ((iCommand == CRLF) || (iCommand == LFCR) || (iCommand == DOUBLE_0A) || (iCommand == DOUBLE_0D) || (iCommand == DETAB) || (iCommand == EXT_TXT))
     {
         iError = 0;
     }
@@ -198,7 +208,8 @@ int checkFileExtension( char *pPathFilename, int iCommand)
                     if (iCommand == DUMP)
                     {
                         if ((strcmp((const char*)pLastPointChar, "scr") != 0) && (strcmp((const char*)pLastPointChar, "pic") != 0) &&
-                            ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0)))
+                            ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0)) &&
+                            (strcmp((const char*)pLastPointChar, "bmp") != 0))
                         {
                             bErrorExt = TRUE;
                         }
@@ -418,11 +429,32 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
             else if (!strcmp((const char*)pConvmParam, "-detab"))
             {
                 iCommand = DETAB;
-                (void)sscanf((const char*)argv[++uIndex], "%d", (int*)&pContext->iTabColumns);
+                if (sscanf((const char*)argv[++uIndex], "%d", (int *)&pContext->uTabColumns) == 1)
+                {
+                    if (pContext->uTabColumns < 2)
+                        pContext->uTabColumns = 4;
+                }
+                else
+                {
+                    pContext->uTabColumns = 4;
+                }
             }
             else if (!strcmp((const char*)pConvmParam, "-dump"))
             {
                 iCommand = DUMP;
+            }
+            else if (!strcmp((const char*)pConvmParam, "-extxt"))
+            {
+                iCommand = EXT_TXT;
+                if (sscanf((const char*)argv[++uIndex], "%d", (int*)&pContext->uMinSentenseLen) == 1)
+                {
+                    if (pContext->uMinSentenseLen < 1)
+                        pContext->uMinSentenseLen = 1;
+                }
+                else
+                {
+                    pContext->uMinSentenseLen = 1;
+                }
             }
             else if (!strcmp((const char*)pConvmParam, "-rlec"))
             {
@@ -930,6 +962,183 @@ char *createOutputPathname( char *pFullFilename, char *pOutPathname, int iComman
     return pOutputPathname;
 }
 
+void doTest( void)
+{
+    #define NUMBER_CHARS_BY_LINE    17
+
+    int             iError = 0;
+    int             FIRST_LINE_X = 0;
+    int             FIRST_LINE_Y = 0;
+    int             iStringLen;
+    int             iCounter = 0;
+    int             iBeginLineX = 0;
+    int             iBeginLineY = 0;
+    int             iOffset = 0;
+    int             iWordLen = 0;
+    unsigned char   ctempLetter;
+    int             iBorne = NUMBER_CHARS_BY_LINE;
+    const char     *pString = "The bustling town of Torentek.\nThis place is crawling with thieves and murderers.\n\nYou have\n\n\t150\n\ngold coins.\nGood day, wizard!";
+    unsigned char   cLetter;
+
+    iStringLen = (int )strlen(pString);
+    do
+    {
+        cLetter = (unsigned char)pString[iCounter];
+        if ((cLetter == 32) && (iBeginLineX == FIRST_LINE_X))    /* this case is managed */
+        {
+            // does nothing
+        }
+        else if (cLetter == 9)     // tab '\t'
+        {
+            //  insert 4 spaces, no qduPut; just increase iIndex and iBeginLineX
+            if (iCounter + 4 < iBorne)
+            {
+                iBeginLineX += 32;   // 32 pixels = 4 * 8 pixels width of charracters
+                printf( "    ");
+                iBorne -= 4;
+            }
+        }
+        else if (cLetter == 10)     // return to line '\n'
+        {
+            //  saute une ligne, no qduPut; just increase iBeginLineY
+            iBeginLineX = FIRST_LINE_X;
+            iOffset += 10;
+            iBeginLineY = FIRST_LINE_Y + iOffset;
+            iBorne = iCounter + NUMBER_CHARS_BY_LINE;
+            printf( "\n");
+        }
+        else
+        {
+            if (cLetter == 32)
+            {
+                unsigned int uWordLen = 0;
+                // compute len of the next word to know is enter in current line
+                for (iWordLen = iCounter + 1; iWordLen < iStringLen; iWordLen++)
+                {
+                    ctempLetter = (unsigned char)pString[iWordLen];
+                    if ((ctempLetter == 32) || (ctempLetter == 10))
+                        break;
+                    uWordLen++;
+                }
+
+                if ((iWordLen > iBorne) && (iWordLen != iStringLen))
+                {
+                    // don't display char ' ' on begin of a line
+                    iCounter++;
+                    cLetter = (unsigned char)pString[iCounter];
+                    // pass to the next line
+                    iBeginLineX = FIRST_LINE_X;
+                    iOffset += 10;
+                    iBeginLineY = FIRST_LINE_Y + iOffset;
+                    iBorne = iCounter + NUMBER_CHARS_BY_LINE;
+                    printf("\n");
+                }
+            }
+
+            if (cLetter != 32)
+            {
+                // write the cLetter with qduPut
+                /*
+                doSelectedPosLetter(cLetter, &iQduPutXdepart, &iQduPutYdepart);
+
+                (void)QduPut((char*)0x00E12000, iBeginLineX, iBeginLineY, (Pointer)*pGameContext->hLetter, iQduPutXdepart, iQduPutYdepart, 8, 4, 0);
+                if (toolerror() != 0)
+                {
+                    DbgFlagError(pGameContext->bDone, 0x0B64, toolerror());
+                }
+                */
+                printf("%c", cLetter);
+                iBeginLineX += 8;
+                iBeginLineY = FIRST_LINE_Y + iOffset;
+            }
+            else
+            {
+                printf(" ");
+            }
+        }
+        iCounter++;
+
+    } while (iCounter < iStringLen);
+
+    exitOnError((char*)"Test ended", NULL, NULL, 666);
+
+    /*
+    iStringLen = strlen( pString);
+    do
+    {
+        // select the sprite
+        cLetter = (unsigned char)pString[iCounter];
+        if (((cLetter == 32) || (cLetter == 10)) && (iBeginLineX == FIRST_LINE_X))    // this case is managed
+        {
+            // don't diplay char ' ' on begin of a line
+            iCounter++;
+            iBorne++;
+            cLetter = (unsigned char)pString[iCounter];
+        }
+        else if ((cLetter == 32) || (cLetter == 10))  // ' ' or '\r'
+        {
+            // The word have enough place in the current line
+            int             iIndex = 0;
+            unsigned char   ctempLetter;
+
+            if (cLetter == 32)
+            {
+                for (iIndex = iCounter + 1; iIndex <= iStringLen; iIndex++)
+                {
+                    ctempLetter = (unsigned char)pString[iIndex];
+                    if ((ctempLetter == 32) || (ctempLetter == 10))
+                        break;
+                }
+            }
+            else
+            {
+                iIndex = iBorne + 1;
+            }
+
+            if (iIndex > iBorne)
+            {
+                // don't diplay char ' ' on begin of a line
+                iCounter++;
+                cLetter = (unsigned char)pString[iCounter];
+                // pass to the next line
+                iBeginLineX = FIRST_LINE_X;
+                iOffset += 10;
+                iBeginLineY = FIRST_LINE_Y + iOffset;
+                iBorne = iCounter + NUMBER_CHARS_BY_LINE;
+            }
+        }
+
+        doSelectedPosLetter(cLetter, &iQduPutXdepart, &iQduPutYdepart);
+
+        (void)QduPut((char*)0x00E12000, iBeginLineX, iBeginLineY, (Pointer)*pGameContext->hLetter, iQduPutXdepart, iQduPutYdepart, 8, 4, 0);
+        if (toolerror() != 0)
+        {
+            DbgFlagError(pGameContext->bDone, 0x0B64, toolerror());
+        }
+
+        iCounter++;
+        if (iCounter == iBorne)
+        {
+            iBeginLineX = FIRST_LINE_X;
+            iOffset += 10;
+            iBeginLineY = FIRST_LINE_Y + iOffset;
+            iBorne += NUMBER_CHARS_BY_LINE;
+        }
+        else
+        {
+            iBeginLineX += 8;
+            iBeginLineY = FIRST_LINE_Y + iOffset;
+        }
+    }
+    while (iCounter != iStringLen);
+    */
+ 
+
+    exitOnError((char*)"Test ended", NULL, NULL, 666);
+
+#undef NUMBER_CHARS_BY_LINE    
+}
+
 /**
 * @fn int main( int argc, char *argv[])
 * @brief The entry point of the software
@@ -964,14 +1173,14 @@ int main(int argc, char* argv[])
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.3.3.9, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
+    printf("\n%s v1.4.4.11, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
     {
         if ((argc == 2) && (argv[1]))
         {
-            if ( (!strcmp((const char*)argv[1], "-help")) || (!strcmp((const char*)argv[1], "-h")) || (!strcmp((const char*)argv[1], "-?")) )
+            if ( (!strcmp((const char *)argv[1], "-help")) || (!strcmp((const char *)argv[1], "-h")) || (!strcmp((const char *)argv[1], "-?")) )
             {
                 usage();
                 return 0;
@@ -979,10 +1188,12 @@ int main(int argc, char* argv[])
         }
         usage();
         printf("\n");
-        exitOnError((char*)"not enough parameters", NULL, NULL, 1);
+        exitOnError((char *)"not enough parameters", NULL, NULL, 1);
     }
 
     iCommand = parseArguments( argc, argv, &context);
+
+    // doTest();
 
     /*
     printf("\n");
@@ -997,15 +1208,15 @@ int main(int argc, char* argv[])
     //pfullFilename = parseSpaceChar( &pfullFilename);
     //printf("");
 
-    uInputFileSize = getMyFileSize(context.pFullFilename);
+    uInputFileSize = getMyFileSize( context.pFullFilename);
 
     printf("\n");
-    pInputFileData = readFileToMemory(context.pFullFilename);   // input file is in memory
+    pInputFileData = readFileToMemory( context.pFullFilename);   // input file is in memory
     if (pInputFileData)
     {
         if (iCommand <= DETAB)
         {
-            pOutputFileData = doConvertJob( pInputFileData, uInputFileSize, (unsigned int)iCommand, (unsigned int)context.iTabColumns, (unsigned int *)&uDataSize);
+            pOutputFileData = doConvertJob( pInputFileData, uInputFileSize, (unsigned int)iCommand, (unsigned int)context.uTabColumns, (unsigned int *)&uDataSize);
             if (pOutputFileData)
             {
                 pfullOutputFilename = getBasePathname( context.pFullFilename, (unsigned int)strlen(TEMP_FILE_NAME));
@@ -1041,8 +1252,47 @@ int main(int argc, char* argv[])
             }
             else
             {
-                doDumpPic(pInputFileData, uInputFileSize);
+                if (context.pFullFilename)
+                {
+                    pEndString = (const char *)strrchr( context.pFullFilename, '.');
+                    if (strcmp((const char *)pEndString, ".bmp") == 0)
+                    {
+                        doDumpBmp( context.pFullFilename, pInputFileData, uInputFileSize);
+                    }
+                    else
+                    {
+                        doDumpPic(pInputFileData, uInputFileSize);
+                    }
+                    pEndString = NULL;
+                }
                 //printf("CONVM: nothing is done. Dump is only for .shr or .pnt\n");
+            }
+        }
+        else if (iCommand == EXT_TXT)
+        {
+            if (context.pFullFilename)
+            {
+                pOutputFileData = doExtractTextFromBinay(pInputFileData, uInputFileSize, context.uMinSentenseLen, (unsigned int*)&uDataSize);
+                if ((pOutputFileData) && (uDataSize > 0))
+                {
+                    context.pOutputPathname = (char*)calloc(1, strlen(context.pFullFilename) + 5);
+                    if (context.pOutputPathname)
+                    {
+                        (void)strncpy_s(context.pOutputPathname, strlen(context.pFullFilename) + 4, context.pFullFilename, strlen((const char*)context.pFullFilename));
+                        context.pOutputPathname = strcat(context.pOutputPathname, (const char *)".txt");
+                        if (writeFileFromMemory(context.pOutputPathname, pOutputFileData, uDataSize))
+                        {
+                            exitOnError((char*)"failed to write output file", NULL, context.pOutputPathname, 4);
+                        }
+                        free(context.pOutputPathname);
+                        context.pOutputPathname = NULL;
+                    }
+                }
+                else
+                {
+                    exitOnError((char*)"file too big", NULL, context.pFullFilename, 5);
+                }
+                free(pOutputFileData);
             }
         }
         else if ((iCommand == RLE_COMP) || (iCommand == RLE_DECO))

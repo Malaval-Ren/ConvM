@@ -28,3 +28,4 @@ unittest/Finder.Data
 
 # Enforce a “no spaces in filenames” policy
 **\ **
+convm/conv.rc.bak

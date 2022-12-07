@@ -12,6 +12,7 @@ extern "C" {
     BOOL            CheckShrFileFormat(char* pInputFileData, unsigned int inputFileSize);
     char           *DoRleJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize);
     void            doDumpPic(char* pInputFileData, unsigned int inputFileSize);
+    char           *doExtractTextFromBinay(char* pInputFileData, unsigned int uInputFileSize, unsigned int minSentenseLen, unsigned int* pDataSize);
 
 #ifdef __cplusplus
 }

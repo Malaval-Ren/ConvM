@@ -1,4 +1,4 @@
-/* FROM : http://www.rosettacode.org/wiki/Run-iLength_encoding/C */
+﻿/* FROM : http://www.rosettacode.org/wiki/Run-iLength_encoding/C */
 /* This page was last modified on 27 December 2012, at 06:48. */
 /* Content is available under GNU Free Documentation License 1.2 unless otherwise noted. */
 
@@ -56,7 +56,7 @@ static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileS
     unsigned int    uTotalDecodedData = 0;
     unsigned char   type;
     unsigned char   count;
-    unsigned char   index;
+    unsigned char   uIndex;
 
     if ((pOutputFileData) && (pInputFileData))
     {
@@ -73,7 +73,7 @@ static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileS
                 case 0: // AllDifferent
                 {
                     uTotalDecodedData += count;
-                    for (index = 0; index < count; index++)
+                    for (uIndex = 0; uIndex < count; uIndex++)
                     {
                         *pOutputFileData = (unsigned char)*pInputFileData;
                         pOutputFileData++;
@@ -86,7 +86,7 @@ static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileS
                 {
                     uLen--;
                     uTotalDecodedData += count;
-                    for (index = 0; index < count; index++)
+                    for (uIndex = 0; uIndex < count; uIndex++)
                     {
                         *pOutputFileData = (unsigned char)*pInputFileData;
                         pOutputFileData++;
@@ -99,7 +99,7 @@ static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileS
                     uLen -= 4;
                     pRunning = pInputFileData;
                     uTotalDecodedData += count;
-                    for (index = 0; index < count; index++)
+                    for (uIndex = 0; uIndex < count; uIndex++)
                     {
                         *pOutputFileData = (unsigned char)*pRunning;
                         pOutputFileData++;
@@ -126,7 +126,7 @@ static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileS
                     uLen--;
                     count *= 4;
                     uTotalDecodedData += count;
-                    for (index = 0; index < count; index++)
+                    for (uIndex = 0; uIndex < count; uIndex++)
                     {
                         *pOutputFileData = (unsigned char)*pInputFileData;
                         pOutputFileData++;
@@ -162,8 +162,8 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
     unsigned short int     *pColors = NULL;
     DirEntry               *pDirEntry = NULL;
     char                    pString[32] = "";
-    unsigned int            index;
-    unsigned int            loop;
+    unsigned int            uIndex;
+    unsigned int            uLoop;
     unsigned int            totalOfBytesToUnpack = 0;
 
     if (pInputFileData)
@@ -196,11 +196,11 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
                 {
                     printf(" - COLORS Tables\n");
                     pColors = (unsigned short int*)&pShrStruct->Couleur_Palette_0[0];
-                    for (index = 0; index < pShrStruct->Nbr_Table_Couleur; index++)
+                    for (uIndex = 0; uIndex < pShrStruct->Nbr_Table_Couleur; uIndex++)
                     {
-                        for (loop = 0; loop < 16; loop++)
+                        for (uLoop = 0; uLoop < 16; uLoop++)
                         {
-                            if (loop == 0)
+                            if (uLoop == 0)
                                 printf("   0x%04X", *pColors);
                             else
                                 printf(" 0x%04X", *pColors);
@@ -226,19 +226,19 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
                 {
                     printf(" - SCAN LINE\n");
                     pDirEntry = (DirEntry *)&pShrDataStruct->ScanLineDirectory;
-                    loop = 0;
-                    for (index = 0; index < pShrDataStruct->Nbr_Scan_Ligne; index++)
+                    uLoop = 0;
+                    for (uIndex = 0; uIndex < pShrDataStruct->Nbr_Scan_Ligne; uIndex++)
                     {
-                        if (loop == 0)
+                        if (uLoop == 0)
                             printf("   %03d %d %d", pDirEntry->NumberOfBytes, (pDirEntry->mode && 0xFF00), (pDirEntry->mode && 0x00FF));
                         else
                             printf("  %03d %d %d", pDirEntry->NumberOfBytes, (pDirEntry->mode && 0xFF00), (pDirEntry->mode && 0x00FF));
                         totalOfBytesToUnpack += pDirEntry->NumberOfBytes;
                         pDirEntry++;
-                        loop++;
-                        if (loop == 16)
+                        uLoop++;
+                        if (uLoop == 16)
                         {
-                            loop = 0;
+                            uLoop = 0;
                             printf("\n");
                         }
                     }
@@ -279,7 +279,7 @@ static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSiz
     unsigned int        colorLen;
     DirEntry           *pDirEntry = NULL;
     unsigned int        totalOfBytesToUnpack = 0;
-    unsigned int        index;
+    unsigned int        uIndex;
     char               *pImageData;
 
     if (pInputFileData)
@@ -298,7 +298,7 @@ static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSiz
         if (pShrDataStruct->Nbr_Scan_Ligne > 0)
         {
             pDirEntry = (DirEntry *)&pShrDataStruct->ScanLineDirectory;
-            for (index = 0; index < pShrDataStruct->Nbr_Scan_Ligne; index++)
+            for (uIndex = 0; uIndex < pShrDataStruct->Nbr_Scan_Ligne; uIndex++)
             {
                 totalOfBytesToUnpack += pDirEntry->NumberOfBytes;
                 pDirEntry++;
@@ -436,29 +436,36 @@ char *DoRleJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
 void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
 {
     char           *pInputRunner;
+    char           *pScb;
+    char           *pPalette;
+    char           *pNumPalette;
+    char           *pColor;
     unsigned short *pColorRunning;
-    unsigned int    index;
-    unsigned int    loop;
+    unsigned int    uIndex;
+    unsigned int    uLoop;
     unsigned int    uBegin = 0;
     unsigned int    uEnd = 0;
     unsigned int    uPalette = 0;
+    unsigned int    uOffsetPalette;
+    unsigned int    uOffsetCouleur;
     unsigned int    uNextLine;
     char            pString[64] = "";
+    unsigned int    uIndexUsed[0x10] = {0};
     unsigned short  uColorUsed[256];
 
     if (pInputFileData)
     {
         printf("\t- PIXELS -\n\n");
         pInputRunner = pInputFileData;
-        for (index = 0; index < 200; index++)
+        for (uIndex = 0; uIndex < 200; uIndex++)
         {
             uNextLine = 20;
-            (void)printf( "%03d: ", index);
-            for (loop = 0; loop < 160; loop++)
+            (void)printf( "%03d: ", uIndex);
+            for (uLoop = 0; uLoop < 160; uLoop++)
             {
                 (void)printf("%02d %02d ", ((*pInputRunner & 0xF0) >> 4), (*pInputRunner & 0x0F));
                 pInputRunner++;
-                if (loop == uNextLine - 1)
+                if (uLoop == uNextLine - 1)
                 {
                     (void)printf("\n     ");
                     uNextLine += 20;
@@ -471,12 +478,13 @@ void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
         uBegin = 0;
         uEnd = 0;
         uPalette = *pInputRunner;
-        for (index = 0; index < 200; index++)
+        pScb = pInputRunner;
+        for (uIndex = 0; uIndex < 200; uIndex++)
         {
-            if ((uPalette != *pInputRunner) || (index == 199) )
+            if ((uPalette != *pInputRunner) || (uIndex == 199) )
             {
-                (void)printf("Line %03d to %03d use palette %02d\n", uBegin, uEnd, uPalette);
-                uBegin = uEnd + 1;
+                (void)printf("Line %03d to %03d  use palette %02d  -  %02d times\n", uBegin, uEnd - 1, uPalette, (uEnd - uBegin));
+                uBegin = uEnd;
                 uEnd++;
                 uPalette = *pInputRunner;
             }
@@ -489,7 +497,7 @@ void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
 
         printf("\n\t- INFO -\n\n");
         uBegin = 0;
-        for (index = 0; index < 56; index++)
+        for (uIndex = 0; uIndex < 56; uIndex++)
         {
             if ((*pInputRunner == 0) && (uBegin == 0))
             {
@@ -513,14 +521,14 @@ void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
         memset( &uColorUsed, 0xFFFF, sizeof(uColorUsed));
 
         pColorRunning = (unsigned short *)(pInputFileData + 0x7E00);
-        loop = 0;
+        uLoop = 0;
         uBegin = 0;
         uEnd = 1;
-        uColorUsed[loop] = *pColorRunning;
-        for (index = 0; index < 16; index++)
+        uColorUsed[uLoop] = *pColorRunning;
+        for (uIndex = 0; uIndex < 16; uIndex++)
         {
-            (void)printf("\n%02d: ", index);
-            for (loop = 0; loop < 16; loop++)
+            (void)printf("\n%02d: ", uIndex);
+            for (uLoop = 0; uLoop < 16; uLoop++)
             {
                 (void)printf("0x%04X ", *pColorRunning);
 
@@ -541,8 +549,272 @@ void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
                 pColorRunning++;
             }
         }
-        printf("\n\nNombre de couleur diff�rentes = %d\n\n", uEnd);
+        printf("\n\nNumber of different colors = %d\n\n", uEnd);
+
+        printf("\t- COLOR INDEX USAGE -\n\n");
+        pInputRunner = pInputFileData;
+        pPalette = pInputFileData + 0x7E00;
+        for (uIndex = 0; uIndex < 200; uIndex++)
+        {
+            (void)printf("%03d: ", uIndex);
+            for (uLoop = 0; uLoop < 160; uLoop++)
+            {
+                uIndexUsed[(*pInputRunner & 0xF0) >> 4] += 1;
+                uIndexUsed[*pInputRunner & 0x0F] += 1;
+                pInputRunner++;
+            }
+
+            for (uLoop = 0; uLoop < 0x10; uLoop++)
+            {
+                if (uIndexUsed[uLoop] == 0)
+                {
+                    (void)printf("    ");
+                }
+                else
+                {
+                    (void)printf("%03d ", uIndexUsed[uLoop]);
+                }
+            }
+            (void)printf(" -  ");
+
+            for (uLoop = 0; uLoop < 0x10; uLoop++)
+            {
+                if (uIndexUsed[uLoop] != 1)
+                {
+                    (void)printf("   .   ");
+                }
+                else
+                {
+                    pNumPalette = pScb + uIndex;   // numero de palette
+                    uOffsetPalette = (*pNumPalette) * 0x1E;
+                    uOffsetCouleur = uLoop << 1;
+                    pColor = pPalette + uOffsetPalette + uOffsetCouleur;
+                    (void)printf( "0x%04X ", *(unsigned short *)pColor);
+                }
+            }
+            (void)printf( "\n");
+
+            memset( &uIndexUsed, 0x0, sizeof(uIndexUsed));
+        }
+
     }
 
     return;
+}
+
+/**
+* @fn char *doExtractTextFromBinay( char *pInputFileData, unsigned int uInputFileSize, unsigned int minSentenseLen, unsigned int *pDataSize)
+* @brief Dump the content of a pic file
+*
+* @param[in]        pInputFileData
+* @param[in]        inputFileSize
+* @param[in]        minSentenseLen
+* @param[in,out]    pDataSize
+*
+* @return a new allocated pointer pOutputFileData
+*/
+char *doExtractTextFromBinay( char *pInputFileData, unsigned int uInputFileSize, unsigned int minSentenseLen, unsigned int *pDataSize)
+{
+    char           *pOutputFileData = NULL;
+    char           *pInputRunner;
+    char           *pBeforeInputRunner;
+    char           *pAfterInputRunner;
+    char           *pOutputRunner = NULL;
+    char            tempBuffer[512] = {0};
+    char            convertChar;
+    unsigned int    uOffset = 0;
+    unsigned int    uIndex = 0;
+    unsigned int    uLen;
+
+    if (uInputFileSize <= 589824)   // 512 + 64
+    {
+        pOutputFileData = calloc(1, (size_t)(589824));    // allocate big place to work
+        if (pOutputFileData)
+        {
+            pInputRunner = pInputFileData;
+            pOutputRunner = pOutputFileData;
+
+            while (uIndex < uInputFileSize)
+            {
+                if ( (*pInputRunner >= ' ') && (*pInputRunner <= '~') )
+                {
+                    convertChar = *pInputRunner;
+                    if (convertChar == '*')
+                    {
+                        pBeforeInputRunner = pInputRunner - 1;
+                        pAfterInputRunner = pInputRunner + 1;
+
+                        if (*pAfterInputRunner == 't')
+                        {
+                            if ((*pBeforeInputRunner == ' ') ||
+                                (*pBeforeInputRunner == 'b') ||
+                                (*pBeforeInputRunner == 'r') ||
+                                (*pBeforeInputRunner == 't') ||
+                                (*pBeforeInputRunner == 'n') ||
+                                (*pBeforeInputRunner == '-') ||
+                                (*pBeforeInputRunner == '\''))
+                            {
+                                convertChar = 'ê';
+                            }
+                        }
+                        if (*pAfterInputRunner == 'm')
+                        {
+                            if ((*pBeforeInputRunner == 'm') || (*pBeforeInputRunner == 'l'))
+                            {
+                                convertChar = 'ê';
+                            }
+                        }
+                        else if ((*pBeforeInputRunner == 'g') && (*pAfterInputRunner == 'n'))
+                            convertChar = 'ê';
+                    }
+                    tempBuffer[uOffset] = convertChar;
+                    uOffset++;
+                }
+                else if ( (*pInputRunner >= (char)0x81) && (*pInputRunner <= (char)0xB4) )
+                {
+                    /*   convert : ASCII TABLE from Atari ST
+                            _0   _1  _2  _3  _4  _5  _6  _7  _8  _9  _A  _B  _C  _D  _E  _F
+                        2_       !   "   #   $   %   &   '   (   )   *   +   ,   -   .   /
+                        3_   0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ?
+                        4_   @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O
+                        5_   P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _
+                        6_   `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o
+                        7_   p   q   r   s   t   u   v   w   x   y   z   {   |   }   ~   Δ
+                        8_   Ç   ü   é   â   ä   à   å   ç   ê   ë   è   ï   î   ì   Ä   Å
+                        9_   É   æ   Æ   ô   ö   ò   û   ù   ÿ   Ö   Ü   ¢   £   ¥   ß   ƒ
+                        A_   á   í   ó   ú   ñ   Ñ   ª   º   ¿   ⌐   ¬   ½   ¼   ¡   «   »
+                        B_   ã   õ   Ø   ø   œ   Œ   À   Ã   Õ   ¨   ´   †   ¶   ©   ®   ™
+                        C_   ĳ   Ĳ   א   ב   ג   ד   ה   ו   ז   ח   ט   י   כ   ל   מ   נ
+                        D_   ס   ע   פ   צ   ק   ר   ש   ת   ן   ך   ם   ף   ץ   §   ∧   ∞
+                        E_   α   β   Γ   π   Σ   σ   µ   τ   Φ   Θ   Ω   δ   ∮   ϕ   ∈   ∩
+                        F_   ≡   ±   ≥   ≤   ⌠   ⌡   ÷   ≈   °   •   ·   √   ⁿ   ²   ³   ¯
+                    */
+                    switch (*pInputRunner)
+                    {
+                        case (char )0x81:  convertChar = 'ü';   break;
+                        case (char )0x82:  convertChar = 'é';   break;
+                        case (char )0x83:  convertChar = 'â';   break;
+                        case (char )0x84:  convertChar = 'ä';   break;
+                        case (char )0x85:  convertChar = 'à';   break;
+                        case (char )0x86:  convertChar = 'å';   break;
+                        case (char )0x87:  convertChar = 'ç';   break;
+                        case (char )0x88:  convertChar = 'ê';   break;
+                        case (char )0x89:  convertChar = 'ë';   break;
+                        case (char )0x8A:  convertChar = 'è';   break;
+                        case (char )0x8B:  convertChar = 'ï';   break;
+                        case (char )0x8C:  convertChar = 'î';   break;
+                        case (char )0x8D:  convertChar = 'ì';   break;
+                        //case (char )0x8E:  convertChar = ' ';   break;
+                        //case (char )0x8F:  convertChar = ' ';   break;
+                        //case (char )0x90:  convertChar = ' ';   break;
+                        //case (char )0x91:  convertChar = ' ';   break;
+                        //case (char )0x92:  convertChar = ' ';   break;
+                        case (char )0x93:  convertChar = 'ô';   break;
+                        case (char )0x94:  convertChar = 'ö';   break;
+                        case (char )0x95:  convertChar = 'ò';   break;
+                        case (char )0x96:  convertChar = 'û';   break;
+                        case (char )0x97:  convertChar = 'ÿ';   break;
+                        //case (char )0x98:  convertChar = ' ';   break;
+                        //case (char )0x99:  convertChar = ' ';   break;
+                        //case (char )0x9A:  convertChar = ' ';   break;
+                        //case (char )0x9B:  convertChar = ' ';   break;
+                        //case (char )0x9C:  convertChar = ' ';   break;
+                        //case (char )0x9D:  convertChar = ' ';   break;
+                        //case (char )0x9E:  convertChar = ' ';   break;
+                        //case (char )0x9F:  convertChar = ' ';   break;
+                        case (char )0xA0:  convertChar = 'á';   break;
+                        case (char )0xA1:  convertChar = 'í';   break;
+                        case (char )0xA2:  convertChar = 'ó';   break;
+                        case (char )0xA3:  convertChar = 'ú';   break;
+                        case (char )0xA4:  convertChar = 'ñ';   break;
+                        //case (char )0xA5:  convertChar = ' ';   break;
+                        //case (char )0xA6:  convertChar = ' ';   break;
+                        //case (char )0xA7:  convertChar = ' ';   break;
+                        //case (char )0xA8:  convertChar = ' ';   break;
+                        //case (char )0xA9:  convertChar = ' ';   break;
+                        //case (char )0xAA:  convertChar = ' ';   break;
+                        //case (char )0xAB:  convertChar = ' ';   break;
+                        //case (char )0xAC:  convertChar = ' ';   break;
+                        //case (char )0xAD:  convertChar = ' ';   break;
+                        case (char )0xAE:  convertChar = '"';   break;
+                        case (char )0xAF:  convertChar = '"';   break;
+                        case (char )0xB0:  convertChar = 'ã';   break;
+                        case (char )0xB1:  convertChar = 'õ';   break;
+                        case (char )0xB2:  convertChar = 'Ø';   break;
+                        case (char )0xB3:  convertChar = 'ø';   break;
+                        case (char )0xB4:  convertChar = 'œ';   break;
+
+                        default:           convertChar = ' ';   break;
+                    }
+
+                    if (convertChar != ' ')
+                    {
+                        tempBuffer[uOffset] = convertChar;
+                        uOffset++;
+                    }
+                    else
+                    {
+                        if (uOffset > 0)    // not managed characters in a string before '\0' drop it
+                        {
+                            uOffset = 0;
+                            tempBuffer[uOffset] = 0;
+                        }
+                    }
+                }
+                else if (*pInputRunner == '\n')    // a return to line in a string
+                {
+                    tempBuffer[uOffset] = '\\';
+                    uOffset++;
+                    tempBuffer[uOffset] = 'N';
+                    uOffset++;
+                }
+                else if (*pInputRunner == '\r')    // a return to line in a string
+                {
+                    tempBuffer[uOffset] = '\\';
+                    uOffset++;
+                    tempBuffer[uOffset] = 'R';
+                    uOffset++;
+                }
+                else if (*pInputRunner == '\0')     // end of a string
+                {
+                    if (uOffset > 0)
+                    {
+                        tempBuffer[uOffset] = *pInputRunner;
+
+                        if (strcmp((const char*)tempBuffer, "Le meunier") == 0)
+                        {
+                            uOffset = uOffset;
+                        }
+
+                        uLen = (unsigned int)strlen(tempBuffer);
+                        if ((uLen > 0) && (uLen >= minSentenseLen))
+                        {
+                            (void)memcpy(pOutputRunner, tempBuffer, uLen);
+                            pOutputRunner += uLen;
+                            *pOutputRunner = '\r';
+                            pOutputRunner++;
+                            *pOutputRunner = '\n';
+                            pOutputRunner++;
+                            *pDataSize += uLen + 2;
+                        }
+                        uOffset = 0;
+                        tempBuffer[uOffset] = 0;
+                    }
+                }
+                else     // not managed characters
+                {
+                    if (uOffset > 0)    // not managed characters in a string before '\0' drop it
+                    {
+                        uOffset = 0;
+                        tempBuffer[uOffset] = 0;
+                    }
+                }
+
+                pInputRunner++;
+                uIndex++;
+            }
+        }
+    }
+
+    return pOutputFileData;
 }
