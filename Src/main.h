@@ -14,7 +14,7 @@
 #define RLE_DECO    9
 #define TO_BMP      10
 #define TO_PIC      11
-
+#define ADDPALBMP   12
 
 #pragma pack(1)     // structure without padding....
 typedef struct

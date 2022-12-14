@@ -33,7 +33,7 @@
  * unsigned int     u<Name>
  * unsigned char    u<Name>
  * unsigned short   u<Name>
- * unsigned #       u<Name>
+ * unsigned long    u<Name>
  * pointer         *p<Name>
  */
 
@@ -53,10 +53,15 @@
  * -dump ../../../Iron_Lord/BootImages/ironlord_g9.pic
  * -dump ../../../Iron_Lord/BootImages/ironlord_g9_ex.bmp
  * 
+ * -2pic +lower ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
+ * 
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/iron_lord_game_20221112_104906.AMm
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/Iron_Lord_fr_sorcier.uss
  * 
  * -2bmp ../../../Iron_Lord/BootImages/ironlord_g9.pic
+ * 
+ * -apbm ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
+ * 
  */
 
 
@@ -80,6 +85,7 @@ void usage()
     printf("   -rled            - decompress with rle algorithms file\n");
     printf("   -2bmp            - convert .scr, .shr, .pnt, .pic to .bmp\n");
     printf("   -2pic            - convert .bmp to .pic\n");
+    printf("   -apbm            - add a palette to .bmp 4 to 256 colors\n");
 
     printf("\n  <option> is one of the following:\n");
     printf("   +lower           - the output file name is in lower case\n");
@@ -174,15 +180,15 @@ int checkFileExtension( char *pPathFilename, int iCommand)
     BOOL         bError = FALSE;
     BOOL         bErrorCmd = FALSE;
     BOOL         bErrorExt = FALSE;
-    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic" };
+    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic", "-apbm"};
 
-    if ((iCommand == CRLF) || (iCommand == LFCR) || (iCommand == DOUBLE_0A) || (iCommand == DOUBLE_0D) || (iCommand == DETAB) || (iCommand == EXT_TXT))
+    if ((iCommand == CRLF) || (iCommand == LFCR) || (iCommand == DOUBLE_0A) || (iCommand == DOUBLE_0D) || (iCommand == DETAB) || (iCommand == EXT_TXT) || (iCommand == ADDPALBMP))
     {
         iError = 0;
     }
     else
     {
-        pEndString = getFileName(pPathFilename);
+        pEndString = getFileName( pPathFilename);
         if (pEndString)
         {
             pRunning = (char*)pEndString;
@@ -209,7 +215,7 @@ int checkFileExtension( char *pPathFilename, int iCommand)
                     {
                         if ((strcmp((const char*)pLastPointChar, "scr") != 0) && (strcmp((const char*)pLastPointChar, "pic") != 0) &&
                             ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0)) &&
-                            (strcmp((const char*)pLastPointChar, "bmp") != 0))
+                             (strcmp((const char*)pLastPointChar, "bmp") != 0))
                         {
                             bErrorExt = TRUE;
                         }
@@ -472,6 +478,10 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
             else if (!strcmp((const char*)pConvmParam, "-2pic"))
             {
                 iCommand = TO_PIC;
+            }
+            else if (!strcmp((const char*)pConvmParam, "-apbm"))
+            {
+                iCommand = ADDPALBMP;
             }
             else
             {
@@ -885,7 +895,7 @@ char *createOutputPathname( char *pFullFilename, char *pOutPathname, int iComman
         if (pOutPathname)
         {
             pEndString = getFileName(pFullFilename);
-            uOutputPathnameLen = strlen((const char*)pOutPathname) + strlen((const char*)pEndString)  + (size_t)16;
+            uOutputPathnameLen = strlen((const char*)pOutPathname) + strlen((const char*)pEndString) + (size_t)16;
         }
         else
         {
@@ -962,183 +972,6 @@ char *createOutputPathname( char *pFullFilename, char *pOutPathname, int iComman
     return pOutputPathname;
 }
 
-void doTest( void)
-{
-    #define NUMBER_CHARS_BY_LINE    17
-
-    int             iError = 0;
-    int             FIRST_LINE_X = 0;
-    int             FIRST_LINE_Y = 0;
-    int             iStringLen;
-    int             iCounter = 0;
-    int             iBeginLineX = 0;
-    int             iBeginLineY = 0;
-    int             iOffset = 0;
-    int             iWordLen = 0;
-    unsigned char   ctempLetter;
-    int             iBorne = NUMBER_CHARS_BY_LINE;
-    const char     *pString = "The bustling town of Torentek.\nThis place is crawling with thieves and murderers.\n\nYou have\n\n\t150\n\ngold coins.\nGood day, wizard!";
-    unsigned char   cLetter;
-
-    iStringLen = (int )strlen(pString);
-    do
-    {
-        cLetter = (unsigned char)pString[iCounter];
-        if ((cLetter == 32) && (iBeginLineX == FIRST_LINE_X))    /* this case is managed */
-        {
-            // does nothing
-        }
-        else if (cLetter == 9)     // tab '\t'
-        {
-            //  insert 4 spaces, no qduPut; just increase iIndex and iBeginLineX
-            if (iCounter + 4 < iBorne)
-            {
-                iBeginLineX += 32;   // 32 pixels = 4 * 8 pixels width of charracters
-                printf( "    ");
-                iBorne -= 4;
-            }
-        }
-        else if (cLetter == 10)     // return to line '\n'
-        {
-            //  saute une ligne, no qduPut; just increase iBeginLineY
-            iBeginLineX = FIRST_LINE_X;
-            iOffset += 10;
-            iBeginLineY = FIRST_LINE_Y + iOffset;
-            iBorne = iCounter + NUMBER_CHARS_BY_LINE;
-            printf( "\n");
-        }
-        else
-        {
-            if (cLetter == 32)
-            {
-                unsigned int uWordLen = 0;
-                // compute len of the next word to know is enter in current line
-                for (iWordLen = iCounter + 1; iWordLen < iStringLen; iWordLen++)
-                {
-                    ctempLetter = (unsigned char)pString[iWordLen];
-                    if ((ctempLetter == 32) || (ctempLetter == 10))
-                        break;
-                    uWordLen++;
-                }
-
-                if ((iWordLen > iBorne) && (iWordLen != iStringLen))
-                {
-                    // don't display char ' ' on begin of a line
-                    iCounter++;
-                    cLetter = (unsigned char)pString[iCounter];
-                    // pass to the next line
-                    iBeginLineX = FIRST_LINE_X;
-                    iOffset += 10;
-                    iBeginLineY = FIRST_LINE_Y + iOffset;
-                    iBorne = iCounter + NUMBER_CHARS_BY_LINE;
-                    printf("\n");
-                }
-            }
-
-            if (cLetter != 32)
-            {
-                // write the cLetter with qduPut
-                /*
-                doSelectedPosLetter(cLetter, &iQduPutXdepart, &iQduPutYdepart);
-
-                (void)QduPut((char*)0x00E12000, iBeginLineX, iBeginLineY, (Pointer)*pGameContext->hLetter, iQduPutXdepart, iQduPutYdepart, 8, 4, 0);
-                if (toolerror() != 0)
-                {
-                    DbgFlagError(pGameContext->bDone, 0x0B64, toolerror());
-                }
-                */
-                printf("%c", cLetter);
-                iBeginLineX += 8;
-                iBeginLineY = FIRST_LINE_Y + iOffset;
-            }
-            else
-            {
-                printf(" ");
-            }
-        }
-        iCounter++;
-
-    } while (iCounter < iStringLen);
-
-    exitOnError((char*)"Test ended", NULL, NULL, 666);
-
-    /*
-    iStringLen = strlen( pString);
-    do
-    {
-        // select the sprite
-        cLetter = (unsigned char)pString[iCounter];
-        if (((cLetter == 32) || (cLetter == 10)) && (iBeginLineX == FIRST_LINE_X))    // this case is managed
-        {
-            // don't diplay char ' ' on begin of a line
-            iCounter++;
-            iBorne++;
-            cLetter = (unsigned char)pString[iCounter];
-        }
-        else if ((cLetter == 32) || (cLetter == 10))  // ' ' or '\r'
-        {
-            // The word have enough place in the current line
-            int             iIndex = 0;
-            unsigned char   ctempLetter;
-
-            if (cLetter == 32)
-            {
-                for (iIndex = iCounter + 1; iIndex <= iStringLen; iIndex++)
-                {
-                    ctempLetter = (unsigned char)pString[iIndex];
-                    if ((ctempLetter == 32) || (ctempLetter == 10))
-                        break;
-                }
-            }
-            else
-            {
-                iIndex = iBorne + 1;
-            }
-
-            if (iIndex > iBorne)
-            {
-                // don't diplay char ' ' on begin of a line
-                iCounter++;
-                cLetter = (unsigned char)pString[iCounter];
-                // pass to the next line
-                iBeginLineX = FIRST_LINE_X;
-                iOffset += 10;
-                iBeginLineY = FIRST_LINE_Y + iOffset;
-                iBorne = iCounter + NUMBER_CHARS_BY_LINE;
-            }
-        }
-
-        doSelectedPosLetter(cLetter, &iQduPutXdepart, &iQduPutYdepart);
-
-        (void)QduPut((char*)0x00E12000, iBeginLineX, iBeginLineY, (Pointer)*pGameContext->hLetter, iQduPutXdepart, iQduPutYdepart, 8, 4, 0);
-        if (toolerror() != 0)
-        {
-            DbgFlagError(pGameContext->bDone, 0x0B64, toolerror());
-        }
-
-        iCounter++;
-        if (iCounter == iBorne)
-        {
-            iBeginLineX = FIRST_LINE_X;
-            iOffset += 10;
-            iBeginLineY = FIRST_LINE_Y + iOffset;
-            iBorne += NUMBER_CHARS_BY_LINE;
-        }
-        else
-        {
-            iBeginLineX += 8;
-            iBeginLineY = FIRST_LINE_Y + iOffset;
-        }
-    }
-    while (iCounter != iStringLen);
-    */
- 
-
-    exitOnError((char*)"Test ended", NULL, NULL, 666);
-
-#undef NUMBER_CHARS_BY_LINE    
-}
-
 /**
 * @fn int main( int argc, char *argv[])
 * @brief The entry point of the software
@@ -1173,7 +1006,7 @@ int main(int argc, char* argv[])
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.4.4.11, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
+    printf("\n%s v1.6.1.13, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
@@ -1219,7 +1052,7 @@ int main(int argc, char* argv[])
             pOutputFileData = doConvertJob( pInputFileData, uInputFileSize, (unsigned int)iCommand, (unsigned int)context.uTabColumns, (unsigned int *)&uDataSize);
             if (pOutputFileData)
             {
-                pfullOutputFilename = getBasePathname( context.pFullFilename, (unsigned int)strlen(TEMP_FILE_NAME));
+                pfullOutputFilename = getBasePathname( context.pFullFilename, (unsigned int)strlen( TEMP_FILE_NAME));
                 pfullOutputFilename = strcat( pfullOutputFilename, TEMP_FILE_NAME);
 
                 if (!writeFileFromMemory(pfullOutputFilename, pOutputFileData, uDataSize))
@@ -1232,7 +1065,7 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    exitOnError((char*)"failed to write output file", NULL, pfullOutputFilename, 4);
+                    exitOnError( (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                 }
 
                 free(pfullOutputFilename);
@@ -1369,15 +1202,15 @@ int main(int argc, char* argv[])
         }
         else if (iCommand == TO_PIC)
         {
-            if (CheckBmpFileFormat(pInputFileData, uInputFileSize))
+            if (CheckBmpFileFormat( pInputFileData, uInputFileSize))
             {
                 pOutputFileData = DoBmpJob(pInputFileData, uInputFileSize, iCommand, &uDataSize);
                 if ((pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
                 {
-                    pfullOutputFilename = createOutputPathname(context.pFullFilename, context.pOutputPathname, iCommand);
+                    pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
                     if (pfullOutputFilename)
                     {
-                        if (!writeFileFromMemory(pfullOutputFilename, pOutputFileData, uDataSize))
+                        if (!writeFileFromMemory( pfullOutputFilename, pOutputFileData, uDataSize))
                         {
                             updateFileType(&context, iCommand, pfullOutputFilename);
                         }
@@ -1385,7 +1218,7 @@ int main(int argc, char* argv[])
                         {
                             exitOnError((char*)"failed to write output file", NULL, pfullOutputFilename, 4);
                         }
-                        free(pfullOutputFilename);
+                        free( pfullOutputFilename);
                     }
                     else
                     {
@@ -1397,6 +1230,37 @@ int main(int argc, char* argv[])
             else
             {
                 exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+            }
+        }
+        else if (iCommand == ADDPALBMP)
+        {
+            if (context.pFullFilename)
+            {
+                pEndString = (const char*)strrchr( context.pFullFilename, '.');
+                if (strcmp((const char*)pEndString, ".bmp") == 0)
+                {
+                    pOutputFileData = DoAddPaletteToBmp( pInputFileData, uInputFileSize, iCommand, &uDataSize);
+                    if ((pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
+                    {
+                        pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
+                        if (pfullOutputFilename)
+                        {
+                            (void)strncpy_s(pfullOutputFilename, strlen( pfullOutputFilename), context.pFullFilename, strlen( (const char *)context.pFullFilename) - 4);
+                            pfullOutputFilename = strcat(pfullOutputFilename, (const char *)"2.bmp");
+
+                            if (writeFileFromMemory( pfullOutputFilename, pOutputFileData, uDataSize))
+                            {
+                                exitOnError( (char*)"failed to write output file", NULL, pfullOutputFilename, 4);
+                            }
+                            free( pfullOutputFilename);
+                        }
+                        free( pOutputFileData);
+                    }
+                }
+                else
+                {
+                    exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                }
             }
         }
         else

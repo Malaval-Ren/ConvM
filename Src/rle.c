@@ -170,17 +170,12 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
     {
         pShrStruct = (HeaderSHR *)pInputFileData;
 
-        //printf("long int size    : %d\n", (int)sizeof(pShrStruct->Longueur_Fichier));
-        //printf("short int size   : %d\n", (int)sizeof(pShrStruct->Mode_Maitre));
-        //printf("insigned int size: %d\n\n", (int)sizeof(pShrStruct->Couleur_Palette_0[0]));
-
         printf("HEADER\n");
         printf(" - File size         : %lu\n", pShrStruct->Longueur_Fichier);
         if (pShrStruct->Signature[0] != 0)
         {
             pBlockName = (char*)&pString;
             (void)strncpy_s( pBlockName, 32, (char *)(&pShrStruct->Signature[1]), pShrStruct->Signature[0]);
-            //(void )strncpy( pfullOutputFilename, pfullFilename, strlen( pfullFilename));
             printf(" - Block Name        : %s\n", pBlockName);
         }
 
@@ -306,20 +301,12 @@ static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSiz
         }
 
         pImageData = (char *)pDirEntry;
-        //printf("pImageData            : %p\n", (void *)pImageData);
-        //printf("pImageData size       : %d\n", totalOfBytesToUnpack);
-        //printf("\npOutputFileData       : %p\n", (void*)pOutputFileData);
 
         if ((pColors) && (colorLen >= 32) && (pImageData))
         {
             iOffset = rle_decode(pOutputFileData, uOutputFileSize, pImageData, totalOfBytesToUnpack);
             if (iOffset)
             {
-                //printf("rle_decode size       : %d\n", iOffset);
-                //printf("pImageData            : %p\n", (void*)pImageData);
-                //printf("pImageData size       : %d\n", totalOfBytesToUnpack);
-                //printf("\npOutputFileData       : %p\n", (void*)pOutputFileData);
-
                 char *pFun = pOutputFileData + 0x7D00 + 0xD0;
                 (void )strncpy( pFun, "Renaud Malaval", sizeof("Renaud Malaval"));
                 pFun = pOutputFileData + 0x7D00 + 0xE0;
@@ -527,10 +514,10 @@ void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
         uColorUsed[uLoop] = *pColorRunning;
         for (uIndex = 0; uIndex < 16; uIndex++)
         {
-            (void)printf("\n%02d: ", uIndex);
+            (void )printf("\n%02d: ", uIndex);
             for (uLoop = 0; uLoop < 16; uLoop++)
             {
-                (void)printf("0x%04X ", *pColorRunning);
+                (void )printf("0x%04X ", *pColorRunning);
 
                 // Fill array to be able to count number of color used
                 while (uColorUsed[uBegin] != 0xFFFF)
@@ -780,11 +767,6 @@ char *doExtractTextFromBinay( char *pInputFileData, unsigned int uInputFileSize,
                     if (uOffset > 0)
                     {
                         tempBuffer[uOffset] = *pInputRunner;
-
-                        if (strcmp((const char*)tempBuffer, "Le meunier") == 0)
-                        {
-                            uOffset = uOffset;
-                        }
 
                         uLen = (unsigned int)strlen(tempBuffer);
                         if ((uLen > 0) && (uLen >= minSentenseLen))
