@@ -10,7 +10,7 @@ Just a little software to help **Apple IIGS** cross dev
 #help usage :
 
 ```bash
-convm v1.6.1.13, (c) R. Malaval & F. Mure 2022.
+convm.exe v1.7.3.15, (c) R. Malaval & F. Mure 2022.
 
 Usage: convm <convmspec> <option> "<filespec>" "<output folder>"
 
@@ -27,6 +27,7 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder>"
    -2bmp            - convert .scr, .shr, .pnt, .pic to .bmp
    -2pic            - convert .bmp to .pic
    -apbm            - add a palette to .bmp 4 to 256 colors
+   -swap <col><col> - swap 2 colors in palette and bitmap
 
   <option> is one of the following:
    +lower           - the output file name is in lower case

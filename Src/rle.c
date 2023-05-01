@@ -33,7 +33,7 @@ static unsigned int rle4_encode( char *pOutputFileData, const char *pInputFileDa
 {
     unsigned int    uTotalEncodedData = 0;
 
-    if ((pOutputFileData) && (pInputFileData))
+    if ((pOutputFileData) && (pInputFileData) && (uLen))
     {
     }
 
@@ -390,18 +390,18 @@ char *DoRleJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
 
         switch (command)
         {
-            case DUMP:
+            case eDUMP:
             {
                 DumpShrHeader(pInputFileData, inputFileSize);
                 *pDataSize = 0;
             }
             break;
 
-            case RLE_COMP:
+            case eRLE_COMP:
                 *pDataSize = rle4_encode( pOutputFileData, pInputFileData, inputFileSize);
             break;
 
-            case RLE_DECO:
+            case eRLE_DECO:
                 *pDataSize = createPic( pOutputFileData, 65535, pInputFileData, inputFileSize);
             break;
                 
@@ -437,7 +437,6 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
     unsigned int    uOffsetPalette;
     unsigned int    uOffsetCouleur;
     unsigned int    uNextLine;
-    char            pString[64] = "";
     unsigned int    uIndexUsed[0x10] = {0};
     unsigned short  uColorUsed[256];
 
@@ -661,7 +660,7 @@ char *doExtractTextFromBinay( char *pInputFileData, unsigned int uInputFileSize,
                     tempBuffer[uOffset] = convertChar;
                     uOffset++;
                 }
-                else if ( (*pInputRunner >= (char)0x81) && (*pInputRunner <= (char)0xB4) )
+                else if ( (*pInputRunner >= (char )0x81) && (*pInputRunner <= (char )0xB4) )
                 {
                     /*   convert : ASCII TABLE from Atari ST
                             _0   _1  _2  _3  _4  _5  _6  _7  _8  _9  _A  _B  _C  _D  _E  _F

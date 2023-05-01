@@ -29,11 +29,11 @@
 * @param[in]        uError
 *
 */
-void exitOnError(char* pExplain, char* pDetail, char* pInfo, unsigned int uError)
+void exitOnError( char *pExplain, char *pDetail, char *pInfo, unsigned int uError)
 {
-    const char* pEndString = NULL;
-    const char* pSpaceString = NULL;
-    char* pMessage = NULL;
+    const char  *pEndString = NULL;
+    const char  *pSpaceString = NULL;
+    char        *pMessage = NULL;
     size_t       uLen;
 
     if (pExplain)
@@ -59,29 +59,29 @@ void exitOnError(char* pExplain, char* pDetail, char* pInfo, unsigned int uError
 
             if (pDetail)
             {
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pEndString);
-                pMessage = strcat(pMessage, (const char*)pDetail);
-                pMessage = strcat(pMessage, (const char*)pEndString);
+                pMessage = strcat(pMessage, (const char *)pSpaceString);
+                pMessage = strcat(pMessage, (const char *)pSpaceString);
+                pMessage = strcat(pMessage, (const char *)pEndString);
+                pMessage = strcat(pMessage, (const char *)pDetail);
+                pMessage = strcat(pMessage, (const char *)pEndString);
             }
 
             if (pInfo)
             {
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pEndString);
-                pMessage = strcat(pMessage, (const char*)pInfo);
-                pMessage = strcat(pMessage, (const char*)pEndString);
+                pMessage = strcat(pMessage, (const char *)pSpaceString);
+                pMessage = strcat(pMessage, (const char *)pSpaceString);
+                pMessage = strcat(pMessage, (const char *)pEndString);
+                pMessage = strcat(pMessage, (const char *)pInfo);
+                pMessage = strcat(pMessage, (const char *)pEndString);
             }
 
             printf("CONVM : %s\n", pMessage);
 
-            free(pMessage);
+            free( pMessage);
         }
     }
 
-    exit(uError);
+    exit( uError);
 }
 
 /**
@@ -467,7 +467,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
             {
                 switch (uCommand)
                 {
-                    case CRLF:  /* 13 == 0x0D == CR == Carriage Return == '\r' */  /* 10 == 0x0A == LF == Line Feed == '\n' */
+                    case eCRLF:  /* 13 == 0x0D == CR == Carriage Return == '\r' */  /* 10 == 0x0A == LF == Line Feed == '\n' */
                     {
                         if (*pInputRunner == '\r')
                             *pOutputRunner = 10;
@@ -477,7 +477,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                     }
                     break;
 
-                    case LFCR:  /* 10 == 0x0A == LF == Line Feed == '\n' */  /* 13 == 0x0D == CR == Carriage Return == '\r' */
+                    case eLFCR:  /* 10 == 0x0A == LF == Line Feed == '\n' */  /* 13 == 0x0D == CR == Carriage Return == '\r' */
                     {
                         if (*pInputRunner == '\n')
                             *pOutputRunner = 13;
@@ -487,7 +487,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                     }
                     break;
 
-                    case DOUBLE_0A: /* 10 == 0x0A == LF == Line Feed == '\n' */
+                    case eDOUBLE_0A: /* 10 == 0x0A == LF == Line Feed == '\n' */
                     {
                         if (uIndex < uInputFileSize)
                         {
@@ -510,7 +510,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                     }
                     break;
 
-                    case DOUBLE_0D: /* 13 == 0x0D == CR == Carriage Return == '\r' */
+                    case eDOUBLE_0D: /* 13 == 0x0D == CR == Carriage Return == '\r' */
                     {
                         if (uIndex <= uInputFileSize)
                         {
@@ -533,7 +533,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
                     }
                     break;
 
-                    case DETAB:
+                    case eDETAB:
                     {
                         switch (*pInputRunner)
                         {

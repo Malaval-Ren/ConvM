@@ -2,19 +2,24 @@
 #ifndef MY_GLOBAL_H
 #define MY_GLOBAL_H
 
-#define NONE        0
-#define CRLF        1
-#define LFCR        2
-#define DOUBLE_0A   3
-#define DOUBLE_0D   4
-#define DETAB       5
-#define DUMP        6
-#define EXT_TXT     7
-#define RLE_COMP    8
-#define RLE_DECO    9
-#define TO_BMP      10
-#define TO_PIC      11
-#define ADDPALBMP   12
+enum eCommandNnumber {
+    eNONE,
+    eCRLF,
+    eLFCR,
+    eDOUBLE_0A,
+    eDOUBLE_0D,
+    eDETAB,
+    eDUMP,
+    eEXT_TXT,
+    eRLE_COMP,
+    eRLE_DECO,
+    eTO_BMP,
+    eTO_PIC,
+    eADDPALBMP,
+    eSWAP2COLOR,
+    eCOMPPALET,
+    eCOPYPALET
+};
 
 #pragma pack(1)     // structure without padding....
 typedef struct
@@ -70,7 +75,7 @@ typedef struct
     unsigned long int   Nbr_Couleur_Image;          // 4 octets pour le nombre de couleurs dans l'image (ou 0 pour une image RVB)
     unsigned long int   Nbr_Couleur_Importante;     // 4 octets pour le nombre de couleurs importante dans l'image (0 si toutes)
     // Color Table
-    unsigned long int   Couleur_Palette_0[16];      // 0 - une seule palette de 16 couleurs sur 4 octed A=00 R=xx G=xx B=xx
+    unsigned long int   Couleur_Palette_0[16];      // 0 - une seule palette de 16 couleurs sur 4 octets A=00 R=xx G=xx B=xx
     // BITMAP
     unsigned char       bitmap[200][160];           // 32000 car 2 pixels par octets -> 320/2*200 = 32000
 } FormatBMP;
@@ -110,6 +115,8 @@ typedef struct
     char           *pOutputPathname;
     unsigned int    uTabColumns;
     unsigned int    uMinSentenseLen;
+    unsigned int    uSwapColumnA;
+    unsigned int    uSwapColumnB;
 } ConvmArguments;
 
 #endif
