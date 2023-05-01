@@ -4,7 +4,7 @@
 #
 # renaud.malaval@free.fr
 #
-version='1.1'
+version='1.2'
 
 # definition all colors and styles to use with an echo
 
@@ -125,6 +125,10 @@ fi
 originFolder=$(pwd)
 project_Name=$(basename "$originFolder")
 
+echo
+echo -e $Green $project_Name $Color_Off
+echo
+
 if [[ -f "$originFolder""/""$project_Name"".sln" ]]
 then
 	echo -e $Green "Deleting files" $Color_Off
@@ -193,6 +197,9 @@ then
 
 	echo
 	echo -e $BGreen "Done" $Color_Off
+else
+	echo
+	echo -e $BGreen "Wrong folder, nothing is done" $Color_Off
 fi
 
 exit $NO_ERROR
