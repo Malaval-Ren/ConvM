@@ -66,7 +66,9 @@
  * -2bmp ../../../Iron_Lord/BootImages/ironlord_g9.pic
  * 
  * -apbm ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
- * 
+ * -apbm ../../../Iron_Lord/dessin.bmp/brasdefer4.bmp
+ * -apbm ../../../Iron_Lord/dessin.bmp/brasdefer6.bmp
+ *
  * in the palette 0
  * -swap 2 11 ../../../Iron_Lord/dessin.bmp/sorcie.ch.bmp
  * -swap 3 12 ../../../Iron_Lord/dessin.bmp/sorcie.ch.bmp
@@ -1021,7 +1023,7 @@ int main(int argc, char* argv[])
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.9.3.69, (c) R. Malaval & F. Mure 2022-23.\n", pEndString);
+    printf("\n%s v1.9.4.71, (c) R. Malaval & F. Mure 2022-23.\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
@@ -1247,7 +1249,7 @@ int main(int argc, char* argv[])
         }
         else if (iCommand == eADDPALBMP)
         {
-            if ((context.pFullFilename) && (context.pOutputPathname))
+            if (context.pFullFilename)
             {
                 pEndString = (const char*)strrchr( context.pFullFilename, '.');
                 if (strcmp((const char*)pEndString, ".bmp") == 0)
