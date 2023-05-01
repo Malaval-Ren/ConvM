@@ -464,65 +464,95 @@ static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutp
 }
 
 /**
-* @fn static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
-* @brief Convert a bmp with 8 Bits by pixel to a pic with 15 palettes
+* @fn static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize, char *pScbFileData)
+* @brief Convert a bmp with 8 Bits by pixel 256 colors to a pic with 15 palettes
 *
 * @param[in,out]    pOutputFileData
-* @param[in]        uOutputFileSize
+* @param[in]        uOutputFileSize : size of pOutputFileData
 * @param[in]        pInputFileData
-* @param[in]        inputFileSize
+* @param[in]        inputFileSize : size of pInputFileData
+* @param[in]        pScbFileData : customize the palette go generate a pic file
 *
 * @return size of data to save
 */
-static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
+static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize, char *pScbFileData)
 {
-    FormatPIC          *pPicImage = NULL;
-    FormatBMP256       *pBmpImage = NULL;
-    unsigned short int *pPicPalette;
-    unsigned long int  *pBmpPalette;
-    char               *pFun;
-    unsigned int        uOffset = 0;
-    int                 iVarPicX = 0;
-    int                 iVarBmpX = 199;
-    unsigned int        uIndex = 0;
-    unsigned int        uLoop;
-    unsigned long int   uValueD = 0;
-    unsigned char       uColorRed = 0;
-    unsigned char       uColorGreen = 0;
-    unsigned char       uColorBlue = 0;
+    FormatPIC           *pPicImage = NULL;
+    FormatBMP256        *pBmpImage = NULL;
+    CustomPaletteHeader *pScbHeader = NULL;
+    CustomPalette       *pScbOngoin = NULL;
+    unsigned short int  *pPicPalette;
+    unsigned long int   *pBmpPalette;
+    char                *pFun;
+    unsigned int         uOffset = 0;
+    int                  iVarPicX = 0;
+    int                  iVarBmpX = 199;
+    unsigned int         uIndex = 0;
+    unsigned int         uLoop;
+    unsigned long int    uValueD = 0;
+    unsigned char        uColorRed = 0;
+    unsigned char        uColorGreen = 0;
+    unsigned char        uColorBlue = 0;
+    BOOLEAN              bPallette = FALSE;
 
     if ((pOutputFileData) && (uOutputFileSize > 0) && (pInputFileData))
     {
-        pPicImage = (FormatPIC *)pOutputFileData;
-
         pBmpImage = (FormatBMP256 *)pInputFileData;
 
+        pPicImage = (FormatPIC *)pOutputFileData;
+
+        if (pScbFileData)
+        {
+            pScbHeader = (CustomPaletteHeader *)pScbFileData;
+            pScbOngoin = (CustomPalette *)( pScbFileData + sizeof( CustomPaletteHeader));
+        }
+
+        // Do the job on the SCB to set the right palette for each line
         for (iVarPicX = 0; iVarPicX < 200; iVarPicX++)
         {
             uIndex = 0;
+            pPicImage->SCB[iVarPicX] = 0;
+
+            if (pScbOngoin)     // palette management if a file exist with extension is .scb
+            {
+                if ((iVarPicX >= pScbOngoin->uFromScbIndex) && (iVarPicX <= pScbOngoin->uToScbIndex))
+                {
+                    pPicImage->SCB[iVarPicX] = pScbOngoin->uPaletteIndex;
+                }
+            }
+
             for (uLoop = 0; uLoop < 160; uLoop++)
             {
-                if (uLoop == 0)
+                if ( (pScbOngoin == NULL) && (bPallette == FALSE) && ((pBmpImage->bitmap[iVarBmpX][uIndex] >> 4) > 0))
                 {
-                    pPicImage->SCB[iVarPicX] = pBmpImage->bitmap[iVarBmpX][uIndex] / 16;
-                    uOffset = pPicImage->SCB[iVarPicX] * 16;
+                    pPicImage->SCB[iVarPicX] = pBmpImage->bitmap[iVarBmpX][uIndex] >> 4;    // x / 16
+                    bPallette = TRUE;
                 }
 
-                uColorRed = (pBmpImage->bitmap[iVarBmpX][uIndex++] - uOffset) << 4;    // 1er  pixel
-                uColorGreen = pBmpImage->bitmap[iVarBmpX][uIndex++] - uOffset;         // 2eme pixel
+                // Copy the bit map
+                // uOffet correction of the color index  from  .BMP 8 bit 0..255  to  .PIC only from 0..15
+                uOffset = (pBmpImage->bitmap[iVarBmpX][uIndex] >> 4) << 4;              // (x / 16) * 16
+                uColorRed = (pBmpImage->bitmap[iVarBmpX][uIndex++] - uOffset) << 4;     // 1er  pixel
 
-                pPicImage->MonImage[iVarPicX][uLoop] = uColorRed + uColorGreen;
+                uOffset = (pBmpImage->bitmap[iVarBmpX][uIndex] >> 4) << 4;              // (x / 16) * 16
+                uColorGreen = pBmpImage->bitmap[iVarBmpX][uIndex++] - uOffset;          // 2eme pixel
+
+                pPicImage->MonImage[iVarPicX][uLoop] = (uColorRed + uColorGreen);
             }
             iVarBmpX--;
+            bPallette = FALSE;
         }
-        uOffset = 0;
 
-        pFun = pOutputFileData + 0x7D00 + 0xD0;
+        pPicImage->Libre[0] = '[';
+        pFun = pPicImage->Libre + 3;
+        (void)strncpy(pFun, "2023", sizeof("2023"));
+        pFun = pPicImage->Libre + 8;
         (void)strncpy(pFun, "Frederic Mure", sizeof( "Frederic Mure"));
-        pFun = pOutputFileData + 0x7D00 + 0xE0;
-        (void)strncpy(pFun, "and", sizeof( "and"));
-        pFun = pOutputFileData + 0x7D00 + 0xF0;
+        pFun = pPicImage->Libre + 24;
+        (void)strncpy(pFun, "ET", sizeof( "ET"));
+        pFun = pPicImage->Libre + 40;
         (void)strncpy(pFun, "Renaud Malaval", sizeof( "Renaud Malaval"));
+        pPicImage->Libre[55] = ']';
 
         pPicPalette = (unsigned short int *)&pPicImage->Couleur_Palette_0;
         pBmpPalette = (unsigned long int *)&pBmpImage->Couleur_Palettes;
@@ -875,17 +905,18 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
 }
 
 /**
-* @fn char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize)
+* @fn char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize, char *pScbFileData)
 * @brief parse pInputFileData of inputFileSize size following command, and return the data size of pOutputFileData in pDataSize
 *
 * @param[in]        pInputFileData
 * @param[in]        inputFileSize
 * @param[in]        command
 * @param[in,out]    pDataSize : size of data to save
+* @param[in]        pScbFileData : customize the palette go generate a pic file
 *
 * @return A new pointer pOutputFileData
 */
-char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize)
+char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize, char *pScbFileData)
 {
     char        *pOutputFileData = NULL;
     char        *pInputRunner = NULL;
@@ -899,32 +930,34 @@ char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
 
         switch (command)
         {
-        case eTO_BMP:
-            *pDataSize = convert_to_bmp( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
+            case eTO_BMP:
+            {
+                *pDataSize = convert_to_bmp(pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
+            }
             break;
 
-        case eTO_PIC:
-        {
-            pBmpImage = (FormatBMP *)pInputFileData;
+            case eTO_PIC:
+            {
+                pBmpImage = (FormatBMP *)pInputFileData;
             
-            if (pBmpImage->Nbr_Bit_Par_Pixel == 4)
-            {
-                *pDataSize = convert_to_16_pic( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
+                if (pBmpImage->Nbr_Bit_Par_Pixel == 4)
+                {
+                    *pDataSize = convert_to_16_pic( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
+                }
+                else if (pBmpImage->Nbr_Bit_Par_Pixel == 8)
+                {
+                    *pDataSize = convert_to_256_pic( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize, pScbFileData);
+                }
+                else
+                {
+                    free( pOutputFileData);
+                    pOutputFileData = NULL;
+                }
             }
-            else if (pBmpImage->Nbr_Bit_Par_Pixel == 8)
-            {
-                *pDataSize = convert_to_256_pic( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
-            }
-            else
-            {
-                free( pOutputFileData);
-                pOutputFileData = NULL;
-            }
-        }
-        break;
-
-        default:
             break;
+
+            default:
+                break;
         }
     }
 
@@ -1002,11 +1035,13 @@ char *DoAddPaletteToBmp( char *pInputFileData, unsigned int inputFileSize, unsig
                 pBmp8Image->Largeur_Image = pBmpIn256ColorsImage->Largeur_Image;
                 pBmp8Image->Longueur_Image = pBmpIn256ColorsImage->Longueur_Image;
 
+                // copy the palette 
                 (void )memcpy( (char *)&pBmp8Image->Couleur_Palettes[16], (char *)&pBmpIn256ColorsImage->Couleur_Palettes[0], sizeof(pBmpIn256ColorsImage->Couleur_Palettes) - sizeof(pBmpIn16ColorsImage->Couleur_Palette_0));
 
                 pInputRunner = pInputFileData + pBmpIn256ColorsImage->Offset_Image;
                 pOutputRunner = pOutputFileData + pBmp8Image->Offset_Image;
 
+                // copy and update the bitmap 4 bits per pixel to 8 bits per pixel to 
                 for (uIndex = 0; uIndex < sizeof(pBmpIn256ColorsImage->bitmap); uIndex++)
                 {
                     *pOutputRunner = *pInputRunner + 16;
@@ -1150,7 +1185,7 @@ BOOL CheckBmpFileFormat( char *pInputFileData, unsigned int inputFileSize)
                         {
                             if ( (pBmpStruct->Taille_Map == 32000) || (pBmpStruct->Taille_Map == 64000) || (pBmpStruct->Type_Compression == 2) )
                             {
-                                if ( (pBmpStruct->Offset_Image == 118) || (pBmpStruct->Offset_Image == 1078) )
+                                if ( (pBmpStruct->Offset_Image == 118) || (pBmpStruct->Offset_Image == 1078) /* || (pBmpStruct->Offset_Image == 1162) */ )
                                 {
                                     bResult = TRUE;
                                 }

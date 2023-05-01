@@ -9,7 +9,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>-ipbm8 1 1 ../../../Iron_Lord/dessin.bmp/brasdefer4.bmp ../../../Iron_Lord/dessin.bmp/brafer.ch.bmp</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-2pic +lower ../../../Iron_Lord/dessin.bmp/brafer.ch.bmp</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAmpDefaultAccelerator>{ADEFF70D-84BF-47A1-91C3-FF6B0FC71218}</LocalDebuggerAmpDefaultAccelerator>
   </PropertyGroup>

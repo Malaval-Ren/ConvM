@@ -108,9 +108,45 @@ typedef struct
     unsigned char       bitmap[200][320];           // 64000 car 1 pixel par octets -> 320*200 = 64000
 } FormatBMP256;
 
+/*
+* structure from GIMP for BMP file, not used
+* 
+typedef struct _BitmapFileHeadGimp
+{
+    unsigned char       zzMagic[2];  // 00 "BM"
+    unsigned long int   bfSize;      // 02
+    unsigned short int  zzHotX;      // 06
+    unsigned short int  zzHotY;      // 08
+    unsigned long int   bfOffs;      // 0A
+    unsigned long int   biSize;      // 0E
+} BitmapFileHeadGimp;
+
+typedef struct _BitmapHeadGimp
+{
+    long int            biWidth;     // 12
+    long int            biHeight;    // 16
+    unsigned short int  biPlanes;    // 1A
+    unsigned short int  biBitCnt;    // 1C
+    unsigned long int   biCompr;     // 1E
+    unsigned long int   biSizeIm;    // 22
+    unsigned long int   biXPels;     // 26
+    unsigned long int   biYPels;     // 2A
+    unsigned long int   biClrUsed;   // 2E
+    unsigned long int   biClrImp;    // 32
+    unsigned long int   masks[4];    // 36
+} BitmapHeadGimp;
+
+typedef struct _BitmapChannelGimp
+{
+    unsigned long int   mask;
+    unsigned long int   shiftin;
+    float               max_value;
+} BitmapChannelGimp;
+*/
+
 #pragma pack()
 
-typedef struct
+typedef struct _ConvmArguments
 {
     char           *pFullFilename;
     char           *pOutputPathname;
@@ -121,3 +157,17 @@ typedef struct
 } ConvmArguments;
 
 #endif
+
+typedef struct _CustomPaletteHeader
+{
+    unsigned short int  uSignature;                  // 2 octets pour la signature "RM"
+    unsigned short int  uNumberOfPalettes;
+} CustomPaletteHeader;
+
+typedef struct _CustomPalette
+{
+    unsigned char       uPaletteIndex;               // the palette number form 0 to 15
+    unsigned char       uNumberOfUsage;              // number of usage of this palette not colled 
+    unsigned char       uFromScbIndex;               // the 1st line
+    unsigned char       uToScbIndex;                 // the last line
+} CustomPalette;

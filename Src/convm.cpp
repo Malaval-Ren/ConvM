@@ -59,6 +59,7 @@
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/enall2.bmp
  * -2pic +lower ../../../Iron_Lord/Olivier--Ren--Fred/enemyallc.bmp
  * -2pic +lower ../../../Iron_Lord/Olivier--Ren--Fred/enemyall_gimp.bmp
+ * -2pic +lower ../../../Iron_Lord/dessin.bmp/brafre.ch.bmp
  * 
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/iron_lord_game_20221112_104906.AMm
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/Iron_Lord_fr_sorcier.uss
@@ -922,81 +923,81 @@ char *createOutputPathname( char *pFullFilename, char *pOutPathname, int iComman
     {
         if (pOutPathname)
         {
-            pEndString = getFileName(pFullFilename);
-            uOutputPathnameLen = strlen((const char *)pOutPathname) + strlen((const char *)pEndString) + (size_t)16;
+            pEndString = getFileName( pFullFilename);
+            uOutputPathnameLen = strlen( (const char *)pOutPathname) + strlen( (const char *)pEndString) + (size_t )16;
         }
         else
         {
-            uOutputPathnameLen = strlen((const char *)pFullFilename) + (size_t)16;
+            uOutputPathnameLen = strlen( (const char *)pFullFilename) + (size_t )16;
         }
-        pOutputPathname = (char *)calloc(1, uOutputPathnameLen);
+        pOutputPathname = (char *)calloc( 1, uOutputPathnameLen);
 
         if (pOutputPathname)
         {
             if (pOutPathname)
             {
-                (void)strncpy_s(pOutputPathname, uOutputPathnameLen, pOutPathname, strlen((const char *)pOutPathname));
-                pOutputPathname = strcat(pOutputPathname, pEndString);
+                (void)strncpy_s( pOutputPathname, uOutputPathnameLen, pOutPathname, strlen( (const char *)pOutPathname));
+                pOutputPathname = strcat( pOutputPathname, pEndString);
                 pEndString = NULL;
             }
             else
             {
-                (void)strncpy_s(pOutputPathname, uOutputPathnameLen, pFullFilename, strlen((const char *)pFullFilename));
+                (void)strncpy_s( pOutputPathname, uOutputPathnameLen, pFullFilename, strlen( (const char *)pFullFilename));
                 //(void )strncpy( pOutputPathname, pfullFilename, uOutputPathnameLen);
             }
 
             // Change the extention of the output file
-            if (pOutputPathname[strlen(pOutputPathname) - 4] == '.')
+            if (pOutputPathname[ strlen( pOutputPathname) - 4] == '.')
             {
-                pEndString = &pOutputPathname[strlen(pOutputPathname) - 3];
+                pEndString = &pOutputPathname[ strlen( pOutputPathname) - 3];
             }
 
             if (iCommand == eRLE_COMP)
             {
                 if (pEndString)
                 {
-                    pOutputPathname[strlen(pOutputPathname) - 3] = 'p';
-                    pOutputPathname[strlen(pOutputPathname) - 2] = 'n';
-                    pOutputPathname[strlen(pOutputPathname) - 1] = 't';
+                    pOutputPathname[ strlen( pOutputPathname) - 3] = 'p';
+                    pOutputPathname[ strlen( pOutputPathname) - 2] = 'n';
+                    pOutputPathname[ strlen( pOutputPathname) - 1] = 't';
                 }
                 else
                 {
-                    pOutputPathname = strcat(pOutputPathname, ".pnt");
+                    pOutputPathname = strcat( pOutputPathname, ".pnt");
                 }
             }
             else if ((iCommand == eRLE_DECO) || (iCommand == eTO_PIC))
             {
                 if (pEndString)
                 {
-                    pOutputPathname[strlen(pOutputPathname) - 3] = 'p';
-                    pOutputPathname[strlen(pOutputPathname) - 2] = 'i';
-                    pOutputPathname[strlen(pOutputPathname) - 1] = 'c';
+                    pOutputPathname[ strlen( pOutputPathname) - 3] = 'p';
+                    pOutputPathname[ strlen( pOutputPathname) - 2] = 'i';
+                    pOutputPathname[ strlen( pOutputPathname) - 1] = 'c';
                 }
                 else
                 {
-                    pOutputPathname = strcat(pOutputPathname, ".pic");
+                    pOutputPathname = strcat( pOutputPathname, ".pic");
                 }
             }
             else if (iCommand == eTO_BMP)
             {
                 if (pEndString)
                 {
-                    pOutputPathname[strlen(pOutputPathname) - 3] = 'b';
-                    pOutputPathname[strlen(pOutputPathname) - 2] = 'm';
-                    pOutputPathname[strlen(pOutputPathname) - 1] = 'p';
+                    pOutputPathname[ strlen( pOutputPathname) - 3] = 'b';
+                    pOutputPathname[ strlen( pOutputPathname) - 2] = 'm';
+                    pOutputPathname[ strlen( pOutputPathname) - 1] = 'p';
                 }
                 else
                 {
-                    pOutputPathname = strcat(pOutputPathname, ".bmp");
+                    pOutputPathname = strcat( pOutputPathname, ".bmp");
                 }
             }
             else if (iCommand == eSWAP2COLOR)
             {
                 if (pEndString)
                 {
-                    pOutputPathname[strlen(pOutputPathname) - 4] = '\0';
+                    pOutputPathname[ strlen( pOutputPathname) - 4] = '\0';
                 }
-                pOutputPathname = strcat(pOutputPathname, "-s.bmp");
+                pOutputPathname = strcat( pOutputPathname, "-s.bmp");
             }
             else
             {
@@ -1017,13 +1018,14 @@ char *createOutputPathname( char *pFullFilename, char *pOutPathname, int iComman
 *
 * @return 0 if success, other values in case of error
 */
-int main(int argc, char* argv[])
+int main( int argc, char *argv[])
 {
     ConvmArguments  context = {};
     char           *pfullOutputFilename = NULL;
     char           *pInputFileData = NULL;
     char           *pOutputFileData = NULL;
     char           *pTempFileData = NULL;
+    char           *pScbFileData = NULL;    
     const char     *pEndString = NULL;
     int             iCommand = eNONE;
     unsigned int    uInputFileSize = 0;
@@ -1031,29 +1033,29 @@ int main(int argc, char* argv[])
     unsigned int    uDataSize = 0;
 
     /* Message Information */
-    pEndString = getFileName(argv[0]);
+    pEndString = getFileName( argv[0]);
     if (!pEndString)
     {
         pEndString = argv[0];
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.9.5.73, (c) R. Malaval & F. Mure 2022-23.\n", pEndString);
+    printf( "\n%s v1.9.7.85, (c) R. Malaval & F. Mure 2022-23.\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
     {
         if ((argc == 2) && (argv[1]))
         {
-            if ( (!strcmp((const char *)argv[1], "-help")) || (!strcmp((const char *)argv[1], "-h")) || (!strcmp((const char *)argv[1], "-?")) )
+            if ( (!strcmp( (const char *)argv[1], "-help")) || ( !strcmp( (const char *)argv[1], "-h")) || ( !strcmp( (const char *)argv[1], "-?")) )
             {
                 usage();
                 exitOnError( NULL, NULL, NULL, 1);
             }
         }
         usage();
-        printf("\n");
-        exitOnError((char *)"not enough parameters", NULL, NULL, 1);
+        printf( "\n");
+        exitOnError( (char *)"not enough parameters", NULL, NULL, 1);
     }
 
     iCommand = parseArguments( argc, argv, &context);
@@ -1103,7 +1105,7 @@ int main(int argc, char* argv[])
                 free(pfullOutputFilename);
                 free(pOutputFileData);
             }
-            free(pInputFileData);
+            free( pInputFileData);
         }
         else if (iCommand == eDUMP)
         {
@@ -1140,52 +1142,52 @@ int main(int argc, char* argv[])
                 pOutputFileData = doExtractTextFromBinay(pInputFileData, uInputFileSize, context.uMinSentenseLen, (unsigned int*)&uDataSize);
                 if ((pOutputFileData) && (uDataSize > 0))
                 {
-                    context.pOutputPathname = (char *)calloc(1, strlen(context.pFullFilename) + 5);
+                    context.pOutputPathname = (char *)calloc( 1, strlen( context.pFullFilename) + 5);
                     if (context.pOutputPathname)
                     {
-                        (void )strncpy_s(context.pOutputPathname, strlen(context.pFullFilename) + 4, context.pFullFilename, strlen((const char *)context.pFullFilename));
+                        (void )strncpy_s( context.pOutputPathname, strlen(context.pFullFilename) + 4, context.pFullFilename, strlen((const char *)context.pFullFilename));
                         context.pOutputPathname = strcat(context.pOutputPathname, (const char *)".txt");
-                        if (writeFileFromMemory(context.pOutputPathname, pOutputFileData, uDataSize))
+                        if (writeFileFromMemory( context.pOutputPathname, pOutputFileData, uDataSize))
                         {
-                            exitOnError((char *)"failed to write output file", NULL, context.pOutputPathname, 4);
+                            exitOnError( (char *)"failed to write output file", NULL, context.pOutputPathname, 4);
                         }
                     }
                 }
                 else
                 {
-                    exitOnError((char *)"file too big", NULL, context.pFullFilename, 5);
+                    exitOnError( (char *)"file too big", NULL, context.pFullFilename, 5);
                 }
-                free(pOutputFileData);
+                free( pOutputFileData);
             }
         }
         else if ((iCommand == eRLE_COMP) || (iCommand == eRLE_DECO))
         {
-            pOutputFileData = DoRleJob(pInputFileData, uInputFileSize, iCommand, &uDataSize);
+            pOutputFileData = DoRleJob( pInputFileData, uInputFileSize, iCommand, &uDataSize);
             if ( (pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
             {
                 pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
                 if (pfullOutputFilename)
                 {
-                    if (!writeFileFromMemory(pfullOutputFilename, pOutputFileData, uDataSize))
+                    if (!writeFileFromMemory( pfullOutputFilename, pOutputFileData, uDataSize))
                     {
-                        updateFileType(&context, iCommand, pfullOutputFilename);
+                        updateFileType( &context, iCommand, pfullOutputFilename);
                     }
                     else
                     {
-                        exitOnError((char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                        exitOnError( (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                     }
-                    free(pfullOutputFilename);
+                    free( pfullOutputFilename);
                 }
                 else
                 {
-                    exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                    exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
                 }
 
-                free(pOutputFileData);
+                free( pOutputFileData);
             }
             else
             {
-                exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
             }
             free(pInputFileData);
         }
@@ -1194,47 +1196,68 @@ int main(int argc, char* argv[])
             if (CheckShrFileFormat( pInputFileData, uInputFileSize))
             {
                 // decompress file before convert to BMP
-                pTempFileData = DoRleJob(pInputFileData, uInputFileSize, eRLE_DECO, &uDataSize);
+                pTempFileData = DoRleJob( pInputFileData, uInputFileSize, eRLE_DECO, &uDataSize);
                 if ((pTempFileData) && (uDataSize > 0))
                 {
-                    pOutputFileData = DoBmpJob(pTempFileData, uDataSize, iCommand, &uDataSize);
-                    free(pTempFileData);
+                    pOutputFileData = DoBmpJob( pTempFileData, uDataSize, iCommand, &uDataSize, NULL);
+                    free( pTempFileData);
                     pTempFileData = NULL;
                 }
             }
             else
             {
-                pOutputFileData = DoBmpJob(pInputFileData, uInputFileSize, iCommand, &uDataSize);
+                pOutputFileData = DoBmpJob( pInputFileData, uInputFileSize, iCommand, &uDataSize, NULL);
             }
 
             if ((pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
             {
-                pfullOutputFilename = createOutputPathname(context.pFullFilename, context.pOutputPathname, iCommand);
+                pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
                 if (pfullOutputFilename)
                 {
-                    if (writeFileFromMemory(pfullOutputFilename, pOutputFileData, uDataSize))
+                    if (writeFileFromMemory( pfullOutputFilename, pOutputFileData, uDataSize))
                     {
-                        exitOnError((char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                        exitOnError( (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                     }
                     free(pfullOutputFilename);
                 }
                 else
                 {
-                    exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                    exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
                 }
-                free(pOutputFileData);
+                free( pOutputFileData);
             }
             else
             {
-                exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
             }
-            free(pInputFileData);
+            free( pInputFileData);
         }
         else if (iCommand == eTO_PIC)
         {
             if (CheckBmpFileFormat( pInputFileData, uInputFileSize))
             {
-                pOutputFileData = DoBmpJob(pInputFileData, uInputFileSize, iCommand, &uDataSize);
+                if (context.pFullFilename != NULL)
+                {
+                    pfullOutputFilename = (char *)calloc( 1, strlen( context.pFullFilename) + 1);
+                    if (pfullOutputFilename)
+                    {
+                        (void )strncpy_s( pfullOutputFilename, strlen( context.pFullFilename) + 1, context.pFullFilename, strlen( (const char *)context.pFullFilename));
+
+                        pfullOutputFilename[ strlen( pfullOutputFilename) - 3] = 's';
+                        pfullOutputFilename[ strlen( pfullOutputFilename) - 2] = 'c';
+                        pfullOutputFilename[ strlen( pfullOutputFilename) - 1] = 'b';
+
+                        if ( pathFileExists( (const char *)pfullOutputFilename))
+                        {
+                            pScbFileData = readFileToMemory( pfullOutputFilename);
+                        }
+
+                        free( pfullOutputFilename);
+                        pfullOutputFilename = NULL;
+                    }
+                }
+
+                pOutputFileData = DoBmpJob( pInputFileData, uInputFileSize, iCommand, &uDataSize, pScbFileData);
                 if ((pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
                 {
                     pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
@@ -1242,24 +1265,30 @@ int main(int argc, char* argv[])
                     {
                         if (!writeFileFromMemory( pfullOutputFilename, pOutputFileData, uDataSize))
                         {
-                            updateFileType(&context, iCommand, pfullOutputFilename);
+                            updateFileType( &context, iCommand, pfullOutputFilename);
                         }
                         else
                         {
-                            exitOnError((char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                            exitOnError( (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                         }
                         free( pfullOutputFilename);
                     }
                     else
                     {
-                        exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                        exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
                     }
-                    free(pOutputFileData);
+                    free( pOutputFileData);
+                }
+
+                if (pScbFileData)
+                {
+                    free( pScbFileData);
+                    pScbFileData = NULL;
                 }
             }
             else
             {
-                exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
             }
         }
         else if (iCommand == eADDPALBMP4)
@@ -1267,7 +1296,7 @@ int main(int argc, char* argv[])
             if (context.pFullFilename)
             {
                 pEndString = (const char *)strrchr( context.pFullFilename, '.');
-                if (strcmp((const char *)pEndString, ".bmp") == 0)
+                if (strcmp( (const char *)pEndString, ".bmp") == 0)
                 {
                     pOutputFileData = DoAddPaletteToBmp( pInputFileData, uInputFileSize, iCommand, &uDataSize);
                     if ((pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
@@ -1275,8 +1304,8 @@ int main(int argc, char* argv[])
                         pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
                         if (pfullOutputFilename)
                         {
-                            (void)strncpy_s(pfullOutputFilename, strlen( pfullOutputFilename), context.pFullFilename, strlen( (const char *)context.pFullFilename) - 4);
-                            pfullOutputFilename = strcat(pfullOutputFilename, (const char *)"2.bmp");
+                            (void )strncpy_s( pfullOutputFilename, strlen( pfullOutputFilename), context.pFullFilename, strlen( (const char *)context.pFullFilename) - 4);
+                            pfullOutputFilename = strcat( pfullOutputFilename, (const char *)"2.bmp");
 
                             if (writeFileFromMemory( pfullOutputFilename, pOutputFileData, uDataSize))
                             {
@@ -1289,7 +1318,7 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                    exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
                 }
             }
         }
@@ -1330,17 +1359,17 @@ int main(int argc, char* argv[])
             if (context.pFullFilename)
             {
                 pEndString = (const char *)strrchr(context.pFullFilename, '.');
-                if (strcmp((const char *)pEndString, ".bmp") == 0)
+                if (strcmp( (const char *)pEndString, ".bmp") == 0)
                 {
-                    if (CheckBmpFileFormat(pInputFileData, uInputFileSize))
+                    if (CheckBmpFileFormat( pInputFileData, uInputFileSize))
                     {
-                        pOutputFileData = DoSwapColor(pInputFileData, uInputFileSize, context.uSwapColumnA, context.uSwapColumnB, &uDataSize);
+                        pOutputFileData = DoSwapColor( pInputFileData, uInputFileSize, context.uSwapColumnA, context.uSwapColumnB, &uDataSize);
                         if ((pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
                         {
-                            pfullOutputFilename = createOutputPathname(context.pFullFilename, context.pOutputPathname, iCommand);
+                            pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
                             if (pfullOutputFilename)
                             {
-                                if (writeFileFromMemory(pfullOutputFilename, pOutputFileData, uDataSize))
+                                if (writeFileFromMemory( pfullOutputFilename, pOutputFileData, uDataSize))
                                 {
                                     exitOnError((char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                                 }
@@ -1351,12 +1380,12 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                        exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
                     }
                 }
                 else
                 {
-                    exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                    exitOnError( (char *)"file not compatible", NULL, context.pFullFilename, 5);
                 }
             }
         }
