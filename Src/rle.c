@@ -20,7 +20,7 @@
 #pragma warning(disable : 4996)
 
 /**
-* @fn static unsigned int rle_encode( char *pOutputFileData, const char *pInputFileData, unsigned int uLen)
+* @fn static unsigned int rle4_encode( char *pOutputFileData, const char *pInputFileData, unsigned int uLen)
 * @brief encode in pInputFileData in out pOutputFileData
 *
 * @param[in,out]    pOutputFileData
@@ -29,7 +29,7 @@
 *
 * @@return return size of encoded data
 */
-static unsigned int rle_encode( char *pOutputFileData, const char *pInputFileData, unsigned int uLen)
+static unsigned int rle4_encode( char *pOutputFileData, const char *pInputFileData, unsigned int uLen)
 {
     unsigned int    uTotalEncodedData = 0;
 
@@ -41,8 +41,8 @@ static unsigned int rle_encode( char *pOutputFileData, const char *pInputFileDat
 }
 
 /**
-* @fn static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int uLen)
-* @brief decode in pointer in out pointer
+* @fn unsigned int rle4_decode( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int uLen)
+* @brief SHR decode from pInputFileData pointer to pOutputFileData pointer
 *
 * @param[in,out]    pOutputFileData
 * @param[in]        pInputFileData
@@ -50,7 +50,7 @@ static unsigned int rle_encode( char *pOutputFileData, const char *pInputFileDat
 *
 * @@return return size of decoded data
 */
-static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int uLen)
+unsigned int rle4_decode( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int uLen)
 {
     char           *pRunning;
     unsigned int    uTotalDecodedData = 0;
@@ -66,7 +66,7 @@ static unsigned int rle_decode( char *pOutputFileData, unsigned int uOutputFileS
             count = ((unsigned char)*pInputFileData & 0x3f) + 1;
             pInputFileData++;
             uLen--;
-            //printf("pOutputFileData        : %p\tsize = %d\twrite = %d\tuLen = %d\n", (void*)pOutputFileData, uOutputFileSize, nbrWrite, uLen);
+            // printf("pOutputFileData        : %p\tsize = %d\twrite = %d\tuLen = %d\n", (void*)pOutputFileData, uOutputFileSize, nbrWrite, uLen);
 
             switch (type)
             {
@@ -304,7 +304,7 @@ static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSiz
 
         if ((pColors) && (colorLen >= 32) && (pImageData))
         {
-            iOffset = rle_decode(pOutputFileData, uOutputFileSize, pImageData, totalOfBytesToUnpack);
+            iOffset = rle4_decode(pOutputFileData, uOutputFileSize, pImageData, totalOfBytesToUnpack);
             if (iOffset)
             {
                 char *pFun = pOutputFileData + 0x7D00 + 0xD0;
@@ -398,7 +398,7 @@ char *DoRleJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
             break;
 
             case RLE_COMP:
-                *pDataSize = rle_encode( pOutputFileData, pInputFileData, inputFileSize);
+                *pDataSize = rle4_encode( pOutputFileData, pInputFileData, inputFileSize);
             break;
 
             case RLE_DECO:
@@ -416,11 +416,12 @@ char *DoRleJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
 * @fn void doDumpPic(char* pInputFileData, unsigned int inputFileSize)
 * @brief Dump the content of a pic file
 *
+* @param[in]        pFilePathname
 * @param[in]        pInputFileData
 * @param[in]        inputFileSize
 *
 */
-void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
+void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFileSize)
 {
     char           *pInputRunner;
     char           *pScb;
@@ -440,8 +441,11 @@ void doDumpPic( char *pInputFileData, unsigned int inputFileSize)
     unsigned int    uIndexUsed[0x10] = {0};
     unsigned short  uColorUsed[256];
 
-    if (pInputFileData)
+    if ( (pInputFileData) && (pFilePathname) )
     {
+        printf("\nDisplay content of pic\n\n");
+        printf(" %s\n\n", pFilePathname);
+
         printf("\t- PIXELS -\n\n");
         pInputRunner = pInputFileData;
         for (uIndex = 0; uIndex < 200; uIndex++)

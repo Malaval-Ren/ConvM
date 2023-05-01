@@ -9,12 +9,12 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>-2bmp ../../../Iron_Lord/BootImages/ironlord_g9.pic</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-2pic +lower ../../../Iron_Lord/Olivier--Ren--Fred/enemyall_gimp.bmp</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAmpDefaultAccelerator>{ADEFF70D-84BF-47A1-91C3-FF6B0FC71218}</LocalDebuggerAmpDefaultAccelerator>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>-dump ../../../Iron_Lord/BootImages/iron_lord_logo_gimpA.pic</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-dump ../../../Iron_Lord/dessin.bmp/enall2.bmp</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

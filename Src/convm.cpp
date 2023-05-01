@@ -52,8 +52,11 @@
  * -dump ../../../Iron_Lord/BootImages/iron_lord_logo_gimpA.pic
  * -dump ../../../Iron_Lord/BootImages/ironlord_g9.pic
  * -dump ../../../Iron_Lord/BootImages/ironlord_g9_ex.bmp
+ * -dump ../../../Iron_Lord/dessin.bmp/enall2.bmp
  * 
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
+ * -2pic +lower ../../../Iron_Lord/dessin.bmp/enall2.bmp
+ * -2pic +lower ../../../Iron_Lord/Olivier--Ren--Fred/enemyallc.bmp
  * 
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/iron_lord_game_20221112_104906.AMm
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/Iron_Lord_fr_sorcier.uss
@@ -94,71 +97,6 @@ void usage()
     printf("   -crlf to -detab  : any type of text\n");
     printf("   -dump            : any\n");
     printf("   -rlec -rled      : .scr, .shr, .pnt, .pic\n");
-}
-
-/**
-* @fn void exitOnError( char *pExplain, char **pDetail, char *pInfo, unsigned int uError)
-* @brief Center for exit when an error occur
-*
-* @param[in]        pExplain
-* @param[in,out]    pDetail     // this pointer if free
-* @param[in]        pInfo
-* @param[in]        uError
-*
-*/
-void exitOnError( char *pExplain, char *pDetail, char *pInfo, unsigned int uError)
-{
-    const char  *pEndString = NULL;
-    const char  *pSpaceString = NULL;
-    char        *pMessage = NULL;
-    size_t       uLen;
-
-    if (pExplain)
-    {
-        pEndString = "\"";
-        pSpaceString = " ";
-
-        uLen = strlen((const char*)pExplain);
-        if (pDetail)
-        {
-            uLen += strlen((const char*)pDetail);
-        }
-        if (pInfo)
-        {
-            uLen += strlen((const char*)pInfo);
-        }
-        uLen += (size_t )32;    // a marge for char ' '; '"'
-
-        pMessage = (char*)calloc( 1, uLen);
-        if (pMessage)
-        {
-            (void)strncpy_s( pMessage, uLen, (const char*)pExplain, strlen((const char *)pExplain));
-
-            if (pDetail)
-            {
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pEndString);
-                pMessage = strcat(pMessage, (const char*)pDetail);
-                pMessage = strcat(pMessage, (const char*)pEndString);
-            }
-
-            if (pInfo)
-            {
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pSpaceString);
-                pMessage = strcat(pMessage, (const char*)pEndString);
-                pMessage = strcat(pMessage, (const char*)pInfo);
-                pMessage = strcat(pMessage, (const char*)pEndString);
-            }
-
-            printf("CONVM : %s\n", pMessage);
-
-            free( pMessage);
-        }
-    }
-
-    exit(uError);
 }
 
 /**
@@ -1006,7 +944,7 @@ int main(int argc, char* argv[])
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.6.1.13, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
+    printf("\n%s v1.6.3.15, (c) R. Malaval & F. Mure 2022.\n\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
@@ -1094,7 +1032,7 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        doDumpPic(pInputFileData, uInputFileSize);
+                        doDumpPic(context.pFullFilename, pInputFileData, uInputFileSize);
                     }
                     pEndString = NULL;
                 }

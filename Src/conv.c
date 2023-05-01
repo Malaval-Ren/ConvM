@@ -18,6 +18,72 @@
 // _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable : 4996)
 
+
+/**
+* @fn void exitOnError( char *pExplain, char **pDetail, char *pInfo, unsigned int uError)
+* @brief Center for exit when an error occur
+*
+* @param[in]        pExplain
+* @param[in,out]    pDetail     // this pointer if free
+* @param[in]        pInfo
+* @param[in]        uError
+*
+*/
+void exitOnError(char* pExplain, char* pDetail, char* pInfo, unsigned int uError)
+{
+    const char* pEndString = NULL;
+    const char* pSpaceString = NULL;
+    char* pMessage = NULL;
+    size_t       uLen;
+
+    if (pExplain)
+    {
+        pEndString = "\"";
+        pSpaceString = " ";
+
+        uLen = strlen((const char*)pExplain);
+        if (pDetail)
+        {
+            uLen += strlen((const char*)pDetail);
+        }
+        if (pInfo)
+        {
+            uLen += strlen((const char*)pInfo);
+        }
+        uLen += (size_t)32;    // a marge for char ' '; '"'
+
+        pMessage = (char*)calloc(1, uLen);
+        if (pMessage)
+        {
+            (void)strncpy_s(pMessage, uLen, (const char*)pExplain, strlen((const char*)pExplain));
+
+            if (pDetail)
+            {
+                pMessage = strcat(pMessage, (const char*)pSpaceString);
+                pMessage = strcat(pMessage, (const char*)pSpaceString);
+                pMessage = strcat(pMessage, (const char*)pEndString);
+                pMessage = strcat(pMessage, (const char*)pDetail);
+                pMessage = strcat(pMessage, (const char*)pEndString);
+            }
+
+            if (pInfo)
+            {
+                pMessage = strcat(pMessage, (const char*)pSpaceString);
+                pMessage = strcat(pMessage, (const char*)pSpaceString);
+                pMessage = strcat(pMessage, (const char*)pEndString);
+                pMessage = strcat(pMessage, (const char*)pInfo);
+                pMessage = strcat(pMessage, (const char*)pEndString);
+            }
+
+            printf("CONVM : %s\n", pMessage);
+
+            free(pMessage);
+        }
+    }
+
+    exit(uError);
+}
+
 /**
 * @fn char *parseAntiSlashChar( char **pPathname)
 * @brief Replace character anti slash '\\' by a slash '/'

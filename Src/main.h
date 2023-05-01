@@ -43,20 +43,22 @@ typedef struct
 
 typedef struct
 {
-    unsigned char       MonImage[200][160];           // 32000 car 2 pixel par octets -> (320 / 2) * 200 = 32000
-    unsigned char       SCB[200];                     // 200 SCB donnant le numero de palette de couleur pour chaque ligne 
-    unsigned char       Libre[56];                    // espace libre utiliser pour indiquer quel logiciel... Par exemple en [25] == "816/Paint"
-    unsigned short int  Couleur_Palette_0[16];        // une seule palette de 16 couleurs sur 2 octets A=0 R=x G=x B=x
+    unsigned char       MonImage[200][160];             // 32000 car 2 pixel par octets -> (320 / 2) * 200 = 32000
+    unsigned char       SCB[200];                       // 200 SCB donnant le numero de palette de couleur pour chaque ligne 
+    unsigned char       Libre[56];                      // espace libre utiliser pour indiquer quel logiciel... Par exemple en [25] == "816/Paint"
+    unsigned short int  Couleur_Palette_0[16];          // une seule palette de 16 couleurs sur 2 octets A=0 R=x G=x B=x
     unsigned short int  Couleur_Palette_1a15[16 * 15];  // les autres 15 palettes restantes... 16 couleurs sur 2 octets * 15
 } FormatPIC;
 
 typedef struct
 {
+    // BITMAPFILEHEADER
     unsigned short int  Signature;                  // 2 octets pour la signature "BM" = 19778
     unsigned long int   Taille_Image;               // 4 octets pour la taille de l'image (pas toujours fiable)
     unsigned long int   Reserves;                   // 4 octets réservés
     unsigned long int   Offset_Image;               // 4 octets pour l'offset du début de l'image (en prenant en compte la taille de la palette)
-    unsigned long int   Entete2;                    // 4 octets pour la taille de la seconde entête (généralement 40 octets >> "28" )
+    // DIB Header BITMAPV5HEADER
+    unsigned long int   Entete2;                    // 4 octets pour la taille de la seconde entête (généralement 40 octets >> "0x28" )
     unsigned long int   Largeur_Image;              // 4 octets pour la largeur de l'image (colonne)
     unsigned long int   Longueur_Image;             // 4 octets pour la longueur de l'image (ligne)
     unsigned short int  Nbr_Plan;                   // 2 octets pour le nombre de plan (toujours à 1)
@@ -67,19 +69,23 @@ typedef struct
     unsigned long int   Resolution_V;               // 4 octets pour résolution verticale en pixel par mètre (pas toujours fiable)
     unsigned long int   Nbr_Couleur_Image;          // 4 octets pour le nombre de couleurs dans l'image (ou 0 pour une image RVB)
     unsigned long int   Nbr_Couleur_Importante;     // 4 octets pour le nombre de couleurs importante dans l'image (0 si toutes)
+    // Color Table
     unsigned long int   Couleur_Palette_0[16];      // 0 - une seule palette de 16 couleurs sur 4 octed A=00 R=xx G=xx B=xx
-    unsigned char       MonImage[200][160];         // 32000 car 2 pixels par octets -> 320/2*200 = 32000
+    // BITMAP
+    unsigned char       bitmap[200][160];           // 32000 car 2 pixels par octets -> 320/2*200 = 32000
 } FormatBMP;
 // default value vor the struct FormatBMP
 // { 19778, 32118, 0, 118, 40, 320, 200, 1, 4, 0, 32000, 3780, 3780, 0, 0}
 
 typedef struct
 {
+    // BITMAPFILEHEADER
     unsigned short int  Signature;                  // 2 octets pour la signature "BM" = 19778
     unsigned long int   Taille_Image;               // 4 octets pour la taille de l'image (pas toujours fiable)
     unsigned long int   Reserves;                   // 4 octets réservés
     unsigned long int   Offset_Image;               // 4 octets pour l'offset du début de l'image (en prenant en compte la taille de la palette)
-    unsigned long int   Entete2;                    // 4 octets pour la taille de la seconde entête (généralement 40 octets >> "28" )
+    // DIB Header BITMAPV5HEADER
+    unsigned long int   Entete2;                    // 4 octets pour la taille de la seconde entête (généralement 40 octets >> "0x28" )
     unsigned long int   Largeur_Image;              // 4 octets pour la largeur de l'image (colonne)
     unsigned long int   Longueur_Image;             // 4 octets pour la longueur de l'image (ligne)
     unsigned short int  Nbr_Plan;                   // 2 octets pour le nombre de plan (toujours à 1)
@@ -90,8 +96,10 @@ typedef struct
     unsigned long int   Resolution_V;               // 4 octets pour résolution verticale en pixel par mètre (pas toujours fiable)
     unsigned long int   Nbr_Couleur_Image;          // 4 octets pour le nombre de couleurs dans l'image (ou 0 pour une image RVB)
     unsigned long int   Nbr_Couleur_Importante;     // 4 octets pour le nombre de couleurs importante dans l'image (0 si toutes)
+    // Color Table
     unsigned long int   Couleur_Palettes[256];      // 0 - une seule palette de 256 couleurs sur 4 octets A=00 R=xx G=xx B=xx
-    unsigned char       MonImage[200][320];         // 64000 car 1 pixel par octets -> 320*200 = 64000
+    // BITMAP
+    unsigned char       bitmap[200][320];           // 64000 car 1 pixel par octets -> 320*200 = 64000
 } FormatBMP256;
 
 #pragma pack()

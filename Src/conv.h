@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+    extern void             exitOnError( char *pExplain, char *pDetail, char *pInfo, unsigned int uError);
     extern char            *parseAntiSlashChar( char **pPathname);
     extern char            *parseSpaceChar( char **pPathname);
     extern char            *getBasePathname( const char* pPathname, unsigned int uExtension);
