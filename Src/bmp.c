@@ -962,6 +962,7 @@ char *DoAddPaletteToBmp( char *pInputFileData, unsigned int inputFileSize, unsig
         pBmp8Image = (FormatBMP256 *)pOutputFileData;
         pBmp8Image->Signature = 19778;
         pBmp8Image->Taille_Image = sizeof( FormatBMP256);    // 65078
+        pBmp8Image->Reserves = 1296452946;
         pBmp8Image->Offset_Image = sizeof( FormatBMP256) - sizeof( pBmp8Image->bitmap);
         pBmp8Image->Nbr_Plan = 1;
         pBmp8Image->Nbr_Bit_Par_Pixel = 8;
@@ -975,8 +976,10 @@ char *DoAddPaletteToBmp( char *pInputFileData, unsigned int inputFileSize, unsig
             pBmp8Image->Largeur_Image = pBmpIn16ColorsImage->Largeur_Image;
             pBmp8Image->Longueur_Image = pBmpIn16ColorsImage->Longueur_Image;
 
+            // copy the palette 
             (void)memcpy( (char *)&pBmp8Image->Couleur_Palettes[16], (char *)pBmpIn16ColorsImage->Couleur_Palette_0, sizeof( pBmpIn16ColorsImage->Couleur_Palette_0));
 
+            // copy and update the bitmap 4 bits per pixel to 8 bits per pixel to 
             pInputRunner = pInputFileData + pBmpIn16ColorsImage->Offset_Image;
             pOutputRunner = pOutputFileData + pBmp8Image->Offset_Image;
             for (uIndex = 0; uIndex < sizeof( pBmpIn16ColorsImage->bitmap); uIndex++)
@@ -1022,6 +1025,95 @@ char *DoAddPaletteToBmp( char *pInputFileData, unsigned int inputFileSize, unsig
     }
 
     return pOutputFileData;
+}
+
+/**
+* @fn void DoInsertPaletteToBmp( char *pInputFileData, unsigned int uInputFileSize, char **pOutputFileData, unsigned int uOutputFileSize, unsigned int uFrom, unsigned int uTo)
+* @brief parse pInputFileData of inputFileSize size following command, and return the data size of pOutputFileData in pDataSize
+*
+* @param[in]        pInputFileData
+* @param[in]        uInputFileSize
+* @param[in,out]    pOutputFileData
+* @param[in,out]    uOutputFileSize
+* @param[in]        uFrom
+* @param[in]        uTo
+* 
+*/
+void DoInsertPaletteToBmp( char *pInputFileData, unsigned int uInputFileSize, char **pOutputFileData, unsigned int *puOutputFileSize, unsigned int uFrom, unsigned int uTo)
+{
+    FormatBMP       *pBmpIn16ColorsImage = NULL;
+    FormatBMP256    *pBmpIn256ColorsImage = NULL;
+    FormatBMP256    *pBmp8Image;
+    char            *pInputRunner = NULL;
+    char            *pOutputRunner = NULL;
+    unsigned int     uIndex;
+
+    if ((pInputFileData) && ((pOutputFileData) && (*pOutputFileData)))
+    {
+        pBmpIn16ColorsImage = (FormatBMP *)*pOutputFileData;
+        if (pBmpIn16ColorsImage->Nbr_Bit_Par_Pixel == 4)
+        {
+            // convert to 8 bits per pixel bmp 256 colors
+            pBmp8Image = calloc(1, (size_t)(98304));
+            if (pBmp8Image)
+            {
+                pBmp8Image->Signature = pBmpIn16ColorsImage->Signature;
+                pBmp8Image->Taille_Image = sizeof( FormatBMP256);    // 65078
+                pBmp8Image->Reserves = 1296452946;
+                pBmp8Image->Offset_Image = sizeof( FormatBMP256) - sizeof( pBmp8Image->bitmap);
+                pBmp8Image->Entete2 = pBmpIn16ColorsImage->Entete2;
+                pBmp8Image->Largeur_Image = pBmpIn16ColorsImage->Largeur_Image;
+                pBmp8Image->Longueur_Image = pBmpIn16ColorsImage->Longueur_Image;
+                pBmp8Image->Nbr_Plan = pBmpIn16ColorsImage->Nbr_Plan;
+                pBmp8Image->Nbr_Bit_Par_Pixel = 8;
+                pBmp8Image->Taille_Map = sizeof( pBmp8Image->bitmap);
+                pBmp8Image->Resolution_H = 2835;
+                pBmp8Image->Resolution_V = 2835;
+
+                // copy the palette
+                (void )memcpy((char *)pBmp8Image->Couleur_Palettes, (char *)pBmpIn16ColorsImage->Couleur_Palette_0, sizeof( pBmpIn16ColorsImage->Couleur_Palette_0));
+
+                // copy the bitmap 4 bits per pixel to 8 bits per pixel
+                pInputRunner = (char *)pBmpIn16ColorsImage + pBmpIn16ColorsImage->Offset_Image;
+                pOutputRunner = (char *)pBmp8Image + pBmp8Image->Offset_Image;
+                for (uIndex = 0; uIndex < sizeof( pBmpIn16ColorsImage->bitmap); uIndex++)
+                {
+                    *pOutputRunner++ = ((*pInputRunner & 0xF0) >> 4);
+                    *pOutputRunner++ = (*pInputRunner & 0x0F);
+
+                    pInputRunner++;
+                }
+
+                *puOutputFileSize = (unsigned int )sizeof( FormatBMP256);
+                free( *pOutputFileData);
+                *pOutputFileData = (char *)pBmp8Image;
+                pBmp8Image = NULL;
+                pBmpIn16ColorsImage = NULL;
+            }
+        }
+
+        if ((pOutputFileData) && (*pOutputFileData))
+        {
+            pBmpIn16ColorsImage = (FormatBMP *)pInputFileData;
+            if (pBmpIn16ColorsImage->Nbr_Bit_Par_Pixel == 4)
+            {
+                pInputRunner = (char *)&pBmpIn16ColorsImage->Couleur_Palette_0[0];
+                pBmpIn256ColorsImage = (FormatBMP256 *)*pOutputFileData;
+                pOutputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uTo * 16];
+            }
+            else
+            {
+                pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
+                pInputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uFrom * 16];
+
+                pBmpIn256ColorsImage = (FormatBMP256 *)*pOutputFileData;
+                pOutputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uTo * 16];
+            }
+            (void )memcpy( pOutputRunner, pInputRunner, sizeof( unsigned long int) * 16);
+        }
+    }
+
+    return;
 }
 
 

@@ -8,7 +8,10 @@ extern "C" {
 
     void    doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFileSize);
     char   *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize);
+
     char   *DoAddPaletteToBmp( char *pInputFileData, unsigned int inputFileSize, unsigned int command, unsigned int *pDataSize);
+
+    void    DoInsertPaletteToBmp( char *pInputFileData, unsigned int uInputFileSize, char **pOutputFileData, unsigned int *puOutputFileSize, unsigned int uFrom, unsigned int uTo);
 
     BOOL    CheckBmpFileFormat( char *pInputFileData, unsigned int inputFileSize);
 

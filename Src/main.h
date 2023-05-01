@@ -15,7 +15,8 @@ enum eCommandNnumber {
     eRLE_DECO,
     eTO_BMP,
     eTO_PIC,
-    eADDPALBMP,
+    eADDPALBMP4,
+    eINSERTPALBMP8,
     eSWAP2COLOR,
     eCOMPPALET,
     eCOPYPALET

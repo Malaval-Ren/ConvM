@@ -65,9 +65,11 @@
  * 
  * -2bmp ../../../Iron_Lord/BootImages/ironlord_g9.pic
  * 
- * -apbm ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
- * -apbm ../../../Iron_Lord/dessin.bmp/brasdefer4.bmp
- * -apbm ../../../Iron_Lord/dessin.bmp/brasdefer6.bmp
+ * -apbm4 ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
+ * -apbm4 ../../../Iron_Lord/dessin.bmp/brasdefer4.bmp
+ * -apbm4 ../../../Iron_Lord/dessin.bmp/brasdefer6.bmp
+ * 
+ * -ipbm8 1 1 ../../../Iron_Lord/dessin.bmp/brasdefer4.bmp ../../../Iron_Lord/dessin.bmp/brafer.ch.bmp
  *
  * in the palette 0
  * -swap 2 11 ../../../Iron_Lord/dessin.bmp/sorcie.ch.bmp
@@ -85,7 +87,6 @@
  *
  */
 
-
 /*
  * @fn void usage()
  * @brief Show how to use soft
@@ -95,29 +96,31 @@ void usage()
 {
     printf("Usage: convm <convmspec> <option> \"<filespec>\" \"<output folder>\"\n");
     printf("\n  <convmspec> is one of the following:\n");
-    printf("   -crlf            - convert CR to LF\n");
-    printf("   -lfcr            - convert LF to CR\n");
-    printf("   -dblf            - replace 2 first $0A (LF) by one in a serie\n");
-    printf("   -dbcr            - replace 2 first $0D (CR) by one in a serie\n");
-    printf("   -detab <col>     - convert tabs to spaces (tab stop every COL columns)\n");
-    printf("   -dump            - dump content of a supported file format\n");
-    printf("   -extxt <minlen>  - extract string of minlen from a binary file\n");
-    printf("   -rlec            - not implemented\n");
-    printf("   -rled            - decompress with rle algorithms file\n");
-    printf("   -2bmp            - convert .scr, .shr, .pnt, .pic to .bmp\n");
-    printf("   -2pic            - convert .bmp to .pic\n");
-    printf("   -apbm            - add a palette to .bmp 16 to 256 colors\n");
-    printf("   -swap <col><col> - swap 2 colors in palette and bitmap\n");
-    printf("   -cmpl            - compare palette of bmp 4 bits per pixel\n");
-    printf("   -cppl            - copy palette of bmp 4 bits per pixel\n");
+    printf("   -crlf              - convert CR to LF\n");
+    printf("   -lfcr              - convert LF to CR\n");
+    printf("   -dblf              - replace 2 first $0A (LF) by one in a serie\n");
+    printf("   -dbcr              - replace 2 first $0D (CR) by one in a serie\n");
+    printf("   -detab <col>       - convert tabs to spaces (tab stop every COL columns)\n");
+    printf("   -dump              - dump content of a supported file format\n");
+    printf("   -extxt <minlen>    - extract string of minlen from a binary file\n");
+    printf("   -rlec              - not implemented\n");
+    printf("   -rled              - decompress with rle algorithms file\n");
+    printf("   -2bmp              - convert .scr, .shr, .pnt, .pic to .bmp\n");
+    printf("   -2pic              - convert .bmp to .pic\n");
+    printf("   -apbm4             - add palette to .bmp 16 to 256 colors\n");
+    printf("   -ipbm8 <lin> <lin> - insert palette 16 colors to .bmp 256 colors at lines\n");
+    printf("   -swap <col> <col>  - swap 2 colors in palette and bitmap\n");
+    printf("   -cmpl              - compare palette of bmp 4 bits per pixel\n");
+    printf("   -cppl              - copy palette of bmp 4 bits per pixel\n");
 
     printf("\n  <option> is one of the following:\n");
-    printf("   +lower           - the output file name is in lower case\n");
+    printf("   +lower             - the output file name is in lower case\n");
 
     printf("\n  <filespec> file extension could be:\n");
-    printf("   -crlf to -detab  : any type of text\n");
-    printf("   -dump            : any\n");
-    printf("   -rlec -rled      : .scr, .shr, .pnt, .pic\n");
+    printf("   -crlf to -detab    : any type of text\n");
+    printf("   -dump              : any\n");
+    printf("   -rlec -rled        : .scr, .shr, .pnt, .pic\n");
+    printf("   -apbm4 -ipbm8\n   -swap -cmpl -cppl  : .bmp\n");
 }
 
 /**
@@ -139,9 +142,9 @@ int checkFileExtension( char *pPathFilename, int iCommand)
     BOOL         bError = FALSE;
     BOOL         bErrorCmd = FALSE;
     BOOL         bErrorExt = FALSE;
-    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic", "-apbm", "-swap", "-cmpl", "-cppl"};
+    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic", "-apbm4", "-ipbm8", "-swap", "-cmpl", "-cppl"};
 
-    if ((iCommand == eCRLF) || (iCommand == eLFCR) || (iCommand == eDOUBLE_0A) || (iCommand == eDOUBLE_0D) || (iCommand == eDETAB) || (iCommand == eEXT_TXT) || (iCommand == eADDPALBMP) || (iCommand == eSWAP2COLOR) || (iCommand == eCOMPPALET) || (iCommand == eCOPYPALET))
+    if ((iCommand == eCRLF) || (iCommand == eLFCR) || (iCommand == eDOUBLE_0A) || (iCommand == eDOUBLE_0D) || (iCommand == eDETAB) || (iCommand == eEXT_TXT) || (iCommand == eADDPALBMP4) || (iCommand == eINSERTPALBMP8) || (iCommand == eSWAP2COLOR) || (iCommand == eCOMPPALET) || (iCommand == eCOPYPALET))
     {
         iError = 0;
     }
@@ -150,7 +153,7 @@ int checkFileExtension( char *pPathFilename, int iCommand)
         pEndString = getFileName( pPathFilename);
         if (pEndString)
         {
-            pRunning = (char*)pEndString;
+            pRunning = (char *)pEndString;
 
             while (*pRunning != '\0')
             {
@@ -172,22 +175,22 @@ int checkFileExtension( char *pPathFilename, int iCommand)
                 {
                     if (iCommand == eDUMP)
                     {
-                        if ((strcmp((const char*)pLastPointChar, "scr") != 0) && (strcmp((const char*)pLastPointChar, "pic") != 0) &&
-                            ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0)) &&
-                             (strcmp((const char*)pLastPointChar, "bmp") != 0))
+                        if ((strcmp((const char *)pLastPointChar, "scr") != 0) && (strcmp((const char *)pLastPointChar, "pic") != 0) &&
+                            ((strcmp((const char *)pLastPointChar, "shr") != 0) && (strcmp((const char *)pLastPointChar, "pnt") != 0)) &&
+                             (strcmp((const char *)pLastPointChar, "bmp") != 0))
                         {
                             bErrorExt = TRUE;
                         }
                     }
                     else if (iCommand == eRLE_DECO)
                     {
-                        if ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0))
+                        if ((strcmp((const char *)pLastPointChar, "shr") != 0) && (strcmp((const char *)pLastPointChar, "pnt") != 0))
                         {
-                            if ((strcmp((const char*)pLastPointChar, "scr") == 0) || (strcmp((const char*)pLastPointChar, "pic") == 0))
+                            if ((strcmp((const char *)pLastPointChar, "scr") == 0) || (strcmp((const char *)pLastPointChar, "pic") == 0))
                             {
                                 bErrorCmd = TRUE;
                             }
-                            else if (strcmp((const char*)pLastPointChar, "bmp") == 0)
+                            else if (strcmp((const char *)pLastPointChar, "bmp") == 0)
                             {
                                 bErrorExt = TRUE;
                             }
@@ -199,13 +202,13 @@ int checkFileExtension( char *pPathFilename, int iCommand)
                     }
                     else if (iCommand == eRLE_COMP)
                     {
-                        if ((strcmp((const char*)pLastPointChar, "scr") != 0) && (strcmp((const char*)pLastPointChar, "pic") != 0))
+                        if ((strcmp((const char *)pLastPointChar, "scr") != 0) && (strcmp((const char *)pLastPointChar, "pic") != 0))
                         {
-                            if ((strcmp((const char*)pLastPointChar, "shr") == 0) || (strcmp((const char*)pLastPointChar, "pnt") == 0))
+                            if ((strcmp((const char *)pLastPointChar, "shr") == 0) || (strcmp((const char *)pLastPointChar, "pnt") == 0))
                             {
                                 bErrorCmd = TRUE;
                             }
-                            else if (strcmp((const char*)pLastPointChar, "bmp") == 0)
+                            else if (strcmp((const char *)pLastPointChar, "bmp") == 0)
                             {
                                 bErrorExt = TRUE;
                             }
@@ -218,10 +221,10 @@ int checkFileExtension( char *pPathFilename, int iCommand)
                     else if (iCommand == eTO_BMP)
                     {
                         // strcmp == 0 -> OK 
-                        if ((strcmp((const char*)pLastPointChar, "scr") != 0) && (strcmp((const char*)pLastPointChar, "pic") != 0) &&
-                            ((strcmp((const char*)pLastPointChar, "shr") != 0) && (strcmp((const char*)pLastPointChar, "pnt") != 0)))
+                        if ((strcmp((const char *)pLastPointChar, "scr") != 0) && (strcmp((const char *)pLastPointChar, "pic") != 0) &&
+                            ((strcmp((const char *)pLastPointChar, "shr") != 0) && (strcmp((const char *)pLastPointChar, "pnt") != 0)))
                         {
-                            if (strcmp((const char*)pLastPointChar, "bmp") == 0)
+                            if (strcmp((const char *)pLastPointChar, "bmp") == 0)
                             {
                                 bErrorCmd = TRUE;
                             }
@@ -233,7 +236,7 @@ int checkFileExtension( char *pPathFilename, int iCommand)
                     }
                     else if (iCommand == eTO_PIC)
                     {
-                        if (strcmp((const char*)pLastPointChar, "bmp") != 0)
+                        if (strcmp((const char *)pLastPointChar, "bmp") != 0)
                         {
                             bError = TRUE;
                         }
@@ -250,19 +253,19 @@ int checkFileExtension( char *pPathFilename, int iCommand)
 
                 if (bError)
                 {
-                    exitOnError((char*)"file extension not supported", (char*)pCmdtext[iCommand], (char *)pEndString, 3);
+                    exitOnError((char *)"file extension not supported", (char *)pCmdtext[iCommand], (char *)pEndString, 3);
                     iError = 1;
                 }
 
                 if (bErrorCmd)
                 {
-                    exitOnError((char*)"command already done on this file", (char *)pCmdtext[iCommand], (char *)pEndString, 3);
+                    exitOnError((char *)"command already done on this file", (char *)pCmdtext[iCommand], (char *)pEndString, 3);
                     iError = 1;
                 }
 
                 if (bErrorExt)
                 {
-                    exitOnError((char*)"file not compatible with command", (char *)pCmdtext[iCommand], (char *)pEndString, 5);
+                    exitOnError((char *)"file not compatible with command", (char *)pCmdtext[iCommand], (char *)pEndString, 5);
                     iError = 1;
                 }
             }
@@ -273,7 +276,7 @@ int checkFileExtension( char *pPathFilename, int iCommand)
 
             if (bErrorNoExt)
             {
-                exitOnError((char*)"file without extension", NULL, pPathFilename, 3);
+                exitOnError((char *)"file without extension", NULL, pPathFilename, 3);
                 iError = 1;
             }
         }
@@ -375,26 +378,26 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
     {
         if ((pConvmParam) && (*pConvmParam == '-') && (argv[uIndex][0] == '-'))     // convmspec
         {
-            if (!strcmp((const char*)pConvmParam, "-crlf"))
+            if (!strcmp((const char *)pConvmParam, "-crlf"))
             {
                 iCommand = eCRLF;
             }
-            else if (!strcmp((const char*)pConvmParam, "-lfcr"))
+            else if (!strcmp((const char *)pConvmParam, "-lfcr"))
             {
                 iCommand = eLFCR;
             }
-            else if (!strcmp((const char*)pConvmParam, "-dblf"))
+            else if (!strcmp((const char *)pConvmParam, "-dblf"))
             {
                 iCommand = eDOUBLE_0A;
             }
-            else if (!strcmp((const char*)pConvmParam, "-dbcr"))
+            else if (!strcmp((const char *)pConvmParam, "-dbcr"))
             {
                 iCommand = eDOUBLE_0D;
             }
-            else if (!strcmp((const char*)pConvmParam, "-detab"))
+            else if (!strcmp((const char *)pConvmParam, "-detab"))
             {
                 iCommand = eDETAB;
-                if (sscanf((const char*)argv[++uIndex], "%d", (int*)&pContext->uTabColumns) == 1)
+                if (sscanf((const char *)argv[++uIndex], "%d", (int*)&pContext->uTabColumns) == 1)
                 {
                     if (pContext->uTabColumns < 2)
                         pContext->uTabColumns = 4;
@@ -404,14 +407,14 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                     pContext->uTabColumns = 4;
                 }
             }
-            else if (!strcmp((const char*)pConvmParam, "-dump"))
+            else if (!strcmp((const char *)pConvmParam, "-dump"))
             {
                 iCommand = eDUMP;
             }
-            else if (!strcmp((const char*)pConvmParam, "-extxt"))
+            else if (!strcmp((const char *)pConvmParam, "-extxt"))
             {
                 iCommand = eEXT_TXT;
-                if (sscanf((const char*)argv[++uIndex], "%d", (int*)&pContext->uMinSentenseLen) == 1)
+                if (sscanf((const char *)argv[++uIndex], "%d", (int*)&pContext->uMinSentenseLen) == 1)
                 {
                     if (pContext->uMinSentenseLen < 1)
                         pContext->uMinSentenseLen = 1;
@@ -421,37 +424,49 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                     pContext->uMinSentenseLen = 1;
                 }
             }
-            else if (!strcmp((const char*)pConvmParam, "-rlec"))
+            else if (!strcmp((const char *)pConvmParam, "-rlec"))
             {
                 //iCommand = eRLE_COMP;
-                exitOnError((char*)"not implemented <convmspec>", pConvmParam, NULL, 4);
+                exitOnError((char *)"not implemented <convmspec>", pConvmParam, NULL, 4);
             }
-            else if (!strcmp((const char*)pConvmParam, "-rled"))
+            else if (!strcmp((const char *)pConvmParam, "-rled"))
             {
                 iCommand = eRLE_DECO;
             }
-            else if (!strcmp((const char*)pConvmParam, "-2bmp"))
+            else if (!strcmp((const char *)pConvmParam, "-2bmp"))
             {
                 iCommand = eTO_BMP;
             }
-            else if (!strcmp((const char*)pConvmParam, "-2pic"))
+            else if (!strcmp((const char *)pConvmParam, "-2pic"))
             {
                 iCommand = eTO_PIC;
             }
-            else if (!strcmp((const char*)pConvmParam, "-apbm"))
+            else if (!strcmp((const char *)pConvmParam, "-apbm4"))
             {
-                iCommand = eADDPALBMP;
+                iCommand = eADDPALBMP4;
             }
-            else if (!strcmp((const char*)pConvmParam, "-swap"))
+            else if (!strcmp((const char *)pConvmParam, "-ipbm8"))
+            {
+                iCommand = eINSERTPALBMP8;
+                uIndex++;
+                pContext->uSwapColumnA = (unsigned int)atoi((const char *)argv[uIndex]);
+                uIndex++;
+                pContext->uSwapColumnB = (unsigned int)atoi((const char *)argv[uIndex]);
+                if ((pContext->uSwapColumnA > 15) || (pContext->uSwapColumnB > 15))
+                {
+                    exitOnError((char *)"illegal convmspec parameter", pConvmParam, NULL, 2);
+                }
+            }
+            else if (!strcmp((const char *)pConvmParam, "-swap"))
             {
                 iCommand = eSWAP2COLOR;
                 uIndex++;
-                pContext->uSwapColumnA = (unsigned int)atoi((const char*)argv[uIndex]);
+                pContext->uSwapColumnA = (unsigned int)atoi((const char *)argv[uIndex]);
                 uIndex++;
-                pContext->uSwapColumnB = (unsigned int)atoi((const char*)argv[uIndex]);
+                pContext->uSwapColumnB = (unsigned int)atoi((const char *)argv[uIndex]);
                 if ((pContext->uSwapColumnA > 255) || (pContext->uSwapColumnB > 255))
                 {
-                    exitOnError((char*)"illegal convmspec parameter", pConvmParam, NULL, 2);
+                    exitOnError((char *)"illegal convmspec parameter", pConvmParam, NULL, 2);
                 }
 
                 if (pContext->uSwapColumnA > pContext->uSwapColumnB)
@@ -463,25 +478,25 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
 
                 if ((pContext->uSwapColumnB - pContext->uSwapColumnA) > 15)
                 {
-                    exitOnError((char*)"Swap only color in the same IIGS palette", pConvmParam, NULL, 2);
+                    exitOnError((char *)"Swap only color in the same IIGS palette", pConvmParam, NULL, 2);
                 }
             }
-            else if (!strcmp((const char*)pConvmParam, "-cmpl"))
+            else if (!strcmp((const char *)pConvmParam, "-cmpl"))
             {
                 iCommand = eCOMPPALET;
             }
-            else if (!strcmp((const char*)pConvmParam, "-cppl"))
+            else if (!strcmp((const char *)pConvmParam, "-cppl"))
             {
                 iCommand = eCOPYPALET;
             }
             else
             {
-                exitOnError((char*)"illegal convmspec parameter", pConvmParam, NULL, 2);
+                exitOnError((char *)"illegal convmspec parameter", pConvmParam, NULL, 2);
             }
         }
         else if ((pOptionParam) && (*pOptionParam == '+') && (argv[uIndex][0] == '+'))  // option
         {
-            if (!strcmp((const char*)pOptionParam, "+lower"))
+            if (!strcmp((const char *)pOptionParam, "+lower"))
             {
                 bLowerCase = TRUE;
             }
@@ -492,7 +507,7 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                     free(pConvmParam);
                 }
 
-                exitOnError((char*)"illegal option parameter", pOptionParam, NULL, 2);
+                exitOnError((char *)"illegal option parameter", pOptionParam, NULL, 2);
             }
         }
         else
@@ -502,7 +517,7 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                 pContext->pFullFilename = (char *)calloc( 1, _MAX_PATH + _MAX_PATH);
                 if (!pContext->pFullFilename)
                 {
-                    exitOnError((char*)"out of memory", NULL, NULL, 1);
+                    exitOnError((char *)"out of memory", NULL, NULL, 1);
                 }
                 else
                 {
@@ -512,28 +527,28 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                     {
                         if (_fullpath(pContext->pFullFilename, argv[uIndex], _MAX_PATH) != NULL)
                         {
-                            if (!pathFileExists((const char*)pContext->pFullFilename))
+                            if (!pathFileExists((const char *)pContext->pFullFilename))
                             {
-                                exitOnError((char*)"input file does not exist", NULL, argv[uIndex], 2);
+                                exitOnError((char *)"input file does not exist", NULL, argv[uIndex], 2);
                             }
                         }
                         else
                         {
-                            exitOnError((char*)"invalid input parameter", NULL, argv[uIndex], 2);
+                            exitOnError((char *)"invalid input parameter", NULL, argv[uIndex], 2);
                         }
                     }
                     else
                     {
-                        strncpy(pContext->pFullFilename, (const char*)argv[uIndex], strlen((const char*)argv[uIndex]) + (size_t)1);
+                        strncpy(pContext->pFullFilename, (const char *)argv[uIndex], strlen((const char *)argv[uIndex]) + (size_t)1);
                     }
                 }
 
                 pContext->pFullFilename = parseAntiSlashChar(&pContext->pFullFilename);
-                if (pathFileExists((const char*)pContext->pFullFilename))
+                if (pathFileExists((const char *)pContext->pFullFilename))
                 {
                     if (getMyFileSize(pContext->pFullFilename) == 0)
                     {
-                        exitOnError((char*)"size equal to 0 for file", NULL, pContext->pFullFilename, 3);
+                        exitOnError((char *)"size equal to 0 for file", NULL, pContext->pFullFilename, 3);
                     }
                     else
                     {
@@ -596,7 +611,7 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                     {
                         if (_fullpath(pContext->pOutputPathname, argv[uIndex], _MAX_PATH) != NULL)
                         {
-                            if ((iCommand != eCOMPPALET) && (iCommand != eCOPYPALET))
+                            if ((iCommand != eCOMPPALET) && (iCommand != eCOPYPALET) && (iCommand != eINSERTPALBMP8))
                             {
                                 if (!directoryExists((const char *)pContext->pOutputPathname))
                                 {
@@ -639,7 +654,7 @@ int parseArguments(int argc, char *argv[], ConvmArguments *pContext)
                 pContext->pOutputPathname = parseAntiSlashChar(&pContext->pOutputPathname);
                 if (pContext->pOutputPathname)
                 {
-                    if ((iCommand != eCOMPPALET) && (iCommand != eCOPYPALET))
+                    if ((iCommand != eCOMPPALET) && (iCommand != eCOPYPALET) && (iCommand != eINSERTPALBMP8))
                     {
                         if (!directoryExists((const char *)pContext->pOutputPathname))
                         {
@@ -787,11 +802,11 @@ void updateFileType(ConvmArguments* pContext, int iCommand, char* pfullOutputFil
 
     if ((pContext) && (pfullOutputFilename))
     {
-        pShortPathname = (char*)calloc(1, strlen(pfullOutputFilename) + 1);
-        pDuplicateString = (char*)calloc(1, _MAX_PATH + _MAX_PATH);
+        pShortPathname = (char *)calloc(1, strlen(pfullOutputFilename) + 1);
+        pDuplicateString = (char *)calloc(1, _MAX_PATH + _MAX_PATH);
         if ((!pDuplicateString) || (!pShortPathname))
         {
-            exitOnError((char*)"out of memory", NULL, NULL, 1);
+            exitOnError((char *)"out of memory", NULL, NULL, 1);
         }
         else
         {
@@ -835,7 +850,7 @@ void updateFileType(ConvmArguments* pContext, int iCommand, char* pfullOutputFil
             }
             else
             {
-                iError = mySystemCmd((char*)pCheckEmulatorPresent);
+                iError = mySystemCmd((char *)pCheckEmulatorPresent);
                 if (!iError)    // Check if iix is installed to use it
                 {
                     if (iCommand == eRLE_COMP)
@@ -877,7 +892,7 @@ void updateFileType(ConvmArguments* pContext, int iCommand, char* pfullOutputFil
                         pEndString = "#c10000\0"; // PIC
                     }
                     pDuplicateString = strcat(pDuplicateString, pEndString);
-                    (void)rename((const char*)pShortPathname, (const char*)pDuplicateString);
+                    (void)rename((const char *)pShortPathname, (const char *)pDuplicateString);
                 }
 
                 free(pDuplicateString);
@@ -908,11 +923,11 @@ char *createOutputPathname( char *pFullFilename, char *pOutPathname, int iComman
         if (pOutPathname)
         {
             pEndString = getFileName(pFullFilename);
-            uOutputPathnameLen = strlen((const char*)pOutPathname) + strlen((const char*)pEndString) + (size_t)16;
+            uOutputPathnameLen = strlen((const char *)pOutPathname) + strlen((const char *)pEndString) + (size_t)16;
         }
         else
         {
-            uOutputPathnameLen = strlen((const char*)pFullFilename) + (size_t)16;
+            uOutputPathnameLen = strlen((const char *)pFullFilename) + (size_t)16;
         }
         pOutputPathname = (char *)calloc(1, uOutputPathnameLen);
 
@@ -920,13 +935,13 @@ char *createOutputPathname( char *pFullFilename, char *pOutPathname, int iComman
         {
             if (pOutPathname)
             {
-                (void)strncpy_s(pOutputPathname, uOutputPathnameLen, pOutPathname, strlen((const char*)pOutPathname));
+                (void)strncpy_s(pOutputPathname, uOutputPathnameLen, pOutPathname, strlen((const char *)pOutPathname));
                 pOutputPathname = strcat(pOutputPathname, pEndString);
                 pEndString = NULL;
             }
             else
             {
-                (void)strncpy_s(pOutputPathname, uOutputPathnameLen, pFullFilename, strlen((const char*)pFullFilename));
+                (void)strncpy_s(pOutputPathname, uOutputPathnameLen, pFullFilename, strlen((const char *)pFullFilename));
                 //(void )strncpy( pOutputPathname, pfullFilename, uOutputPathnameLen);
             }
 
@@ -1023,7 +1038,7 @@ int main(int argc, char* argv[])
     }
     // TODO : Get the verion from the file conv.rc
 
-    printf("\n%s v1.9.4.71, (c) R. Malaval & F. Mure 2022-23.\n", pEndString);
+    printf("\n%s v1.9.5.73, (c) R. Malaval & F. Mure 2022-23.\n", pEndString);
     pEndString = NULL;
 
     if (argc < 3)
@@ -1128,7 +1143,7 @@ int main(int argc, char* argv[])
                     context.pOutputPathname = (char *)calloc(1, strlen(context.pFullFilename) + 5);
                     if (context.pOutputPathname)
                     {
-                        (void )strncpy_s(context.pOutputPathname, strlen(context.pFullFilename) + 4, context.pFullFilename, strlen((const char*)context.pFullFilename));
+                        (void )strncpy_s(context.pOutputPathname, strlen(context.pFullFilename) + 4, context.pFullFilename, strlen((const char *)context.pFullFilename));
                         context.pOutputPathname = strcat(context.pOutputPathname, (const char *)".txt");
                         if (writeFileFromMemory(context.pOutputPathname, pOutputFileData, uDataSize))
                         {
@@ -1157,20 +1172,20 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        exitOnError((char*)"failed to write output file", NULL, pfullOutputFilename, 4);
+                        exitOnError((char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                     }
                     free(pfullOutputFilename);
                 }
                 else
                 {
-                    exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                    exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
                 }
 
                 free(pOutputFileData);
             }
             else
             {
-                exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
             }
             free(pInputFileData);
         }
@@ -1199,19 +1214,19 @@ int main(int argc, char* argv[])
                 {
                     if (writeFileFromMemory(pfullOutputFilename, pOutputFileData, uDataSize))
                     {
-                        exitOnError((char*)"failed to write output file", NULL, pfullOutputFilename, 4);
+                        exitOnError((char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                     }
                     free(pfullOutputFilename);
                 }
                 else
                 {
-                    exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                    exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
                 }
                 free(pOutputFileData);
             }
             else
             {
-                exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
             }
             free(pInputFileData);
         }
@@ -1231,28 +1246,28 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            exitOnError((char*)"failed to write output file", NULL, pfullOutputFilename, 4);
+                            exitOnError((char *)"failed to write output file", NULL, pfullOutputFilename, 4);
                         }
                         free( pfullOutputFilename);
                     }
                     else
                     {
-                        exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                        exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
                     }
                     free(pOutputFileData);
                 }
             }
             else
             {
-                exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
             }
         }
-        else if (iCommand == eADDPALBMP)
+        else if (iCommand == eADDPALBMP4)
         {
             if (context.pFullFilename)
             {
-                pEndString = (const char*)strrchr( context.pFullFilename, '.');
-                if (strcmp((const char*)pEndString, ".bmp") == 0)
+                pEndString = (const char *)strrchr( context.pFullFilename, '.');
+                if (strcmp((const char *)pEndString, ".bmp") == 0)
                 {
                     pOutputFileData = DoAddPaletteToBmp( pInputFileData, uInputFileSize, iCommand, &uDataSize);
                     if ((pOutputFileData) && (context.pFullFilename) && (uDataSize > 0))
@@ -1274,7 +1289,39 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    exitOnError((char*)"file not compatible", NULL, context.pFullFilename, 5);
+                    exitOnError((char *)"file not compatible", NULL, context.pFullFilename, 5);
+                }
+            }
+        }
+        else if (iCommand == eINSERTPALBMP8)
+        {
+            if (( context.pFullFilename) && ( context.pOutputPathname))
+            {
+                uOutputFileSize = getMyFileSize( context.pOutputPathname);
+
+                pOutputFileData = readFileToMemory( context.pOutputPathname);   // second input file is in memory
+                if (pOutputFileData)
+                {
+                    if (CheckBmpFileFormat( pInputFileData, uInputFileSize) && CheckBmpFileFormat( pOutputFileData, uOutputFileSize))
+                    {
+                        DoInsertPaletteToBmp( pInputFileData, uInputFileSize, &pOutputFileData, &uOutputFileSize, context.uSwapColumnA, context.uSwapColumnB);
+                        if ((pOutputFileData) && (context.pFullFilename) && (uOutputFileSize > 0))
+                        {
+                            pfullOutputFilename = createOutputPathname( context.pFullFilename, context.pOutputPathname, iCommand);
+                            if (pfullOutputFilename)
+                            {
+                                (void )strncpy_s( pfullOutputFilename, strlen( pfullOutputFilename), context.pFullFilename, strlen((const char *)context.pFullFilename) - 4);
+                                pfullOutputFilename = strcat( pfullOutputFilename, (const char *)"2.bmp");
+
+                                if (writeFileFromMemory( pfullOutputFilename, pOutputFileData, uOutputFileSize))
+                                {
+                                    exitOnError( (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                                }
+                                free( pfullOutputFilename);
+                            }
+                            free( pOutputFileData);
+                        }
+                    }
                 }
             }
         }
@@ -1282,8 +1329,8 @@ int main(int argc, char* argv[])
         {
             if (context.pFullFilename)
             {
-                pEndString = (const char*)strrchr(context.pFullFilename, '.');
-                if (strcmp((const char*)pEndString, ".bmp") == 0)
+                pEndString = (const char *)strrchr(context.pFullFilename, '.');
+                if (strcmp((const char *)pEndString, ".bmp") == 0)
                 {
                     if (CheckBmpFileFormat(pInputFileData, uInputFileSize))
                     {
