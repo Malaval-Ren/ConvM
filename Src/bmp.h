@@ -19,6 +19,8 @@ extern "C" {
     void    DoComparePalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize);
     void    DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize);
 
+    char   *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, ConvmArguments *pTheSprite, unsigned int *pDataSize);
+
 #ifdef __cplusplus
 }
 #endif

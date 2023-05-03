@@ -19,7 +19,8 @@ enum eCommandNnumber {
     eINSERTPALBMP8,
     eSWAP2COLOR,
     eCOMPPALET,
-    eCOPYPALET
+    eCOPYPALET,
+    eEXTSPRITE
 };
 
 #pragma pack(1)     // structure without padding....
@@ -154,6 +155,9 @@ typedef struct _ConvmArguments
     unsigned int    uMinSentenseLen;
     unsigned int    uSwapColumnA;
     unsigned int    uSwapColumnB;
+    unsigned int    uNumerOfLine;
+    unsigned int    uLargeur;
+    unsigned int    uHauteur;
 } ConvmArguments;
 
 #endif

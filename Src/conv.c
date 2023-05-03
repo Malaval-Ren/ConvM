@@ -41,41 +41,41 @@ void exitOnError( char *pExplain, char *pDetail, char *pInfo, unsigned int uErro
         pEndString = "\"";
         pSpaceString = " ";
 
-        uLen = strlen((const char*)pExplain);
+        uLen = strlen( (const char *)pExplain);
         if (pDetail)
         {
-            uLen += strlen((const char*)pDetail);
+            uLen += strlen( (const char *)pDetail);
         }
         if (pInfo)
         {
-            uLen += strlen((const char*)pInfo);
+            uLen += strlen( (const char *)pInfo);
         }
-        uLen += (size_t)32;    // a marge for char ' '; '"'
+        uLen += (size_t )32;    // a marge for char ' '; '"'
 
-        pMessage = (char*)calloc(1, uLen);
+        pMessage = (char *)calloc( 1, uLen);
         if (pMessage)
         {
-            (void)strncpy_s(pMessage, uLen, (const char*)pExplain, strlen((const char*)pExplain));
+            (void)strncpy_s( pMessage, uLen, (const char *)pExplain, strlen( (const char *)pExplain));
 
             if (pDetail)
             {
-                pMessage = strcat(pMessage, (const char *)pSpaceString);
-                pMessage = strcat(pMessage, (const char *)pSpaceString);
-                pMessage = strcat(pMessage, (const char *)pEndString);
-                pMessage = strcat(pMessage, (const char *)pDetail);
-                pMessage = strcat(pMessage, (const char *)pEndString);
+                pMessage = strcat( pMessage, (const char *)pSpaceString);
+                pMessage = strcat( pMessage, (const char *)pSpaceString);
+                pMessage = strcat( pMessage, (const char *)pEndString);
+                pMessage = strcat( pMessage, (const char *)pDetail);
+                pMessage = strcat( pMessage, (const char *)pEndString);
             }
 
             if (pInfo)
             {
-                pMessage = strcat(pMessage, (const char *)pSpaceString);
-                pMessage = strcat(pMessage, (const char *)pSpaceString);
-                pMessage = strcat(pMessage, (const char *)pEndString);
-                pMessage = strcat(pMessage, (const char *)pInfo);
-                pMessage = strcat(pMessage, (const char *)pEndString);
+                pMessage = strcat( pMessage, (const char *)pSpaceString);
+                pMessage = strcat( pMessage, (const char *)pSpaceString);
+                pMessage = strcat( pMessage, (const char *)pEndString);
+                pMessage = strcat( pMessage, (const char *)pInfo);
+                pMessage = strcat( pMessage, (const char *)pEndString);
             }
 
-            printf("CONVM : %s\n", pMessage);
+            printf( "CONVM : %s\n", pMessage);
 
             free( pMessage);
         }
