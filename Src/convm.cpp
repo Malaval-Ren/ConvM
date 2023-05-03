@@ -115,7 +115,7 @@ void usage()
     printf("   -swap <col> <col>            - swap 2 colors in palette and bitmap\n");
     printf("   -cmpl                        - compare palette of bmp 4 bits per pixel\n");
     printf("   -cppl                        - copy palette of bmp 4 bits per pixel\n");
-    printf("   -xtrspr <col> <lin> <lin> <col> <lin> - extract sprite form picture to text for ASM\n");
+    printf("   -xtrspr <col> <lin> <lin> <col> <lin> - extract sprite form BMP (4 bits per pixel) to text to .aii\n");
 
     printf("\n  <option> is one of the following:\n");
     printf("   +lower             - the output file name is in lower case\n");
