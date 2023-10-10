@@ -22,8 +22,8 @@ x64/
 *.reloc
 *.text
 *.vcxproj.user
-helper_git.txt
 
+helper_git.txt
 Finder.Data
 conv.rc.bak
 
