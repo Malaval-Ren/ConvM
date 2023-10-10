@@ -21,6 +21,7 @@ x64/
 .rdata
 .reloc
 .text
+helper_git.txt
 
 Finder.Data
 convm/Finder.Data

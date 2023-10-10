@@ -17,9 +17,9 @@ extern "C" {
 
     char   *DoSwapColor( char *pInputFileData, unsigned int inputFileSize, unsigned int uSwapColumnA, unsigned int uSwapColumnB, unsigned int *pDataSize);
     void    DoComparePalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize);
-    void    DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize);
+    void    DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize, unsigned int uBitPerPixels);
 
-    char   *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, ConvmArguments *pTheSprite, unsigned int *pDataSize);
+    char   *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pTheSprite, unsigned int *pDataSize);
 
 #ifdef __cplusplus
 }

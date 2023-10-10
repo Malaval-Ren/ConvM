@@ -20,28 +20,32 @@
 
 
 /**
-* @fn void exitOnError( char *pExplain, char **pDetail, char *pInfo, unsigned int uError)
+* @fn void exitOnError( char *pFunctionName, unsigned int uLineNumber, char *pExplain, char **pDetail, char *pInfo, unsigned int uError)
 * @brief Center for exit when an error occur
 *
+* @param[in]        pFunctionName
+* @param[in]        uLineNumber
 * @param[in]        pExplain
 * @param[in,out]    pDetail     // this pointer if free
 * @param[in]        pInfo
 * @param[in]        uError
 *
 */
-void exitOnError( char *pExplain, char *pDetail, char *pInfo, unsigned int uError)
+void exitOnError( char *pFunctionName, unsigned int uLineNumber, char *pExplain, char *pDetail, char *pInfo, unsigned int uError)
 {
     const char  *pEndString = NULL;
     const char  *pSpaceString = NULL;
     char        *pMessage = NULL;
     size_t       uLen;
 
-    if (pExplain)
+    if ((pExplain) && (pFunctionName))
     {
         pEndString = "\"";
         pSpaceString = " ";
 
-        uLen = strlen( (const char *)pExplain);
+        uLen = strlen((const char *)pFunctionName);
+        uLen += 10;
+        uLen += strlen( (const char *)pExplain);
         if (pDetail)
         {
             uLen += strlen( (const char *)pDetail);
@@ -75,7 +79,7 @@ void exitOnError( char *pExplain, char *pDetail, char *pInfo, unsigned int uErro
                 pMessage = strcat( pMessage, (const char *)pEndString);
             }
 
-            printf( "CONVM : %s\n", pMessage);
+            (void )printf( "CONVM : %s() at %d - %s\n", pFunctionName, uLineNumber, pMessage);
 
             free( pMessage);
         }
@@ -268,6 +272,7 @@ char *getFileName( char *pPathname)
             }
         }
     }
+
     return pReturnName;
 }
 
@@ -432,18 +437,18 @@ BOOL directoryExists( const char *pAbsolutePath)
 }
 
 /**
-* @fn char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned int uCommand, unsigned int uTabColumns, unsigned int *pDataSize)
-* @brief parse pInputFileData of uInputFileSize size following uCommand, could use uTabColumns and return the data size of pOutputFileData in pDataSize
+* @fn char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, enum eCommandNumber eCommand, unsigned int uTabColumns, unsigned int *pDataSize)
+* @brief parse pInputFileData of uInputFileSize size following eCommand, could use uTabColumns and return the data size of pOutputFileData in pDataSize
 *
 * @param[in]        pInputFileData
 * @param[in]        uInputFileSize
-* @param[in]        uCommand
+* @param[in]        eCommand
 * @param[in]        uTabColumns
 * @param[in,out]    pDataSize
 *
 * @return a new allocated pointer pOutputFileData
 */
-char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned int uCommand, unsigned int uTabColumns, unsigned int *pDataSize)
+char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, enum eCommandNumber eCommand, unsigned int uTabColumns, unsigned int *pDataSize)
 {
     char           *pOutputFileData = NULL;
     char           *pInputRunner = NULL;
@@ -465,7 +470,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned 
 
             while (uIndex < uInputFileSize)
             {
-                switch (uCommand)
+                switch (eCommand)
                 {
                     case eCRLF:  /* 13 == 0x0D == CR == Carriage Return == '\r' */  /* 10 == 0x0A == LF == Line Feed == '\n' */
                     {

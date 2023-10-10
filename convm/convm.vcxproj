@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="..\Src\bmp.h" />
     <ClInclude Include="..\Src\conv.h" />
+    <ClInclude Include="..\Src\doAction.h" />
     <ClInclude Include="..\Src\rle.h" />
     <ClInclude Include="..\Src\main.h" />
     <ClInclude Include="resource.h" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="..\Src\bmp.c" />
     <ClCompile Include="..\Src\conv.c" />
+    <ClCompile Include="..\Src\doAction.c" />
     <ClCompile Include="..\Src\rle.c" />
     <ClCompile Include="..\Src\convm.cpp" />
   </ItemGroup>

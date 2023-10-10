@@ -397,7 +397,7 @@ static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutp
 
             if (writeFileFromMemory( "encours.tmp.bmp", pDecompressedData, uDecompressedSize))
             {
-                exitOnError((char*)"failed to write output file", NULL, "encours.tmp.bmp", 4);
+                exitOnError( (char *)__FUNCTION__, __LINE__,(char*)"failed to write output file", NULL, "encours.tmp.bmp", 4);
             }
 
         }
@@ -841,6 +841,7 @@ static unsigned int convert_to_bmp( char *pOutputFileData, unsigned int uOutputF
 void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFileSize)
 {
     FormatBMP       *pBmpImage;
+
     char            *pCompressionList[] = { "BI_RGB", "BI_RLE8", "BI_RLE4", "BI_BITFIELDS", "BI_JPEG", "BI_PNG", "BI_ALPHABITFIELDS", "BI_CMYK", "BI_CMYKRLE8", "BI_CMYKRLE4" };
     char            *pCompressionInfo;
     /*
@@ -856,6 +857,9 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         12	"BI_CMYKRLE8"
         13	"BI_CMYKRLE4"
     */
+    unsigned int uIndex;
+    unsigned int uBorne = 0;
+    unsigned int uCounter = 0;
 
     if ((pInputFileData) && (pFilePathname) && (inputFileSize > sizeof( FormatBMP)))
     {
@@ -897,7 +901,47 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         printf( "Taille_Map         = %ld\n", pBmpImage->Taille_Map);
         printf( "Resolution_H       = %ld\n", pBmpImage->Resolution_H);
         printf( "Resolution_V       = %ld\n", pBmpImage->Resolution_V);
+        printf("\n");
 
+        if (pBmpImage->Nbr_Bit_Par_Pixel == 8)
+        {
+            FormatBMP256 *pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
+            printf("La palette de 256 couleurs\n");
+            for (uIndex = 0; uIndex < 256; uIndex++)
+            {
+                if (uIndex == uBorne)
+                    printf("#%02u = %02X %02X %02X %02X ", uCounter,
+                        (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
+                        (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
+                else
+                    printf("%02X %02X %02X %02X ",
+                        (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
+                        (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
+                
+                if (uIndex == (uBorne + 15))
+                {
+                    printf("\n");
+                    uBorne += 16;
+                    uCounter++;
+                }
+            }
+        }
+        else
+        {
+            printf("La palette de 16 couleurs\n");
+            for (uIndex = 0; uIndex < 16; uIndex++)
+            {
+                if (uIndex == uBorne)
+                    printf("#01 = %02X %02X %02X %02X ",
+                        (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
+                        (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
+                else
+                    printf("%02X %02X %02X %02X ",
+                        (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
+                        (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
+            }
+            printf("\n");
+        }
         printf( "\n");
     }
 
@@ -1191,37 +1235,37 @@ BOOL CheckBmpFileFormat( char *pInputFileData, unsigned int inputFileSize)
                                 }
                                 else
                                 {
-                                    printf("BMP : Offset_Image is wrong\n");
+                                    (void )printf( "BMP : Offset_Image is wrong\n");
                                 }
                             }
                             else
                             {
-                                printf("BMP : Taille_Map is wrong\n");
+                                (void )printf( "BMP : Taille_Map is wrong\n");
                             }
                         }
                         else
                         {
-                            printf("BMP : Nbr_Bit_Par_Pixel is wrong\n");
+                            (void )printf( "BMP : Nbr_Bit_Par_Pixel is wrong\n");
                         }
                     }
                     else
                     {
-                        printf("BMP : Longueur_Image is wrong\n");
+                        (void )printf( "BMP : Longueur_Image is wrong\n");
                     }
                 }
                 else
                 {
-                    printf("BMP : Largeur_Image is wrong\n");
+                    (void )printf( "BMP : Largeur_Image is wrong\n");
                 }
             }
             else
             {
-                printf("BMP : Taille_Image is wrong\n");
+                (void )printf( "BMP : Taille_Image is wrong\n");
             }
         }
         else
         {
-            printf("BMP : Signature is wrong\n");
+            (void )printf( "BMP : Signature is wrong\n");
         }
     }
 
@@ -1293,7 +1337,7 @@ char *DoSwapColor( char *pInputFileData, unsigned int inputFileSize, unsigned in
 
                 // swap index color in bitmap
                 pInputRunner = pOutputFileData + pBmpIn16ColorsImage->Offset_Image;
-                pOutputRunner = pInputRunner + sizeof(pBmpIn16ColorsImage->bitmap);
+                pOutputRunner = pInputRunner + sizeof( pBmpIn16ColorsImage->bitmap);
                 while (pInputRunner <= pOutputRunner)
                 {
                     if ((*pInputRunner & 0xF0) == (unsigned char)(uSwapColumnA << 4))
@@ -1341,7 +1385,7 @@ char *DoSwapColor( char *pInputFileData, unsigned int inputFileSize, unsigned in
 
                 // swap index color in bitmap
                 pInputRunner = pOutputFileData + pBmpIn256ColorsImage->Offset_Image;
-                pOutputRunner = pInputRunner + sizeof(pBmpIn256ColorsImage->bitmap);
+                pOutputRunner = pInputRunner + sizeof( pBmpIn256ColorsImage->bitmap);
                 while (pInputRunner <= pOutputRunner)
                 {
                     if (*pInputRunner == uSwapColumnA)
@@ -1398,7 +1442,7 @@ void DoComparePalette( char *pFirstFileData, unsigned int uFirstFileSize, char *
         {
             if (pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] != pBmpIn16ColorsImageTwo->Couleur_Palette_0[uIndex])
             {
-                printf("Color at index %02d are different : R=%03d G=%03d B=%03d  !=  R=%03d G=%03d B=%03d\n", uIndex,
+                (void )printf( "Color at index %02d are different : R=%03d G=%03d B=%03d  !=  R=%03d G=%03d B=%03d\n", uIndex,
                     ((pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16),
                     ((pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
                      (pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] & 0x000000FF),
@@ -1412,29 +1456,44 @@ void DoComparePalette( char *pFirstFileData, unsigned int uFirstFileSize, char *
 }
 
 /**
-* @fn void DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize)
-* @brief copy palette of bmp with 16 colors (4 bit per pixel) from pFirstFileData to pSecondFileData
+* @fn void DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize, unsigned int uBitPerPixels)
+* @brief copy palette of bmp with 16 colors (4 bits per pixel) from pFirstFileData to pSecondFileData
 *
 * @param[in]        pFirstFileData
 * @param[in]        uFirstFileSize
 * @param[in]        pSecondFileData
 * @param[in]        uSecondFileSize
-*
+* @param[in]        uBitPerPixels       : 4 for 16 colors (4 bits per pixel) or 8 for 256 colors (8 bits per pixel)
 */
-void DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize)
+void DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSecondFileData, unsigned int uSecondFileSize, unsigned int uBitPerPixels)
 {
     FormatBMP       *pBmpIn16ColorsImageOne = NULL;
     FormatBMP       *pBmpIn16ColorsImageTwo = NULL;
+    FormatBMP256    *pBmpIn256ColorsImageOne = NULL;
+    FormatBMP256    *pBmpIn256ColorsImageTwo = NULL;
     unsigned int     uIndex;
 
     if ((pFirstFileData) && (pSecondFileData) && (uFirstFileSize) && (uSecondFileSize))
     {
-        pBmpIn16ColorsImageOne = (FormatBMP *)pFirstFileData;
-        pBmpIn16ColorsImageTwo = (FormatBMP *)pSecondFileData;
-
-        for (uIndex = 0; uIndex < 16; uIndex++)
+        if (uBitPerPixels == 4)
         {
-            pBmpIn16ColorsImageTwo->Couleur_Palette_0[uIndex] = pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex];
+            pBmpIn16ColorsImageOne = (FormatBMP *)pFirstFileData;
+            pBmpIn16ColorsImageTwo = (FormatBMP *)pSecondFileData;
+
+            for (uIndex = 0; uIndex < 16; uIndex++)
+            {
+                pBmpIn16ColorsImageTwo->Couleur_Palette_0[uIndex] = pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex];
+            }
+        }
+        else if (uBitPerPixels == 8)
+        {
+            pBmpIn256ColorsImageOne = (FormatBMP256 *)pFirstFileData;
+            pBmpIn256ColorsImageTwo = (FormatBMP256 *)pSecondFileData;
+
+            for (uIndex = 0; uIndex < 16; uIndex++)
+            {
+                pBmpIn256ColorsImageTwo->Couleur_Palettes[uIndex] = pBmpIn256ColorsImageOne->Couleur_Palettes[uIndex];
+            }
         }
     }
 }
@@ -1453,7 +1512,7 @@ void DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSe
 *
 * @return A new pointer pOutputFileData
 */
-char *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, ConvmArguments *pTheSprite, unsigned int *pDataSize)
+char *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pTheSprite, unsigned int *pDataSize)
 {
     char                *pOutputFileData = NULL;
     FormatBMP           *pBmpIn16ColorsImage = NULL;

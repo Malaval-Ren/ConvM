@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-    extern void             exitOnError( char *pExplain, char *pDetail, char *pInfo, unsigned int uError);
+    extern void             exitOnError( char *pFunctionName, unsigned int uLineNumber, char *pExplain, char *pDetail, char *pInfo, unsigned int uError);
     extern char            *parseAntiSlashChar( char **pPathname);
     extern char            *parseSpaceChar( char **pPathname);
     extern char            *getBasePathname( const char* pPathname, unsigned int uExtension);
@@ -18,7 +18,7 @@ extern "C" {
     extern int              writeFileFromMemory( char *pPathname, char *pCharData, unsigned int uDataSize);
     extern BOOL             pathFileExists( const char* pPathname);
     extern BOOL             directoryExists( const char *pAbsolutePath);
-    extern char            *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, unsigned int uCommand, unsigned int uTabColumns, unsigned int *pDataSize);
+    extern char            *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, enum eCommandNumber eCommand, unsigned int uTabColumns, unsigned int *pDataSize);
 
 #ifdef __cplusplus
 }

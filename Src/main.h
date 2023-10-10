@@ -2,8 +2,24 @@
 #ifndef MY_GLOBAL_H
 #define MY_GLOBAL_H
 
-enum eCommandNnumber {
-    eNONE,
+/*
+extracted from file
+minwindef.h
+
+here:
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h
+
+#define MAKEWORD(a, b)      ((WORD)(((BYTE)(((DWORD_PTR)(a)) & 0xff)) | ((WORD)((BYTE)(((DWORD_PTR)(b)) & 0xff))) << 8))
+#define MAKELONG(a, b)      ((LONG)(((WORD)(((DWORD_PTR)(a)) & 0xffff)) | ((DWORD)((WORD)(((DWORD_PTR)(b)) & 0xffff))) << 16))
+#define LOWORD(l)           ((WORD)(((DWORD_PTR)(l)) & 0xffff))
+#define HIWORD(l)           ((WORD)((((DWORD_PTR)(l)) >> 16) & 0xffff))
+#define LOBYTE(w)           ((BYTE)(((DWORD_PTR)(w)) & 0xff))
+#define HIBYTE(w)           ((BYTE)((((DWORD_PTR)(w)) >> 8) & 0xff))
+*/
+
+enum eCommandNumber
+{
+    eNONE = 0,
     eCRLF,
     eLFCR,
     eDOUBLE_0A,
@@ -20,7 +36,9 @@ enum eCommandNnumber {
     eSWAP2COLOR,
     eCOMPPALET,
     eCOPYPALET,
-    eEXTSPRITE
+    eEXTSPRITE,
+
+    eLast
 };
 
 #pragma pack(1)     // structure without padding....
@@ -50,7 +68,7 @@ typedef struct
 
 typedef struct
 {
-    unsigned char       MonImage[200][160];             // 32000 car 2 pixel par octets -> (320 / 2) * 200 = 32000
+    unsigned char       MonImage[200][160];             // 32000 car 2 pixel par octets -> 200 * (320 / 2) = 32000
     unsigned char       SCB[200];                       // 200 SCB donnant le numero de palette de couleur pour chaque ligne 
     unsigned char       Libre[56];                      // espace libre utiliser pour indiquer quel logiciel... Par exemple en [25] == "816/Paint"
     unsigned short int  Couleur_Palette_0[16];          // une seule palette de 16 couleurs sur 2 octets A=0 R=x G=x B=x
@@ -147,7 +165,7 @@ typedef struct _BitmapChannelGimp
 
 #pragma pack()
 
-typedef struct _ConvmArguments
+typedef struct _tConvmArguments
 {
     char           *pFullFilename;
     char           *pOutputPathname;
@@ -158,7 +176,7 @@ typedef struct _ConvmArguments
     unsigned int    uNumerOfLine;
     unsigned int    uLargeur;
     unsigned int    uHauteur;
-} ConvmArguments;
+} tConvmArguments;
 
 #endif
 
@@ -175,3 +193,11 @@ typedef struct _CustomPalette
     unsigned char       uFromScbIndex;               // the 1st line
     unsigned char       uToScbIndex;                 // the last line
 } CustomPalette;
+
+typedef struct _tContextApp
+{
+    char                *pInputFileData;
+    unsigned int         uInputFileSize;
+    char                *pOutputFileData;
+    unsigned int         uOutputFileSize;
+} tContextApp;
