@@ -12,21 +12,20 @@ x64/
 
 *.o
 *.d
-.db
+*.db
 *.sdf
 *.suo
 *.pdb
-.data
-.pdata
-.rdata
-.reloc
-.text
+*.data
+*.pdata
+*.rdata
+*.reloc
+*.text
+*.vcxproj.user
 helper_git.txt
 
 Finder.Data
-convm/Finder.Data
-unittest/Finder.Data
+conv.rc.bak
 
 # Enforce a “no spaces in filenames” policy
 **\ **
-convm/conv.rc.bak
