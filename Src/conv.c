@@ -59,7 +59,7 @@ void exitOnError( char *pFunctionName, unsigned int uLineNumber, char *pExplain,
         pMessage = (char *)calloc( 1, uLen);
         if (pMessage)
         {
-            (void)strncpy_s( pMessage, uLen, (const char *)pExplain, strlen( (const char *)pExplain));
+            (void )strncpy_s( pMessage, uLen, (const char *)pExplain, strlen( (const char *)pExplain));
 
             if (pDetail)
             {
@@ -79,7 +79,7 @@ void exitOnError( char *pFunctionName, unsigned int uLineNumber, char *pExplain,
                 pMessage = strcat( pMessage, (const char *)pEndString);
             }
 
-            (void )printf( "CONVM : %s() at %d - %s\n", pFunctionName, uLineNumber, pMessage);
+            (void )printf( "ConvM : %s() at %d - %s\n", pFunctionName, uLineNumber, pMessage);
 
             free( pMessage);
         }

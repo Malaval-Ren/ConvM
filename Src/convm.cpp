@@ -58,12 +58,14 @@
  * -dump ../../../Iron_Lord/BootImages/ironlord_g9_ex.bmp
  * -dump ../../../Iron_Lord/dessin.bmp/enall2.bmp
  * -dump ../../../Iron_Lord/dessin.bmp/medite.ch.bmp 
+ * -dump ../../../Iron_Lord/picks/iron.lord.256.bmp
  * 
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/enall2.bmp
  * -2pic +lower ../../../Iron_Lord/Olivier--Ren--Fred/enemyallc.bmp
  * -2pic +lower ../../../Iron_Lord/Olivier--Ren--Fred/enemyall_gimp.bmp
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/tasetarc1.pic
+ * -2pic +lower ../../../Iron_Lord/picks/Iron_Lord_2c.bmp
  * 
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/iron_lord_game_20221112_104906.AMm
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/Iron_Lord_fr_sorcier.uss
@@ -329,6 +331,10 @@ void pathanmeToLowerCase( char **pPathname)
         }
     }
 }
+
+#define MAILR "renaud.malaval@free.fr"
+
+#define MAILF "frederic.mure@free.fr"
 
 /**
 * @fn static enum eCommandNumber parseArguments( int argc, char *argv[], ConvmArguments *pContext)
@@ -770,6 +776,7 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
     return eCommand;
 }
 
+
 /**
 * @fn int main( int argc, char *argv[])
 * @brief The entry point of the software
@@ -782,7 +789,7 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.10.10.110, (c) R. Malaval & F. Mure 2022-23";
+    static const char   *pVersionStr = "v1.11.10.119, (c) R. Malaval & F. Mure 2022-23";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;

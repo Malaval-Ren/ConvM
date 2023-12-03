@@ -16,7 +16,19 @@
 // _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable : 4996)
 
-unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSize, FormatBMP *pInputFileData)
+void    doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFileSize);
+
+/**
+* @fn static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSize, FormatBMP *pInputFileData)
+* @brief Convert a bmp with 1 bits by Pixel to a pic with 1 palette
+*
+* @param[in,out]    pOutputFileData     data to decompressed
+* @param[in]        uOutputFileSize     free size for data to decompressed
+* @param[in]        pInputFileData      data to uncompress
+* 
+* @return size of data uncompressed
+*/
+static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSize, FormatBMP *pInputFileData)
 {
     FormatBMP      *pBmpImage = NULL;
     char           *pInputLine;
@@ -65,7 +77,7 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
                     }
                     pOutputLine = pOutputLine + (pBmpImage->Largeur_Image - uPixelsCounter);
                     uNbrOfLine += uNbrAddedLine + 1;
-                    printf( "[%03u : %03u] _ %04d _ %04u : end of line\t\t%04u\n\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, (uNbrAddedLine * pBmpImage->Largeur_Image) + uPixelsCounter, uNbrOfLine);
+                    (void )printf( "[%03u : %03u] _ %04d _ %04u : end of line\t\t%04u\n\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, (uNbrAddedLine * pBmpImage->Largeur_Image) + uPixelsCounter, uNbrOfLine);
                     uPixelsCounter = 0;
                     if (uLoopLine > pBmpImage->Longueur_Image)
                         break;
@@ -83,7 +95,7 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
                     uValue = *pInputLine;
                     pOutputLine = pOutputLine + (uValue * pBmpImage->Largeur_Image);
                     uInputLineIndex += (uValue * pBmpImage->Largeur_Image);
-                    printf( "[%03u : %03u] _ %04d _ Move\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image);
+                    (void )printf( "[%03u : %03u] _ %04d _ Move\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image);
                 }
                 else
                 {
@@ -91,7 +103,6 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
                     {
                         uCode = uValue;
                         uValue = *(pInputLine + 1);
-                        //pInputLine++;
                         uInputLineIndex += 1;
                     }
 
@@ -145,15 +156,15 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
 
                     }
                     table[uindex] = '\0';
-                    printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                    (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
                     for (uindex = 0; uindex < (uCode >> 1); uindex++)
                     {
                         if ((uindex) && ((uindex % 40) == 0))
-                            printf( "\n                          : ");
+                            (void )printf( "\n                          : ");
 
-                        printf( "%02x ", table[uindex]);
+                        (void )printf( "%02x ", table[uindex]);
                     }
-                    printf( "\n");
+                    (void )printf( "\n");
 
                     /*  CODE WORKING ONLY FOR PAIR VALUE
                     if (uCode & 0x01)     // impair
@@ -171,15 +182,15 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
                         uNextHighValue = uValue & 0xF0;
                         bNextHighValuePresent = TRUE;
                         table[uindex] = '\0';
-                        printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                        (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
                         for (uindex = 0; uindex < (uCode >> 1); uindex++)
                         {
                             if ((uindex) && ((uindex % 40) == 0))
-                                printf( "\n                          : ");
+                                (void )printf( "\n                          : ");
 
-                            printf( "%02x ", table[uindex]);
+                            (void )printf( "%02x ", table[uindex]);
                         }
-                        printf( "\n");
+                        (void )printf( "\n");
                     }
                     else    // pair
                     {
@@ -201,15 +212,15 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
 
                         bNextHighValuePresent = FALSE;
                         table[uindex] = '\0';
-                        printf("[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                        (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
                         for (uindex = 0; uindex < (uCode >> 1); uindex++)
                         {
                             if ((uindex) && ((uindex % 40) == 0))
-                                printf("\n                          : ");
+                                (void )printf( "\n                          : ");
 
-                            printf("%02x ", table[uindex]);
+                            (void )printf( "%02x ", table[uindex]);
                         }
-                        printf("\n");
+                        (void )printf("\n");
                     }
                     */
                 }
@@ -265,15 +276,15 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
 
                 }
                 table[uindex] = '\0';
-                printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
                 for (uindex = 0; uindex < (uCode >> 1); uindex++)
                 {
                     if ((uindex) && ((uindex % 40) == 0))
-                        printf( "\n                          : ");
+                        (void )printf( "\n                          : ");
 
-                    printf( "%02x ", table[uindex]);
+                    (void )printf( "%02x ", table[uindex]);
                 }
-                printf( "\n");
+                (void )printf( "\n");
 
                 /*  CODE WORKING ONLY FOR PAIR VALUE
                 if (uCode & 0x01)     // impair
@@ -291,13 +302,13 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
                     uNextHighValue = uValue & 0xF0;
                     bNextHighValuePresent = TRUE;
                     table[uindex] = '\0';
-                    printf("[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                    (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
                     for (uindex = 0; uindex < ((uCode - 1) >> 1); uindex++)
                     {
                         if ((uindex) && ((uindex % 40) == 0))
-                            printf("\n                          : ");
+                            (void )printf( "\n                          : ");
 
-                        printf("%02x ", table[uindex]);
+                        (void )printf( "%02x ", table[uindex]);
                     }
                     printf("\n");
                 }
@@ -314,15 +325,15 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
                     }
                     bNextHighValuePresent = FALSE;
                     table[uindex] = '\0';
-                    printf("[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                    (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
                     for (uindex = 0; uindex < (uCode >> 1); uindex++)
                     {
                         if ( (uindex) && ((uindex % 40) == 0) )
-                            printf("\n                          : ");
+                            (void )printf( "\n                          : ");
 
-                        printf("%02x ", table[uindex]);
+                        (void )printf( "%02x ", table[uindex]);
                     }
-                    printf("\n");
+                    (void )printf( "\n");
                 }
                 */
             }
@@ -340,6 +351,202 @@ unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutputFileSiz
     return uBitmapSize;
 }
 
+#define NOUS "[ ConvM  (c) 2022..23  Renaud Malaval ET Frederic Mure ]"
+
+/**
+* @fn static void add_signature( FormatPIC *pPicImage)
+* @brief Convert a bmp with 1 bits by Pixel to a pic with 1 palette
+*
+* @param[in,out]    pPicImage   pointer to 56 free bytes in pic stucture
+*/
+static void add_signature( FormatPIC *pPicImage)
+{
+    unsigned char   *pFun;
+
+    if (pPicImage)
+    {
+        pFun = pPicImage->Libre;
+        /*
+        (void )printf( "pPicImage->Libre len = %llu\n", sizeof( pPicImage->Libre));
+        (void )printf( "NOUS             len = %llu\n", sizeof( NOUS));
+        */
+        if (sizeof( pPicImage->Libre) + 1 >= sizeof( NOUS))
+        {
+            (void )memcpy( pFun, NOUS, sizeof( NOUS));
+        }
+        else
+        {
+            exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to set NOUS", NULL, NULL, 1966);
+        }
+    }
+}
+
+/**
+* @fn static unsigned int convert_to_2_pic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
+* @brief Convert a bmp with 1 bits by Pixel to a pic with 1 palette
+*
+* @param[in,out]    pOutputFileData
+* @param[in]        uOutputFileSize
+* @param[in]        pInputFileData
+* @param[in]        inputFileSize
+*
+* @return size of data to save
+*/
+static unsigned int convert_to_2_pic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
+{
+    FormatPIC          *pPicImage = NULL;
+    FormatBMP2         *pBmpImage = NULL;
+    unsigned char      *pFun = NULL;
+    char               *pBmpByteOfBits = NULL;
+    char               *pDecompressedData = NULL;
+    unsigned int        uDecompressedSize = 0;
+    unsigned short int *pPicPalette;
+    unsigned long int   uValueD = 0;
+    unsigned int        uOffset = 0;
+    unsigned int        uIndex = 0;
+    unsigned int        uLoop = 0;
+    unsigned int        uExtented = 0;
+    unsigned int        uVarPicX = 0;
+    int                 iVarBmpX;
+    unsigned short int  uValueF = 0;
+    unsigned char       uColorRedOne = 0;
+    unsigned char       uColorGreenOne = 0;
+    unsigned char       uColorBlueOne = 0;
+    unsigned char       uColorRedTwo = 0;
+    unsigned char       uColorGreenTwo = 0;
+    unsigned char       uColorBlueTwo = 0;
+    unsigned char       uColorRedMid = 0;
+    unsigned char       uColorGreenMid = 0;
+    unsigned char       uColorBlueMid = 0;
+    unsigned char       uMask;
+
+    if ((pInputFileData) && (inputFileSize))
+    {
+        pBmpImage = (FormatBMP2 *)pInputFileData;
+
+        if (pBmpImage->Type_Compression == 0)       // BI_RGB
+        {
+            pDecompressedData = pInputFileData;
+            uDecompressedSize = inputFileSize;
+        }
+        else if (pBmpImage->Type_Compression == 2)  // BI_RLE4
+        {
+            exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Not implemented", NULL, NULL, 1965);
+            /*
+            pDecompressedData = calloc( 1, (size_t )(98304));
+            if (pDecompressedData)
+            {
+                // Copy the bmp header
+                (void )memcpy( pDecompressedData, pInputFileData, pBmpImage->Offset_Image);
+                ((FormatBMP2 *)pDecompressedData)->Type_Compression = 0;
+
+                uOffset = bmp_rle4_decode( pDecompressedData, 98304, pBmpImage);
+                if (uOffset)
+                {
+                    uDecompressedSize = uOffset;
+                }
+            }
+
+            if (writeFileFromMemory( "encours.tmp.bmp", pDecompressedData, uDecompressedSize))
+            {
+                exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to write output file", NULL, "encours.tmp.bmp", 4);
+            }
+            */
+        }
+        else
+        {
+            pDecompressedData = NULL;
+            uDecompressedSize = 0;
+        }
+    }
+
+    if ((pOutputFileData) && (uOutputFileSize > 0) && (pDecompressedData))
+    {
+        pPicImage = (FormatPIC *)pOutputFileData;
+
+        pBmpImage = (FormatBMP2 *)pDecompressedData;
+
+        if (pBmpImage->Longueur_Image > 199)
+            uExtented = ((pBmpImage->Longueur_Image - 200) * 160);
+
+        // doDumpBmp( "encours", pInputFileData, inputFileSize);
+
+        iVarBmpX = pBmpImage->Longueur_Image - 1;
+        for (uVarPicX = 0; uVarPicX < pBmpImage->Longueur_Image - 1; uVarPicX++)
+        {
+            pBmpByteOfBits = pBmpImage->bitmap[iVarBmpX];
+            pFun           = pPicImage->MonImage[uVarPicX];
+
+            // Dans le cas des images codant les pixels sur 1 bit ou 4 bits, c'est-à-dire si plusieurs pixels sont codés dans un même octet, les bits de poids fort concernent le pixel le plus à gauche.
+            for (uLoop = 0; uLoop < 40; uLoop++)
+            {
+                uMask = 0x80;
+                for (uIndex = 0; uIndex < 4; uIndex++)  // 8 pixels by byte -> 2 pixels by byte
+                {
+                    uColorRedOne = ((*pBmpByteOfBits & uMask) == 0 ? 0 : 15) << 4;   // Left shifting
+                    uMask = uMask >> 1;   // right shifting
+                    uColorRedTwo = (*pBmpByteOfBits & uMask) == 0 ? 0 : 15;
+                    uMask = uMask >> 1;   // Right shifting
+                    *pFun = uColorRedOne + uColorRedTwo;
+
+                    pFun++;
+                }
+                pBmpByteOfBits++;
+            }
+            iVarBmpX--;
+        }
+
+        add_signature( pPicImage);
+
+        // std SCB = 200 octets and 56 octets of free space
+        if (uExtented)
+            // if extented the SCB = 400 and 112 octets (2 * 56) of free space
+            uExtented += 56;
+
+        // compute color for index 0 and set it
+        pPicPalette = (unsigned short int *) ((char *)&pPicImage->Couleur_Palette_0 + uExtented);
+        uValueD = pBmpImage->Couleur_Palette_0[0];                        // 00 60 20 00 = 00206000     0=00 R=20 G=60 B=00
+        uColorRedOne = (unsigned char)((uValueD & 0x00F00000) / 1048576); // ne garde que le R et le décale en unité
+        uColorGreenOne = (unsigned char)((uValueD & 0x0000F000) / 4096);  // ne garde que le G et le décale en unité
+        uColorBlueOne = (unsigned char)((uValueD & 0x000000F0) / 16);     // ne garde que le B deja en unité
+        uValueF = (uColorRedOne * 256) + (uColorGreenOne * 16) + (uColorBlueOne);  // transformation de 00R0G0B0 en 0=0 R=2 G=6 B=0 Passage niveau couleur FF en F
+        *pPicPalette = uValueF;
+        pPicPalette++;
+
+        // compute color for index 15
+        uValueD = pBmpImage->Couleur_Palette_0[1];                           // 00 60 20 00 = 00206000     0=00 R=20 G=60 B=00
+        uColorRedTwo = (unsigned char)((uValueD & 0x00F00000) / 1048576);    // ne garde que le R et le décale en unité
+        uColorGreenTwo = (unsigned char)((uValueD & 0x0000F000) / 4096);     // ne garde que le G et le décale en unité
+        uColorBlueTwo = (unsigned char)((uValueD & 0x000000F0) / 16);        // ne garde que le B deja en unité
+
+        // compute medium color for index 1 to 14 and set it
+        uColorRedMid = (uColorRedOne + uColorRedTwo) / 2;
+        uColorGreenMid = (uColorGreenOne + uColorGreenTwo) / 2;
+        uColorBlueMid = (uColorBlueOne + uColorBlueTwo) / 2;
+        uValueF = (uColorRedMid * 256) + (uColorGreenMid * 16) + (uColorBlueMid);  // transformation de 00R0G0B0 en 0=0 R=2 G=6 B=0 Passage niveau couleur FF en F
+        for (uIndex = 1; uIndex < 15; uIndex++)            // traitement des 16 couleurs de la palette
+        {
+            *pPicPalette = uValueF;
+            pPicPalette++;
+        }
+
+        // compute color for index 15 and set it
+        uValueF = (uColorRedTwo * 256) + (uColorGreenTwo * 16) + (uColorBlueTwo);  // transformation de 00R0G0B0 en 0=0 R=2 G=6 B=0 Passage niveau couleur FF en F
+        *pPicPalette = uValueF;
+
+        uOffset = (unsigned int)sizeof( FormatPIC) + uExtented;
+
+        pBmpImage = (FormatBMP2 *)pInputFileData;
+        if (pBmpImage->Type_Compression == 2)
+        {
+            free( pDecompressedData);
+            pDecompressedData = NULL;
+        }
+    }
+
+    return uOffset;
+}
+
 /**
 * @fn static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
 * @brief Convert a bmp with 4 bits by Pixel to a pic with 1 palette
@@ -355,7 +562,6 @@ static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutp
 {
     FormatPIC          *pPicImage = NULL;
     FormatBMP          *pBmpImage = NULL;
-    char               *pFun;
     char               *pDecompressedData = NULL;
     unsigned int        uDecompressedSize = 0;
     unsigned short int *pPicPalette;
@@ -424,12 +630,7 @@ static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutp
             iVarBmpX--;
         }
 
-        pFun = pOutputFileData + 0x7D00 + uExtented + 0xD0;
-        (void )strncpy( pFun, "Frederic Mure", sizeof( "Frederic Mure"));
-        pFun = pOutputFileData + 0x7D00 + uExtented + 0xE0;
-        (void )strncpy( pFun, "and", sizeof("and"));
-        pFun = pOutputFileData + 0x7D00 + uExtented + 0xF0;
-        (void )strncpy( pFun, "Renaud Malaval", sizeof( "Renaud Malaval"));
+        add_signature( pPicImage);
 
         // std SCB = 200 octets and 56 octets of free space
         if (uExtented)
@@ -445,7 +646,6 @@ static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutp
             uColorGreen = (unsigned char)((uValueD & 0x0000F000) / 4096);     // ne garde que le G et le décale en unitee
             uColorBlue = (unsigned char)((uValueD & 0x000000F0) / 16);        // ne garde que le B deja en unitee
             uValueF = (uColorRed * 256) + (uColorGreen * 16) + (uColorBlue);  // transformation de 00R0G0B0 en 0=0 R=2 G=6 B=0 Passage niveau couleur FF en F
-            //pPicImage->Couleur_Palette_0[uIndex] = uValueF;
             *pPicPalette = uValueF;
             pPicPalette++;
         }
@@ -483,7 +683,6 @@ static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOut
     CustomPalette       *pScbOngoin = NULL;
     unsigned short int  *pPicPalette;
     unsigned long int   *pBmpPalette;
-    char                *pFun;
     unsigned int         uOffset = 0;
     int                  iVarPicX = 0;
     int                  iVarBmpX = 199;
@@ -543,16 +742,7 @@ static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOut
             bPallette = FALSE;
         }
 
-        pPicImage->Libre[0] = '[';
-        pFun = pPicImage->Libre + 3;
-        (void)strncpy(pFun, "2023", sizeof("2023"));
-        pFun = pPicImage->Libre + 8;
-        (void)strncpy(pFun, "Frederic Mure", sizeof( "Frederic Mure"));
-        pFun = pPicImage->Libre + 24;
-        (void)strncpy(pFun, "ET", sizeof( "ET"));
-        pFun = pPicImage->Libre + 40;
-        (void)strncpy(pFun, "Renaud Malaval", sizeof( "Renaud Malaval"));
-        pPicImage->Libre[55] = ']';
+        add_signature( pPicImage);
 
         pPicPalette = (unsigned short int *)&pPicImage->Couleur_Palette_0;
         pBmpPalette = (unsigned long int *)&pBmpImage->Couleur_Palettes;
@@ -861,19 +1051,21 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
     unsigned int uBorne = 0;
     unsigned int uCounter = 0;
 
-    if ((pInputFileData) && (pFilePathname) && (inputFileSize > sizeof( FormatBMP)))
+    if ((pInputFileData) && (pFilePathname) && (inputFileSize >= sizeof( BMPHeader)))
     {
         pBmpImage = (FormatBMP *)pInputFileData;
         printf( "\nDisplay content of bmp header\n\n");
-        printf( " %s\n\n", pFilePathname);
+        printf( "%s\n\n", pFilePathname);
 
         printf( "Signature          = %c%c\n", (char)(pBmpImage->Signature & 0x00FF), (char)((pBmpImage->Signature & 0xFF00) >> 8));
         printf( "Taille_Image       = %ld\n", pBmpImage->Taille_Image);
         printf( "Offset_Image       = %ld\n", pBmpImage->Offset_Image);
         if (pBmpImage->Reserves != 0)
+        {
             printf( "Reserves           = %c%c%c%c\n",
                 (char)(pBmpImage->Reserves & 0x000000FF), (char)((pBmpImage->Reserves & 0x0000FF00) >> 8),
                 (char)((pBmpImage->Reserves & 0x00FF0000) >> 16), (char)((pBmpImage->Reserves & 0xFF000000) >> 24));
+        }
         printf( "Entete2            = %ld\n", pBmpImage->Entete2);
         printf( "Largeur_Image      = %ld\n", pBmpImage->Largeur_Image);
         printf( "Longueur_Image     = %ld\n", pBmpImage->Longueur_Image);
@@ -901,47 +1093,83 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         printf( "Taille_Map         = %ld\n", pBmpImage->Taille_Map);
         printf( "Resolution_H       = %ld\n", pBmpImage->Resolution_H);
         printf( "Resolution_V       = %ld\n", pBmpImage->Resolution_V);
-        printf("\n");
+        printf( "\n");
 
-        if (pBmpImage->Nbr_Bit_Par_Pixel == 8)
+        /*
+        printf("sizeof( unsigned short int)   = %lld\n", sizeof( unsigned short int));
+        printf("sizeof( unsigned long int)    = %lld\n", sizeof( unsigned long int));
+        printf("\n");
+        */
+
+        printf( "data offset        = %ld / %ld\n", inputFileSize - pBmpImage->Taille_Map, pBmpImage->Offset_Image);
+        printf( "palette offset     = %ld%s\n", (inputFileSize - pBmpImage->Taille_Map) - (int )sizeof( BMPHeader),
+            ((inputFileSize - pBmpImage->Taille_Map) - (int )sizeof( BMPHeader)) == 0 ? " pas de palette" : " " );
+        printf( "\n");
+
+        switch (pBmpImage->Nbr_Bit_Par_Pixel)
         {
-            FormatBMP256 *pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
-            printf("La palette de 256 couleurs\n");
-            for (uIndex = 0; uIndex < 256; uIndex++)
+        case 1:
+            printf( "La palette de 2 couleurs (noir et blanc)\n");
+            printf( "#01 = %02X %02X %02X %02X %02X %02X %02X %02X\n",
+                (unsigned char)(pBmpImage->Couleur_Palette_0[0] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[0] & 0x0000FF00) >> 8),
+                (unsigned char)((pBmpImage->Couleur_Palette_0[0] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[0] & 0xFF000000) >> 24),
+                (unsigned char)(pBmpImage->Couleur_Palette_0[1] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[1] & 0x0000FF00) >> 8),
+                (unsigned char)((pBmpImage->Couleur_Palette_0[1] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[1] & 0xFF000000) >> 24));
+            break;
+        case 4:
             {
-                if (uIndex == uBorne)
-                    printf("#%02u = %02X %02X %02X %02X ", uCounter,
-                        (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
-                        (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
-                else
-                    printf("%02X %02X %02X %02X ",
-                        (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
-                        (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
-                
-                if (uIndex == (uBorne + 15))
+                printf( "La palette de 16 couleurs\n");
+                for (uIndex = 0; uIndex < 16; uIndex++)
                 {
-                    printf("\n");
-                    uBorne += 16;
-                    uCounter++;
+                    if (uIndex == uBorne)
+                        printf( "#01 = %02X %02X %02X %02X ",
+                            (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
+                            (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
+                    else
+                        printf( "%02X %02X %02X %02X ",
+                            (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
+                            (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
+                }
+                printf( "\n");
+            }
+            break;
+        case 8:
+            {
+                FormatBMP256 *pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
+                printf( "La palette de 256 couleurs\n");
+                for (uIndex = 0; uIndex < 256; uIndex++)
+                {
+                    if (uIndex == uBorne)
+                        printf( "#%02u = %02X %02X %02X %02X ", uCounter,
+                            (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
+                            (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
+                    else
+                        printf( "%02X %02X %02X %02X ",
+                            (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
+                            (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
+
+                    if (uIndex == (uBorne + 15))
+                    {
+                        printf( "\n");
+                        uBorne += 16;
+                        uCounter++;
+                    }
                 }
             }
+            break;
+        case 16:
+            printf( "Nombre de bits par pixels 4/16 bits (ARGB)\n");
+            break;
+        case 24:
+            printf( "Nombre d'octets par pixels 8/24 bits (RGB)\n");
+            break;
+        case 32:
+            printf( "Nombre d'octets par pixels 8/32 bits (ARGB)\n");
+            break;
+        default:
+            break;
         }
-        else
-        {
-            printf("La palette de 16 couleurs\n");
-            for (uIndex = 0; uIndex < 16; uIndex++)
-            {
-                if (uIndex == uBorne)
-                    printf("#01 = %02X %02X %02X %02X ",
-                        (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
-                        (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
-                else
-                    printf("%02X %02X %02X %02X ",
-                        (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
-                        (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
-            }
-            printf("\n");
-        }
+
         printf( "\n");
     }
 
@@ -976,7 +1204,7 @@ char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
         {
             case eTO_BMP:
             {
-                *pDataSize = convert_to_bmp(pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
+                *pDataSize = convert_to_bmp( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
             }
             break;
 
@@ -984,7 +1212,11 @@ char *DoBmpJob( char *pInputFileData, unsigned int inputFileSize, unsigned int c
             {
                 pBmpImage = (FormatBMP *)pInputFileData;
             
-                if (pBmpImage->Nbr_Bit_Par_Pixel == 4)
+                if (pBmpImage->Nbr_Bit_Par_Pixel == 1)
+                {
+                    *pDataSize = convert_to_2_pic( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
+                }
+                else if (pBmpImage->Nbr_Bit_Par_Pixel == 4)
                 {
                     *pDataSize = convert_to_16_pic( pOutputFileData, (unsigned int)98304, pInputFileData, inputFileSize);
                 }
@@ -1212,36 +1444,19 @@ BOOL CheckBmpFileFormat( char *pInputFileData, unsigned int inputFileSize)
 
     if ((pInputFileData) && (inputFileSize > 0))
     {
-#ifdef _DEBUG
-        doDumpBmp( "encours", pInputFileData, inputFileSize);
-#endif
         pBmpStruct = (FormatBMP *)pInputFileData;
 
         if (pBmpStruct->Signature == 19778)
         {
-            if ( (pBmpStruct->Taille_Image == sizeof( FormatBMP)) || (pBmpStruct->Taille_Image == sizeof( FormatBMP256)) || (pBmpStruct->Taille_Image <= 0xFFFF))
+            if (pBmpStruct->Taille_Image == pBmpStruct->Offset_Image + pBmpStruct->Taille_Map)
             {
                 if (pBmpStruct->Largeur_Image == 320)
                 {
                     if (pBmpStruct->Longueur_Image <= 400)
                     {
-                        if ( (pBmpStruct->Nbr_Bit_Par_Pixel == 4) || (pBmpStruct->Nbr_Bit_Par_Pixel == 8) )
+                        if ( (pBmpStruct->Nbr_Bit_Par_Pixel == 1) || (pBmpStruct->Nbr_Bit_Par_Pixel == 4) || (pBmpStruct->Nbr_Bit_Par_Pixel == 8) )
                         {
-                            if ( (pBmpStruct->Taille_Map == 32000) || (pBmpStruct->Taille_Map == 64000) || (pBmpStruct->Type_Compression == 2) )
-                            {
-                                if ( (pBmpStruct->Offset_Image == 118) || (pBmpStruct->Offset_Image == 1078) /* || (pBmpStruct->Offset_Image == 1162) */ )
-                                {
-                                    bResult = TRUE;
-                                }
-                                else
-                                {
-                                    (void )printf( "BMP : Offset_Image is wrong\n");
-                                }
-                            }
-                            else
-                            {
-                                (void )printf( "BMP : Taille_Map is wrong\n");
-                            }
+                            bResult = TRUE;
                         }
                         else
                         {
@@ -1266,6 +1481,11 @@ BOOL CheckBmpFileFormat( char *pInputFileData, unsigned int inputFileSize)
         else
         {
             (void )printf( "BMP : Signature is wrong\n");
+        }
+
+        if (bResult == FALSE)
+        {
+            doDumpBmp( "encours", pInputFileData, inputFileSize);
         }
     }
 
