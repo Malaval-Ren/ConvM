@@ -79,6 +79,7 @@
  * -ipbm8 1 1 ../../../Iron_Lord/dessin.bmp/brasdefer4.bmp ../../../Iron_Lord/dessin.bmp/brafer.ch.bmp
  * -ipbm8 0 1 ../../../Iron_Lord/dessin.bmp/tacadre.bmp ../../../Iron_Lord/dessin.bmp/tasetarc111.bmp
  * -ipbm8 0 2 ../../../Iron_Lord/dessin.bmp/tacadre.bmp ../../../Iron_Lord/dessin.bmp/tasetarc111.bmp
+ * -ipbm8 0 1 ../../../Iron_Lord/dessin.bmp/meunie.ch.src.bmp  ../../../Iron_Lord/dessin.bmp/meunie.ch.bmp
  *
  * in the palette 0
  * -swap 2 11 ../../../Iron_Lord/dessin.bmp/sorcie.ch.bmp
@@ -333,7 +334,7 @@ void pathanmeToLowerCase( char **pPathname)
 }
 
 #define MAILR "renaud.malaval@free.fr"
-
+#define MAILE " "
 #define MAILF "frederic.mure@free.fr"
 
 /**
@@ -789,7 +790,7 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.11.10.119, (c) R. Malaval & F. Mure 2022-23";
+    static const char   *pVersionStr = "v1.11.10.120, (c) R. Malaval & F. Mure 2022-23";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;

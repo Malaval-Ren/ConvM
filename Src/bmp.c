@@ -1693,7 +1693,7 @@ void DoCopyPalette( char *pFirstFileData, unsigned int uFirstFileSize, char *pSe
     FormatBMP256    *pBmpIn256ColorsImageTwo = NULL;
     unsigned int     uIndex;
 
-    if ((pFirstFileData) && (pSecondFileData) && (uFirstFileSize) && (uSecondFileSize))
+    if ((pFirstFileData) && (pSecondFileData) && (uFirstFileSize > sizeof( BMPHeader)) && (uSecondFileSize > sizeof( BMPHeader)))
     {
         if (uBitPerPixels == 4)
         {

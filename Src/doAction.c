@@ -347,7 +347,8 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
 * @param[in]        pContext
 * @param[in]        eCommand
 * @param[in]        pfullOutputFilename
-*
+ *
+ * @return 0 no error or exit program
 */
 int doDetab( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
@@ -384,6 +385,16 @@ int doDetab( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
     return 0;
 }
 
+/**
+* @fn int doDump( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief Display the hearder of a BMP or PIC image file 
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doDump( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     const char      *pEndString;
@@ -420,6 +431,15 @@ int doDump( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComman
     return 0;
 }
 
+/**
+* @fn int doExt2Txt( tConvmArguments *pContextArg, tContextApp *pContextApp)
+* @brief 
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+ *
+ * @return 0 no error or exit program
+*/
 int doExt2Txt( tConvmArguments *pContextArg, tContextApp *pContextApp)
 {
     unsigned int     uDataSize = 0;
@@ -453,6 +473,16 @@ int doExt2Txt( tConvmArguments *pContextArg, tContextApp *pContextApp)
     return 0;
 }
 
+/**
+* @fn int doRleComDecom( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doRleComDecom( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char            *pfullOutputFilename = NULL;
@@ -493,6 +523,16 @@ int doRleComDecom( tConvmArguments *pContextArg, tContextApp *pContextApp, enum 
     return 0;
 }
 
+/**
+* @fn int doToBmp( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doToBmp( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char            *pfullOutputFilename = NULL;
@@ -544,6 +584,16 @@ int doToBmp( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
     return 0;
 }
 
+/**
+* @fn int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand )
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand )
 {
     char            *pfullOutputFilename = NULL;
@@ -613,6 +663,16 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
     return 0;
 }
 
+/**
+* @fn int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char            *pfullOutputFilename = NULL;
@@ -653,6 +713,16 @@ int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, 
     return 0;
 }
 
+/**
+* @fn int doInsertPaletteToBmp8( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doInsertPaletteToBmp8( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char            *pfullOutputFilename = NULL;
@@ -693,6 +763,16 @@ int doInsertPaletteToBmp8( tConvmArguments *pContextArg, tContextApp *pContextAp
     return 0;
 }
 
+/**
+* @fn int doSwapTwoColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doSwapTwoColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char                *pfullOutputFilename = NULL;
@@ -738,6 +818,16 @@ int doSwapTwoColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum
     return 0;
 }
 
+/**
+* @fn int doComparePalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doComparePalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     FormatBMP           *pBmpIn16ColorsImageOne;
@@ -778,6 +868,16 @@ int doComparePalette( tConvmArguments *pContextArg, tContextApp *pContextApp, en
     return 0;
 }
 
+/**
+* @fn int doCopyPalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doCopyPalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     if ((pContextArg) && (pContextApp))
@@ -833,6 +933,16 @@ int doCopyPalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum 
     return 0;
 }
 
+/**
+* @fn int doExtSprite( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
 int doExtSprite( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char            *pfullOutputFilename = NULL;
