@@ -67,6 +67,8 @@
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/tasetarc1.pic
  * -2pic +lower ../../../Iron_Lord/picks/Iron_Lord_2c.bmp
  * 
+ * -ncpl ../../../Iron_Lord/dessin/moine.ch.pic
+ * 
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/iron_lord_game_20221112_104906.AMm
  * -extxt 3 ../../../Iron_Lord/Olivier--Renaud/Iron_Lord_fr_sorcier.uss
  * 
@@ -110,34 +112,36 @@
  */
 void usage()
 {
-    printf("Usage: convm <convmspec> <option> \"<filespec>\" \"<output folder or file>\"\n");
-    printf("\n  <convmspec> is one of the following:\n");
-    printf("   -crlf                        - convert CR to LF\n");
-    printf("   -lfcr                        - convert LF to CR\n");
-    printf("   -dblf                        - replace 2 first $0A (LF) by one in a serie\n");
-    printf("   -dbcr                        - replace 2 first $0D (CR) by one in a serie\n");
-    printf("   -detab <col>                 - convert tabs to spaces (tab stop every COL columns)\n");
-    printf("   -dump                        - dump content of a supported file format\n");
-    printf("   -extxt <minlen>              - extract string of minlen from a binary file\n");
-    printf("   -rlec                        - not implemented\n");
-    printf("   -rled                        - decompress with rle algorithms file\n");
-    printf("   -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp\n");
-    printf("   -2pic                        - convert .bmp to .pic\n");
-    printf("   -apbm4                       - add palette to .bmp 16 to 256 colors\n");
-    printf("   -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines\n");
-    printf("   -swap <col> <col>            - swap 2 colors in palette and bitmap\n");
-    printf("   -cmpl                        - compare palette of bmp 4 bits per pixel\n");
-    printf("   -cppl                        - copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel\n");
-    printf("   -xtrspr <col> <lin> <lin> <col> <lin> - extract sprite form BMP (4 bits per pixel) to text to .aii\n");
+    (void )printf( "Usage: convm <convmspec> <option> \"<filespec>\" \"<output folder or file>\"\n");
+    (void )printf( "\n  <convmspec> is one of the following:\n");
+    (void )printf( "   -crlf                        - convert CR to LF\n");
+    (void )printf( "   -lfcr                        - convert LF to CR\n");
+    (void )printf( "   -dblf                        - replace 2 first $0A (LF) by one in a serie\n");
+    (void )printf( "   -dbcr                        - replace 2 first $0D (CR) by one in a serie\n");
+    (void )printf( "   -detab <col>                 - convert tabs to spaces (tab stop every COL columns)\n");
+    (void )printf( "   -dump                        - dump content of a supported file format\n");
+    (void )printf( "   -extxt <minlen>              - extract string of minlen from a binary file\n");
+    (void )printf( "   -rlec                        - not implemented\n");
+    (void )printf( "   -rled                        - decompress with rle algorithms file\n");
+    (void )printf( "   -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp\n");
+    (void )printf( "   -2pic                        - convert .bmp to .pic\n");
+    (void )printf( "   -ncpl                        - display tle line number with color index not used in .pic\n");
+    (void )printf( "   -apbm4                       - add palette to .bmp 16 to 256 colors\n");
+    (void )printf( "   -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines\n");
+    (void )printf( "   -swap <col> <col>            - swap 2 colors in palette and bitmap\n");
+    (void )printf( "   -cmpl                        - compare palette of bmp 4 bits per pixel\n");
+    (void )printf( "   -cppl                        - copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel\n");
+    (void )printf( "   -xtrspr <col> <lin> <lin> <col> <lin> - extract sprite form BMP (4 bits per pixel) to text to .aii\n");
 
-    printf("\n  <option> is one of the following:\n");
-    printf("   +lower             - the output file name is in lower case\n");
+    (void )printf( "\n  <option> is one of the following:\n");
+    (void )printf( "   +lower             - the output file name is in lower case\n");
 
-    printf("\n  <filespec> file extension could be:\n");
-    printf("   -crlf to -detab    : any type of text\n");
-    printf("   -dump              : any\n");
-    printf("   -rlec -rled        : .scr, .shr, .pnt, .pic\n");
-    printf("   -apbm4 -ipbm8\n   -swap -cmpl -cppl  : .bmp\n");
+    (void )printf( "\n  <filespec> file extension could be:\n");
+    (void )printf( "   -crlf to -detab    : any type of text\n");
+    (void )printf( "   -dump              : any\n");
+    (void )printf( "   -rlec -rled        : .scr, .shr, .pnt, .pic\n");
+    (void )printf( "   -ncpl              : .pic\n");
+    (void )printf( "   -apbm4 -ipbm8\n   -swap -cmpl -cppl  : .bmp\n");
 }
 
 /**
@@ -159,7 +163,7 @@ int checkFileExtension( char *pPathFilename, int eCommand)
     BOOL         bError = FALSE;
     BOOL         bErrorCmd = FALSE;
     BOOL         bErrorExt = FALSE;
-    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic", "-apbm4", "-ipbm8", "-swap", "-cmpl", "-cppl", "-xtrspr"};
+    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic", "-ncpl", "-apbm4", "-ipbm8", "-swap", "-cmpl", "-cppl", "-xtrspr"};
 
     if ((eCommand == eCRLF) || (eCommand == eLFCR) || (eCommand == eDOUBLE_0A) || (eCommand == eDOUBLE_0D) || (eCommand == eDETAB) || (eCommand == eEXT_TXT) || (eCommand == eADDPALBMP4) || (eCommand == eINSERTPALBMP8) || (eCommand == eSWAP2COLOR) || (eCommand == eCOMPPALET) || (eCommand == eCOPYPALET) || (eCommand == eEXTSPRITE))
     {
@@ -254,6 +258,13 @@ int checkFileExtension( char *pPathFilename, int eCommand)
                     else if (eCommand == eTO_PIC)
                     {
                         if (strcmp( (const char *)pLastPointChar, "bmp") != 0)
+                        {
+                            bError = TRUE;
+                        }
+                    }
+                    else if (eCommand == eNUMCOLORPERLINE)
+                    {
+                        if (strcmp( (const char*)pLastPointChar, "pic") != 0)
                         {
                             bError = TRUE;
                         }
@@ -468,6 +479,10 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
             {
                 eCommand = eTO_PIC;
             }
+            else if (!strcmp((const char*)pConvmParam, "-ncpl"))
+            {
+                eCommand = eNUMCOLORPERLINE;
+            }
             else if (!strcmp( (const char *)pConvmParam, "-apbm4"))
             {
                 eCommand = eADDPALBMP4;
@@ -588,7 +603,7 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
                     }
                     else
                     {
-                        strncpy(pContext->pFullFilename, (const char *)argv[uIndex], strlen( (const char *)argv[uIndex]) + (size_t)1);
+                        (void )strncpy(pContext->pFullFilename, (const char *)argv[uIndex], strlen( (const char *)argv[uIndex]) + (size_t)1);
                     }
                 }
 
@@ -695,7 +710,7 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
                     }
                     else
                     {
-                        strncpy( pContext->pOutputPathname, (const char *)argv[uIndex], strlen( (const char *)argv[uIndex]) + (size_t)1);
+                        (void )strncpy( pContext->pOutputPathname, (const char *)argv[uIndex], strlen( (const char *)argv[uIndex]) + (size_t)1);
                     }
                 }
 
@@ -712,8 +727,8 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
 
                         if (directoryExists( (const char *)pContext->pOutputPathname))
                         {
-                            printf( "\n");
-                            printf( "param output path is : %s\n", pContext->pOutputPathname);
+                            (void )printf( "\n");
+                            (void )printf( "param output path is : %s\n", pContext->pOutputPathname);
                         }
                         else
                         {
@@ -777,6 +792,15 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
     return eCommand;
 }
 
+/**
+* @fn void doTest( void)
+* @brief a test function in case of study rapidly something
+*
+*/
+void doTest( void)
+{
+
+}
 
 /**
 * @fn int main( int argc, char *argv[])
@@ -790,17 +814,26 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.11.10.120, (c) R. Malaval & F. Mure 2022-23";
+    static const char   *pVersionStr = "v1.12.10.127, (c) R. Malaval & F. Mure 2022-23";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;
     unsigned int         uDataSize = 0;
 
+/*
     char                 ipconf[30] = {};
     unsigned int         uLen;
 
     uLen = sizeof( ipconf);
+*/
 
+/*
+    for (int uIndex = 0; uIndex <= 10; uIndex++)
+    {
+        doTest();
+    }
+    exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Success !", NULL, NULL, 0);
+*/
     /* Message Information */
     pEndString = getFileName(argv[0]);
     if (!pEndString)
@@ -837,8 +870,6 @@ int main( int argc, char *argv[])
 
     eCommand = parseArguments( argc, argv, &contextArg);
 
-    // doTest();
-
     /*
     (void )printf("\n");
 #ifdef _WIN32
@@ -850,9 +881,9 @@ int main( int argc, char *argv[])
     (void )printf("\n");
     */
     //pfullFilename = parseSpaceChar( &pfullFilename);
-    //printf("");
+    //(void )printf("");
 
-    contextApp.uInputFileSize = getMyFileSize(contextArg.pFullFilename);
+    contextApp.uInputFileSize = getMyFileSize( contextArg.pFullFilename);
 
     (void )printf("\n");
     contextApp.pInputFileData = readFileToMemory( contextArg.pFullFilename);   // input file is in memory
@@ -887,6 +918,9 @@ int main( int argc, char *argv[])
             break;
             case eTO_PIC:
                 (void )doToPic( &contextArg, &contextApp, eCommand);
+            break;
+            case eNUMCOLORPERLINE:
+                (void )doNumberOfColorNotUsePerLine( &contextArg, &contextApp, eCommand);
             break;
             case eADDPALBMP4:
                 (void )doAddPaletteToBmp4( &contextArg, &contextApp, eCommand);

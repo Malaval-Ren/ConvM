@@ -17,6 +17,8 @@ extern "C" {
 
     extern int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
+    extern int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
+
     extern int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
     extern int doInsertPaletteToBmp8(tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);

@@ -582,3 +582,32 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, enum eCom
 
     return pOutputFileData;
 }
+
+/**
+* @fn void whereCursorXY( int x, int y)
+* @brief set position of the curosr in a windows console
+*
+*/
+void moveCursorXY(int x, int y)
+{
+    COORD tCoord;
+
+    tCoord.X = x;
+    tCoord.Y = y;
+
+    SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE), tCoord);
+}
+
+/**
+* @fn void whereCursorXY( COORD *ptCoord)
+* @brief get position of the curosr in a windows console
+*
+*/
+void whereCursorXY( COORD *ptCoord)
+{
+    CONSOLE_SCREEN_BUFFER_INFO  tWinInfo;
+
+    GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE), &tWinInfo);
+
+    *ptCoord = tWinInfo.dwCursorPosition;
+}

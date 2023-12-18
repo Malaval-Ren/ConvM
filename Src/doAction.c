@@ -75,7 +75,7 @@ static int mySystemCmd( const char* pCommand)
                 iError = system( pTmpCommand);
                 if (iError)
                 {
-                    printf( "CONVM: \"%s\") failed error = %d\n", pTmpCommand, iError);
+                    (void )printf( "CONVM: \"%s\") failed error = %d\n", pTmpCommand, iError);
                 }
 
                 free( pTmpCommand);
@@ -246,7 +246,7 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
         }
         else
         {
-            printf( "CONVM: from = %s\n", pfullOutputFilename);
+            (void )printf( "CONVM: from = %s\n", pfullOutputFilename);
             ptempFilename = getBasePathname( pfullOutputFilename, 16);
             if (ptempFilename)
             {
@@ -254,7 +254,7 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                 iError = GetShortPathNameA( (LPCSTR)ptempFilename, (LPSTR )pShortPathname, (DWORD )strlen(ptempFilename) + 1);
                 if (!iError)
                 {
-                    printf( "CONVM: GetShortPathName() failed error = %d\n", (int )GetLastError());
+                    (void )printf( "CONVM: GetShortPathName() failed error = %d\n", (int )GetLastError());
                     pShortPathname = strdup( pfullOutputFilename);
                 }
                 else
@@ -268,7 +268,7 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                         pShortPathname = strcat( pShortPathname, getFileName(pfullOutputFilename));
                     }
                 }
-                printf( "CONVM: to   = %s\n", pShortPathname);
+                (void )printf( "CONVM: to   = %s\n", pShortPathname);
                 free( ptempFilename);
             }
             else
@@ -299,7 +299,7 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                         iError = mySystemCmd(pDuplicateString);
                         if (iError)
                         {
-                            printf( "CONVM: Failed to change filetype of '%s' with iix, error = %d\n", pShortPathname, errno);
+                            (void )printf( "CONVM: Failed to change filetype of '%s' with iix, error = %d\n", pShortPathname, errno);
                         }
                     }
                     else    // eRLE_DECO or eTO_PIC
@@ -312,7 +312,7 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                         iError = mySystemCmd( pDuplicateString);
                         if (iError)
                         {
-                            printf( "CONVM: Failed to change filetype of '%s' with iix, error = %d\n", pShortPathname, errno);
+                            (void )printf( "CONVM: Failed to change filetype of '%s' with iix, error = %d\n", pShortPathname, errno);
                         }
                     }
                 }
@@ -424,7 +424,7 @@ int doDump( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComman
                 }
                 pEndString = NULL;
             }
-            //printf("CONVM: nothing is done. Dump is only for .shr or .pnt\n");
+            //(void )printf("CONVM: nothing is done. Dump is only for .shr or .pnt\n");
         }
     }
 
@@ -664,6 +664,79 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
 }
 
 /**
+* @fn int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief Display the line with color index not used
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
+int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+{
+    char           *pInputRunner;
+    unsigned int    uIndex;
+    unsigned int    uLoop;
+    BOOL            bColorNotUsed;
+    COORD           tCoord;
+    unsigned int    uTableNumberOfcolorIndex[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    unsigned int    uCounter = 0;
+
+    if ((pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize))
+    {
+        (void )printf( "\nDisplay line number with color(s) index not used :\n\n");
+
+        pInputRunner = pContextApp->pInputFileData;
+        for (uIndex = 0; uIndex < 200; uIndex++)
+        {
+            for (uLoop = 0; uLoop < 160; uLoop++)
+            {
+                uTableNumberOfcolorIndex[ (*pInputRunner & 0xF0) >> 4] += 1;
+                uTableNumberOfcolorIndex[ *pInputRunner & 0x0F] += 1;
+                pInputRunner++;
+            }
+
+            bColorNotUsed = FALSE;
+            for (uLoop = 0; uLoop < 16; uLoop++)
+            {
+                if (uTableNumberOfcolorIndex[uLoop] == 0)
+                {
+                    bColorNotUsed = TRUE;
+                    break;
+                }
+            }
+
+            if (bColorNotUsed != FALSE)
+            {
+                (void )printf( "line #%03u : not used :", uIndex + 1);
+                for (uLoop = 0; uLoop < 16; uLoop++)
+                {
+                    if (uTableNumberOfcolorIndex[uLoop] == 0)
+                    {
+                        (void )printf( " %02u", uLoop);
+                        uCounter++;
+                    }
+                    else
+                    {
+                        (void )printf( "   ");
+                    }
+                }
+
+                whereCursorXY( &tCoord);        // get cursor position in windows console
+                moveCursorXY( 74, tCoord.Y);    // shift position X of the cursor in windows console
+
+                (void )printf( "free color= %02u / 16\n", uCounter);
+            }
+
+            (void )memset( uTableNumberOfcolorIndex, 0, sizeof( uTableNumberOfcolorIndex));
+            uCounter = 0;
+        }
+    }
+    return 0;
+}
+
+/**
 * @fn int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 * @brief
 *
@@ -692,7 +765,7 @@ int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, 
                     pfullOutputFilename = createOutputPathname( pContextArg->pFullFilename, pContextArg->pOutputPathname, eCommand);
                     if (pfullOutputFilename)
                     {
-                        (void)strncpy_s(pfullOutputFilename, strlen( pfullOutputFilename), pContextArg->pFullFilename, strlen( (const char *)pContextArg->pFullFilename) - 4);
+                        (void )strncpy_s(pfullOutputFilename, strlen( pfullOutputFilename), pContextArg->pFullFilename, strlen( (const char *)pContextArg->pFullFilename) - 4);
                         pfullOutputFilename = strcat( pfullOutputFilename, (const char*)"2.bmp");
 
                         if (writeFileFromMemory( pfullOutputFilename, pContextApp->pOutputFileData, uDataSize))

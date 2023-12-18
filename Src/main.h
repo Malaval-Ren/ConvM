@@ -41,6 +41,7 @@ enum eCommandNumber
     eRLE_DECO,
     eTO_BMP,
     eTO_PIC,
+    eNUMCOLORPERLINE,
     eADDPALBMP4,
     eINSERTPALBMP8,
     eSWAP2COLOR,

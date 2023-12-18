@@ -20,6 +20,9 @@ extern "C" {
     extern BOOL             directoryExists( const char *pAbsolutePath);
     extern char            *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, enum eCommandNumber eCommand, unsigned int uTabColumns, unsigned int *pDataSize);
 
+    extern void             moveCursorXY( int x, int y);
+    extern void             whereCursorXY( COORD *ptCoord);
+
 #ifdef __cplusplus
 }
 #endif

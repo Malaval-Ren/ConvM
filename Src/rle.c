@@ -170,42 +170,42 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
     {
         pShrStruct = (HeaderSHR *)pInputFileData;
 
-        printf("HEADER\n");
-        printf(" - File size         : %lu\n", pShrStruct->Longueur_Fichier);
+        (void )printf( "HEADER\n");
+        (void )printf( " - File size         : %lu\n", pShrStruct->Longueur_Fichier);
         if (pShrStruct->Signature[0] != 0)
         {
-            pBlockName = (char*)&pString;
-            (void)strncpy_s( pBlockName, 32, (char *)(&pShrStruct->Signature[1]), pShrStruct->Signature[0]);
-            printf(" - Block Name        : %s\n", pBlockName);
+            pBlockName = (char *)&pString;
+            (void )strncpy_s( pBlockName, 32, (char *)(&pShrStruct->Signature[1]), pShrStruct->Signature[0]);
+            (void )printf( " - Block Name        : %s\n", pBlockName);
         }
 
         if (pBlockName)
         {
-            if (!strcmp((const char *)pString, "MAIN"))
+            if (!strcmp( (const char *)pString, "MAIN"))
             {
-                printf(" - Master mode high  : %d\n", (pShrStruct->Mode_Maitre && 0xFF00));
-                printf(" - Master mode low   : %d\n", (pShrStruct->Mode_Maitre && 0x00FF));
-                printf(" - PixelsPerScanLine : %d\n", pShrStruct->Nbr_Pixel_Par_Ligne);
-                printf(" - NumColorTables    : %d\n", pShrStruct->Nbr_Table_Couleur);
+                (void )printf( " - Master mode high  : %d\n", (pShrStruct->Mode_Maitre && 0xFF00));
+                (void )printf( " - Master mode low   : %d\n", (pShrStruct->Mode_Maitre && 0x00FF));
+                (void )printf( " - PixelsPerScanLine : %d\n", pShrStruct->Nbr_Pixel_Par_Ligne);
+                (void )printf( " - NumColorTables    : %d\n", pShrStruct->Nbr_Table_Couleur);
                 if (pShrStruct->Nbr_Table_Couleur > 0)
                 {
-                    printf(" - COLORS Tables\n");
+                    (void )printf( " - COLORS Tables\n");
                     pColors = (unsigned short int*)&pShrStruct->Couleur_Palette_0[0];
                     for (uIndex = 0; uIndex < pShrStruct->Nbr_Table_Couleur; uIndex++)
                     {
                         for (uLoop = 0; uLoop < 16; uLoop++)
                         {
                             if (uLoop == 0)
-                                printf("   0x%04X", *pColors);
+                                (void )printf( "   0x%04X", *pColors);
                             else
-                                printf(" 0x%04X", *pColors);
+                                (void )printf( " 0x%04X", *pColors);
                             pColors++;
                         }
                     }
-                    printf("\n");
+                    (void )printf( "\n");
                 }
 
-                printf("\n + offset            : %d = 0x%04X\n\n", (int )((char *)pColors - pInputFileData), (int)((char*)pColors - pInputFileData));
+                (void )printf( "\n + offset            : %d = 0x%04X\n\n", (int )((char *)pColors - pInputFileData), (int)((char*)pColors - pInputFileData));
 
                 if (pColors)
                 {
@@ -215,33 +215,33 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
                 {
                     pShrDataStruct = (DataSHR *)&pShrStruct->Couleur_Palette_0;
                 }
-                printf(" - NumScanLines      : %d\n", pShrDataStruct->Nbr_Scan_Ligne);
+                (void )printf( " - NumScanLines      : %d\n", pShrDataStruct->Nbr_Scan_Ligne);
 
                 if (pShrDataStruct->Nbr_Scan_Ligne > 0)
                 {
-                    printf(" - SCAN LINE\n");
+                    (void )printf( " - SCAN LINE\n");
                     pDirEntry = (DirEntry *)&pShrDataStruct->ScanLineDirectory;
                     uLoop = 0;
                     for (uIndex = 0; uIndex < pShrDataStruct->Nbr_Scan_Ligne; uIndex++)
                     {
                         if (uLoop == 0)
-                            printf("   %03d %d %d", pDirEntry->NumberOfBytes, (pDirEntry->mode && 0xFF00), (pDirEntry->mode && 0x00FF));
+                            (void )printf( "   %03d %d %d", pDirEntry->NumberOfBytes, (pDirEntry->mode && 0xFF00), (pDirEntry->mode && 0x00FF));
                         else
-                            printf("  %03d %d %d", pDirEntry->NumberOfBytes, (pDirEntry->mode && 0xFF00), (pDirEntry->mode && 0x00FF));
+                            (void )printf( "  %03d %d %d", pDirEntry->NumberOfBytes, (pDirEntry->mode && 0xFF00), (pDirEntry->mode && 0x00FF));
                         totalOfBytesToUnpack += pDirEntry->NumberOfBytes;
                         pDirEntry++;
                         uLoop++;
                         if (uLoop == 16)
                         {
                             uLoop = 0;
-                            printf("\n");
+                            (void )printf( "\n");
                         }
                     }
-                    printf("\n");
+                    (void )printf( "\n");
                 }
 
-                printf("\n + BytesToUnpack     : %d = 0x%04X\n", totalOfBytesToUnpack, totalOfBytesToUnpack);
-                printf(" + offset            : %d = 0x%04X\n\n", (int)((char*)pDirEntry - pInputFileData), (int)((char*)pDirEntry - pInputFileData));
+                (void )printf( "\n + BytesToUnpack     : %d = 0x%04X\n", totalOfBytesToUnpack, totalOfBytesToUnpack);
+                (void )printf( " + offset            : %d = 0x%04X\n\n", (int)((char *)pDirEntry - pInputFileData), (int)((char *)pDirEntry - pInputFileData));
 
             }
             else
@@ -264,7 +264,7 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
 *
 * @return return offset of data to decompress
 */
-static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
+static unsigned int createPic( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
 {
     unsigned int        iOffset = 0;
     HeaderSHR          *pShrHeaderStruct;
@@ -285,10 +285,10 @@ static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSiz
 
         pColors = (unsigned short int *)(pInputFileData + iHeaderSize);
         colorLen = pShrHeaderStruct->Nbr_Table_Couleur * sizeof(pShrHeaderStruct->Couleur_Palette_0);
-        //printf("pColors               : %p\n", (void *)pColors);
-        //printf("pColors palette size  : %d\n", colorLen);
+        //(void )printf("pColors               : %p\n", (void *)pColors);
+        //(void )printf("pColors palette size  : %d\n", colorLen);
 
-        pShrDataStruct = (DataSHR*)(pInputFileData + iHeaderSize + colorLen);
+        pShrDataStruct = (DataSHR *)(pInputFileData + iHeaderSize + colorLen);
 
         if (pShrDataStruct->Nbr_Scan_Ligne > 0)
         {
@@ -308,14 +308,14 @@ static unsigned int createPic(char *pOutputFileData, unsigned int uOutputFileSiz
             if (iOffset)
             {
                 char *pFun = pOutputFileData + 0x7D00 + 0xD0;
-                (void )strncpy( pFun, "Renaud Malaval", sizeof("Renaud Malaval"));
+                (void )strncpy( pFun, "Renaud Malaval", sizeof( "Renaud Malaval"));
                 pFun = pOutputFileData + 0x7D00 + 0xE0;
                 (void)strncpy( pFun, "and", sizeof("and"));
                 pFun = pOutputFileData + 0x7D00 + 0xF0;
-                (void)strncpy( pFun, "Frederic Mure", sizeof("Frederic Mure"));
+                (void )strncpy( pFun, "Frederic Mure", sizeof( "Frederic Mure"));
 
                 char* pPalette = pOutputFileData + 0x7E00;
-                (void)memcpy(pPalette, pColors, colorLen);
+                (void )memcpy(pPalette, pColors, colorLen);
                 iOffset = 0x8000;
             }
         }
@@ -442,29 +442,29 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
 
     if ( (pInputFileData) && (pFilePathname) )
     {
-        printf("\nDisplay content of pic\n\n");
-        printf(" %s\n\n", pFilePathname);
+        (void )printf( "\nDisplay content of pic\n\n");
+        (void )printf( " %s\n\n", pFilePathname);
 
-        printf("\t- PIXELS -\n\n");
+        (void )printf( "\t- PIXELS -\n\n");
         pInputRunner = pInputFileData;
         for (uIndex = 0; uIndex < 200; uIndex++)
         {
             uNextLine = 20;
-            (void)printf( "%03d: ", uIndex);
+            (void )printf( "%03d: ", uIndex);
             for (uLoop = 0; uLoop < 160; uLoop++)
             {
-                (void)printf("%02d %02d ", ((*pInputRunner & 0xF0) >> 4), (*pInputRunner & 0x0F));
+                (void )printf( "%02d %02d ", ((*pInputRunner & 0xF0) >> 4), (*pInputRunner & 0x0F));
                 pInputRunner++;
                 if (uLoop == uNextLine - 1)
                 {
-                    (void)printf("\n     ");
+                    (void )printf( "\n     ");
                     uNextLine += 20;
                 }
             }
-            (void)printf("\n");
+            (void )printf( "\n");
         }
 
-        printf("\n\t- SCBS -\n\n");
+        (void )printf( "\n\t- SCBS -\n\n");
         uBegin = 0;
         uEnd = 0;
         uPalette = *pInputRunner;
@@ -473,7 +473,7 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         {
             if ((uPalette != *pInputRunner) || (uIndex == 199) )
             {
-                (void)printf("Line %03d to %03d  use palette %02d  -  %02d times\n", uBegin, uEnd - 1, uPalette, (uEnd - uBegin));
+                (void )printf("Line %03d to %03d  use palette %02d  -  %02d times\n", uBegin, uEnd - 1, uPalette, (uEnd - uBegin));
                 uBegin = uEnd;
                 uEnd++;
                 uPalette = *pInputRunner;
@@ -485,30 +485,30 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
             pInputRunner++;
         }
 
-        printf("\n\t- INFO -\n\n");
+        (void )printf( "\n\t- INFO -\n\n");
         uBegin = 0;
         for (uIndex = 0; uIndex < 56; uIndex++)
         {
-            if ((*pInputRunner == 0) && (uBegin == 0))
+            if (( *pInputRunner == 0) && (uBegin == 0))
             {
                 ;
             }
-            else if ((*pInputRunner == 0) && (uBegin == 1))
+            else if (( *pInputRunner == 0) && (uBegin == 1))
             {
-                (void)printf("\n");
+                (void )printf( "\n");
                 uBegin = 0;
             }
             else
             {
-                (void)printf("%c", *pInputRunner);
+                (void )printf( "%c", *pInputRunner);
                 uBegin = 1;
             }
             pInputRunner++;
         }
 
-        printf("\n\n\t- PALETTE -\n");
+        (void )printf( "\n\n\t- PALETTE -\n");
 
-        memset( &uColorUsed, 0xFFFF, sizeof(uColorUsed));
+        (void )memset( &uColorUsed, 0xFFFF, sizeof(uColorUsed));
 
         pColorRunning = (unsigned short *)(pInputFileData + 0x7E00);
         uLoop = 0;
@@ -517,10 +517,10 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         uColorUsed[uLoop] = *pColorRunning;
         for (uIndex = 0; uIndex < 16; uIndex++)
         {
-            (void )printf("\n%02d: ", uIndex);
+            (void )printf( "\n%02d: ", uIndex);
             for (uLoop = 0; uLoop < 16; uLoop++)
             {
-                (void )printf("0x%04X ", *pColorRunning);
+                (void )printf( "0x%04X ", *pColorRunning);
 
                 // Fill array to be able to count number of color used
                 while (uColorUsed[uBegin] != 0xFFFF)
@@ -528,7 +528,7 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
                     if (uColorUsed[uBegin] == *pColorRunning)
                         break;
                     uBegin++;
-                };
+                }
                 if (uColorUsed[uBegin] == 0xFFFF)
                 {
                     uColorUsed[uBegin] = *pColorRunning;
@@ -539,14 +539,14 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
                 pColorRunning++;
             }
         }
-        printf("\n\nNumber of different colors = %d\n\n", uEnd);
+        (void )printf( "\n\nNumber of different colors = %d\n\n", uEnd);
 
-        printf("\t- COLOR INDEX USAGE -\n\n");
+        (void )printf( "\t- COLOR INDEX USAGE -\n\n");
         pInputRunner = pInputFileData;
         pPalette = pInputFileData + 0x7E00;
         for (uIndex = 0; uIndex < 200; uIndex++)
         {
-            (void)printf("%03d: ", uIndex);
+            (void )printf( "%03d: ", uIndex);
             for (uLoop = 0; uLoop < 160; uLoop++)
             {
                 uIndexUsed[(*pInputRunner & 0xF0) >> 4] += 1;
@@ -565,13 +565,13 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
                     (void)printf("%03d ", uIndexUsed[uLoop]);
                 }
             }
-            (void)printf(" -  ");
+            (void )printf( " -  ");
 
             for (uLoop = 0; uLoop < 0x10; uLoop++)
             {
                 if (uIndexUsed[uLoop] != 1)
                 {
-                    (void)printf("   .   ");
+                    (void )printf("   .   ");
                 }
                 else
                 {
@@ -579,12 +579,12 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
                     uOffsetPalette = (*pNumPalette) * 0x1E;
                     uOffsetCouleur = uLoop << 1;
                     pColor = pPalette + uOffsetPalette + uOffsetCouleur;
-                    (void)printf( "0x%04X ", *(unsigned short *)pColor);
+                    (void )printf( "0x%04X ", *(unsigned short *)pColor);
                 }
             }
-            (void)printf( "\n");
+            (void )printf( "\n");
 
-            memset( &uIndexUsed, 0x0, sizeof(uIndexUsed));
+            (void )memset( &uIndexUsed, 0x0, sizeof( uIndexUsed));
         }
 
     }
