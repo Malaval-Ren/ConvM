@@ -77,7 +77,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
                     }
                     pOutputLine = pOutputLine + (pBmpImage->Largeur_Image - uPixelsCounter);
                     uNbrOfLine += uNbrAddedLine + 1;
-                    (void )printf( "[%03u : %03u] _ %04d _ %04u : end of line\t\t%04u\n\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, (uNbrAddedLine * pBmpImage->Largeur_Image) + uPixelsCounter, uNbrOfLine);
+                    (void )printf( "[%03u : %03u] _ %04lu _ %04lu : end of line\t\t%04u\n\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, (uNbrAddedLine * pBmpImage->Largeur_Image) + uPixelsCounter, uNbrOfLine);
                     uPixelsCounter = 0;
                     if (uLoopLine > pBmpImage->Longueur_Image)
                         break;
@@ -95,7 +95,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
                     uValue = *pInputLine;
                     pOutputLine = pOutputLine + (uValue * pBmpImage->Largeur_Image);
                     uInputLineIndex += (uValue * pBmpImage->Largeur_Image);
-                    (void )printf( "[%03u : %03u] _ %04d _ Move\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image);
+                    (void )printf( "[%03u : %03u] _ %04lu _ Move\n", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image);
                 }
                 else
                 {
@@ -156,7 +156,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
 
                     }
                     table[uindex] = '\0';
-                    (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                    (void )printf( "[%03u : %03u] _ %04lu _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, (unsigned char)(uCode >> 1));
                     for (uindex = 0; uindex < (uCode >> 1); uindex++)
                     {
                         if ((uindex) && ((uindex % 40) == 0))
@@ -276,7 +276,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
 
                 }
                 table[uindex] = '\0';
-                (void )printf( "[%03u : %03u] _ %04d _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, uCode >> 1);
+                (void )printf( "[%03u : %03u] _ %04lu _ %04u : ", uCode, uValue, uInputLineIndex + pBmpImage->Offset_Image, (unsigned char)(uCode >> 1));
                 for (uindex = 0; uindex < (uCode >> 1); uindex++)
                 {
                     if ((uindex) && ((uindex % 40) == 0))
@@ -1058,19 +1058,19 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         (void )printf( "%s\n\n", pFilePathname);
 
         (void )printf( "Signature          = %c%c\n", (char)(pBmpImage->Signature & 0x00FF), (char)((pBmpImage->Signature & 0xFF00) >> 8));
-        (void )printf( "Taille_Image       = %ld\n", pBmpImage->Taille_Image);
-        (void )printf( "Offset_Image       = %ld\n", pBmpImage->Offset_Image);
+        (void )printf( "Taille_Image       = %lu\n", pBmpImage->Taille_Image);
+        (void )printf( "Offset_Image       = %lu\n", pBmpImage->Offset_Image);
         if (pBmpImage->Reserves != 0)
         {
             (void )printf( "Reserves           = %c%c%c%c\n",
                 (char)(pBmpImage->Reserves & 0x000000FF), (char)((pBmpImage->Reserves & 0x0000FF00) >> 8),
                 (char)((pBmpImage->Reserves & 0x00FF0000) >> 16), (char)((pBmpImage->Reserves & 0xFF000000) >> 24));
         }
-        (void )printf( "Entete2            = %ld\n", pBmpImage->Entete2);
-        (void )printf( "Largeur_Image      = %ld\n", pBmpImage->Largeur_Image);
-        (void )printf( "Longueur_Image     = %ld\n", pBmpImage->Longueur_Image);
-        (void )printf( "Nbr_Plan           = %ld\n", pBmpImage->Nbr_Plan);
-        (void )printf( "Nbr_Bit_Par_Pixel  = %ld\n", pBmpImage->Nbr_Bit_Par_Pixel);
+        (void )printf( "Entete2            = %lu\n", pBmpImage->Entete2);
+        (void )printf( "Largeur_Image      = %lu\n", pBmpImage->Largeur_Image);
+        (void )printf( "Longueur_Image     = %lu\n", pBmpImage->Longueur_Image);
+        (void )printf( "Nbr_Plan           = %d\n", pBmpImage->Nbr_Plan);
+        (void )printf( "Nbr_Bit_Par_Pixel  = %d\n", pBmpImage->Nbr_Bit_Par_Pixel);
 
         if ((pBmpImage->Type_Compression >= 0) && (pBmpImage->Type_Compression <= 7))
         {
@@ -1086,13 +1086,13 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         }
 
         if (pCompressionInfo)
-            (void )printf( "Type_Compression   = %ld\t%s\n", pBmpImage->Type_Compression, pCompressionInfo);
+            (void )printf( "Type_Compression   = %lu\t%s\n", pBmpImage->Type_Compression, pCompressionInfo);
         else
-            (void )printf( "Type_Compression   = %ld\n", pBmpImage->Type_Compression);
+            (void )printf( "Type_Compression   = %lu\n", pBmpImage->Type_Compression);
 
-        (void )printf( "Taille_Map         = %ld\n", pBmpImage->Taille_Map);
-        (void )printf( "Resolution_H       = %ld\n", pBmpImage->Resolution_H);
-        (void )printf( "Resolution_V       = %ld\n", pBmpImage->Resolution_V);
+        (void )printf( "Taille_Map         = %lu\n", pBmpImage->Taille_Map);
+        (void )printf( "Resolution_H       = %lu\n", pBmpImage->Resolution_H);
+        (void )printf( "Resolution_V       = %lu\n", pBmpImage->Resolution_V);
         (void )printf( "\n");
 
         /*
@@ -1101,9 +1101,25 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         (void )printf( "\n");
         */
 
-        (void )printf( "data offset        = %ld / %ld\n", inputFileSize - pBmpImage->Taille_Map, pBmpImage->Offset_Image);
-        (void )printf( "palette offset     = %ld%s\n", (inputFileSize - pBmpImage->Taille_Map) - (int )sizeof( BMPHeader),
-            ((inputFileSize - pBmpImage->Taille_Map) - (int )sizeof( BMPHeader)) == 0 ? " pas de palette" : " " );
+        (void )printf( "BMP header size    = %d 0x%04X\n", (int )sizeof( BMPHeader), (int )sizeof( BMPHeader));
+
+        switch (pBmpImage->Nbr_Bit_Par_Pixel)
+        {
+            case 1: uIndex = (int )sizeof( pBmpImage->Couleur_Palette_0);   break;
+            case 4: uIndex = (int )sizeof( pBmpImage->Couleur_Palette_0);   break;
+            case 8:
+                {
+                    FormatBMP256    *pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
+                    uIndex = (int )sizeof(pBmpIn256ColorsImage->Couleur_Palettes);
+                }
+                break;
+            default:
+                uIndex = 0;
+                break;
+        }
+        (void )printf( "palette size       = %u 0x%04X\n", uIndex, uIndex);
+        (void )printf( "data index         = %u 0x%04X\n", uIndex + (int )sizeof( BMPHeader), uIndex + (int )sizeof( BMPHeader));
+        (void )printf( "data index line 56 = %u 0x%04X\n", uIndex + (int )sizeof( BMPHeader) + (56 * 320), uIndex + (int )sizeof( BMPHeader) + (56 * 320));
         (void )printf( "\n");
 
         switch (pBmpImage->Nbr_Bit_Par_Pixel)
@@ -1140,7 +1156,7 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
                 for (uIndex = 0; uIndex < 256; uIndex++)
                 {
                     if (uIndex == uBorne)
-                        (void )printf( "#%02u = %02X %02X %02X %02X ", uCounter,
+                        (void )printf( "#%02u = %02X %02X %02X %02X ", uCounter, 
                             (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
                             (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
                     else
@@ -1662,7 +1678,7 @@ void DoComparePalette( char *pFirstFileData, unsigned int uFirstFileSize, char *
         {
             if (pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] != pBmpIn16ColorsImageTwo->Couleur_Palette_0[uIndex])
             {
-                (void )printf( "Color at index %02d are different : R=%03d G=%03d B=%03d  !=  R=%03d G=%03d B=%03d\n", uIndex,
+                (void )printf( "Color at index %02u are different : R=%03lu G=%03lu B=%03lu  !=  R=%03lu G=%03lu B=%03lu\n", uIndex,
                     ((pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16),
                     ((pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
                      (pBmpIn16ColorsImageOne->Couleur_Palette_0[uIndex] & 0x000000FF),
@@ -1759,7 +1775,7 @@ char *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, tConvmA
             uJndex = pTheSprite->uNumerOfLine;
             while (uJndex > 0)
             {
-                (void )sprintf( pTemp, "\ngTheWait%02d          dc  i'%d,%d'\n", curl, pTheSprite->uHauteur, pTheSprite->uLargeur / 4);
+                (void )sprintf( pTemp, "\ngTheWait%02u          dc  i'%u,%u'\n", curl, pTheSprite->uHauteur, pTheSprite->uLargeur / 4);
                 pOutputFileData = strcat( pOutputFileData, pTemp);
                 pTemp[0] = '\0';
 

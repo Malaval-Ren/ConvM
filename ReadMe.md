@@ -5,14 +5,12 @@
 
 ## Convert many stuff
 
-Just a little software to help **Apple IIGS** cross dev
+Just a little software to help cross dev for **Apple IIGS**
 
 ## help usage :
 
 ```bash
-convm.exe v1.10.10.110, (c) R. Malaval & F. Mure 2022-23
-
-Usage: convm <convmspec> <option> <filespec> <output folder or file>
+Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
 
   <convmspec> is one of the following:
    -crlf                        - convert CR to LF
@@ -26,6 +24,7 @@ Usage: convm <convmspec> <option> <filespec> <output folder or file>
    -rled                        - decompress with rle algorithms file
    -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp
    -2pic                        - convert .bmp to .pic
+   -ncpl                        - display tle line number with color index not used in .pic
    -apbm4                       - add palette to .bmp 16 to 256 colors
    -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines
    -swap <col> <col>            - swap 2 colors in palette and bitmap
@@ -40,11 +39,20 @@ Usage: convm <convmspec> <option> <filespec> <output folder or file>
    -crlf to -detab    : any type of text
    -dump              : any
    -rlec -rled        : .scr, .shr, .pnt, .pic
+   -ncpl              : .pic
    -apbm4 -ipbm8
    -swap -cmpl -cppl  : .bmp
 ```
 
 ## Convmspec Details
+
+### -h
+
+  Display help usage 
+
+### -h
+
+  Display version
 
 ### -crlf <file>
 
@@ -65,6 +73,8 @@ Usage: convm <convmspec> <option> <filespec> <output folder or file>
 ### -2bmp
 
 ### -2pic
+
+### -ncpl
 
 ### -ipbm4 
 
@@ -96,7 +106,7 @@ Usage: convm <convmspec> <option> <filespec> <output folder or file>
 
 co worker - **Frédéric Mure**
 
-[Apple2Infinitum](https://app.slack.com/) - digarok
+[Apple2Infinitum](https://app.slack.com/) - Digarok
 
 [Brutal Deluxe](https://www.brutaldeluxe.fr/) - Antoine VIGNAU & Olivier ZARDINI
 

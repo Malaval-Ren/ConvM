@@ -814,7 +814,7 @@ void doTest( void)
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.12.10.127, (c) R. Malaval & F. Mure 2022-23";
+    static const char   *pVersionStr = "v1.12.11.133, (c) R. Malaval & F. Mure 2022..24";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;

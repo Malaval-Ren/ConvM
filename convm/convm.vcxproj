@@ -145,6 +145,7 @@
     <ClInclude Include="..\Src\rle.h" />
     <ClInclude Include="..\Src\main.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\bmp.c" />
@@ -154,7 +155,7 @@
     <ClCompile Include="..\Src\convm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="conv.rc" />
+    <ResourceCompile Include="convm.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

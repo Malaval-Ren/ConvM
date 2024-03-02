@@ -255,12 +255,14 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                 if (!iError)
                 {
                     (void )printf( "CONVM: GetShortPathName() failed error = %d\n", (int )GetLastError());
+                    free( pShortPathname);
                     pShortPathname = strdup( pfullOutputFilename);
                 }
                 else
                 {
                     if (!strlen( pShortPathname))
                     {
+                        free( pShortPathname);
                         pShortPathname = strdup( pfullOutputFilename);
                     }
                     else
@@ -270,9 +272,11 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                 }
                 (void )printf( "CONVM: to   = %s\n", pShortPathname);
                 free( ptempFilename);
+                ptempFilename = NULL;
             }
             else
             {
+                free(pShortPathname);
                 pShortPathname = strdup( pfullOutputFilename);
             }
 
@@ -282,7 +286,9 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                     (*(unsigned long*)pCmdEmulatorPic != ((unsigned long)544762217))))
             {
                 free( pDuplicateString);
+                pDuplicateString = NULL;
                 free( pShortPathname);
+                pShortPathname = NULL;
             }
             else
             {
@@ -330,10 +336,18 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
                     pDuplicateString = strcat( pDuplicateString, pEndString);
                     (void )rename( (const char *)pShortPathname, (const char *)pDuplicateString);
                 }
-
-                free( pDuplicateString);
-                free( pShortPathname);
             }
+        }
+        if (pDuplicateString)
+        {
+            free(pDuplicateString);
+            pDuplicateString = NULL;
+        }
+
+        if (pShortPathname)
+        {
+            free(pShortPathname);
+            pShortPathname = NULL;
         }
     }
 }
@@ -676,20 +690,29 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
 int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char           *pInputRunner;
+    FormatPIC      *pPicImage;
     unsigned int    uIndex;
     unsigned int    uLoop;
-    BOOL            bColorNotUsed;
     COORD           tCoord;
+    BOOL            bColorNotUsed;
     unsigned int    uTableNumberOfcolorIndex[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     unsigned int    uCounter = 0;
+    unsigned int    uLessUsed = 0;
 
     if ((pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize))
     {
         (void )printf( "\nDisplay line number with color(s) index not used :\n\n");
+        (void )printf( "Cursor colors        :                       C  C        C  C\n");
 
+        pPicImage = (FormatPIC *)pContextApp->pInputFileData;
         pInputRunner = pContextApp->pInputFileData;
         for (uIndex = 0; uIndex < 200; uIndex++)
         {
+            //if (uIndex == 51)
+            //{
+            //    uIndex = uIndex;
+            //}
+
             for (uLoop = 0; uLoop < 160; uLoop++)
             {
                 uTableNumberOfcolorIndex[ (*pInputRunner & 0xF0) >> 4] += 1;
@@ -707,27 +730,41 @@ int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pCo
                 }
             }
 
-            if (bColorNotUsed != FALSE)
+            uLessUsed = uTableNumberOfcolorIndex[0];
+            for (uLoop = 1; uLoop < 16; uLoop++)
             {
-                (void )printf( "line #%03u : not used :", uIndex + 1);
+                if (uTableNumberOfcolorIndex[uLoop] < uLessUsed)
+                {
+                    uLessUsed = uTableNumberOfcolorIndex[uLoop];
+                }
+            }
+
+            (void )printf( "line #%03u : not used :", uIndex);
+            for (uLoop = 0; uLoop < 16; uLoop++)
+            {
+                if (uTableNumberOfcolorIndex[uLoop] == 0)
+                {
+                    (void )printf( " %02u", uLoop);
+                    uCounter++;
+                }
+                else
+                {
+                    (void )printf( "   ");
+                }
+            }
+
+            whereCursorXY( &tCoord);        // get cursor position in windows console
+            moveCursorXY( 74, tCoord.Y);    // shift position X of the cursor in windows console
+
+            (void )printf( " free color= %02u / 16  uLessUsed= %03u  SCB= %d  ", uCounter, uLessUsed, pPicImage->SCB[uIndex]);
+            if (bColorNotUsed == FALSE)
+            {
                 for (uLoop = 0; uLoop < 16; uLoop++)
                 {
-                    if (uTableNumberOfcolorIndex[uLoop] == 0)
-                    {
-                        (void )printf( " %02u", uLoop);
-                        uCounter++;
-                    }
-                    else
-                    {
-                        (void )printf( "   ");
-                    }
+                    (void )printf( " %03u", uTableNumberOfcolorIndex[uLoop]);
                 }
-
-                whereCursorXY( &tCoord);        // get cursor position in windows console
-                moveCursorXY( 74, tCoord.Y);    // shift position X of the cursor in windows console
-
-                (void )printf( "free color= %02u / 16\n", uCounter);
             }
+            (void )printf( "\n");
 
             (void )memset( uTableNumberOfcolorIndex, 0, sizeof( uTableNumberOfcolorIndex));
             uCounter = 0;
