@@ -351,7 +351,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
     return uBitmapSize;
 }
 
-#define NOUS "[ ConvM  (c) 2022..23  Renaud Malaval ET Frederic Mure ]"
+#define NOUS "[ ConvM  (c) 2022..2024  Renaud Malaval AND Frederic Mure ]"
 
 /**
 * @fn static void add_signature( FormatPIC *pPicImage)
@@ -754,8 +754,8 @@ static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOut
             uColorRed   = (unsigned char)(((uValueD & 0x00FF0000) >> 16) / 16);
             uColorGreen = (unsigned char)(((uValueD & 0x0000FF00) >> 8) / 16);
             uColorBlue  = (unsigned char)(( uValueD & 0x000000FF) / 16);
-            *pPicPalette = (uColorRed << 8) + (uColorGreen << 4) + uColorBlue;
 
+            *pPicPalette = (uColorRed << 8) + (uColorGreen << 4) + uColorBlue;
             pPicPalette++;
             pBmpPalette++;
         }
@@ -830,6 +830,7 @@ static unsigned int bmp_256_colors(char *pOutputFileData, unsigned int uOutputFi
         for (uIndex = 0; uIndex < 256; uIndex++)            // traitement des 256 couleurs de la palette
         {
             uValueD = *pPicPalette;
+
             uColorRed = (unsigned char)((  uValueD & 0x0F00) >> 8) + (unsigned char)((uValueD & 0x0F00) >> 4);
             uColorGreen = (unsigned char)((uValueD & 0x00F0) >> 4) + (unsigned char)( uValueD & 0x00F0);
             uColorBlue = (unsigned char)(  uValueD & 0x000F)       + (unsigned char)((uValueD & 0x000F) << 4);
@@ -897,6 +898,7 @@ static unsigned int bmp_16_colors(char *pOutputFileData, unsigned int uOutputFil
         for (uIndex = 0; uIndex < 16; uIndex++)                                 // traitement des 16 couleurs de la palette
         {
             uValueD = pPicImage->Couleur_Palette_0[uIndex];                     // 0x60 0x02 = 0x0260     0=0 R=2 G=6 B=0
+
             uColorRed = (unsigned char)((uValueD & 0x0F00) >> 8);               // ne garde que le R et le décale en unitee
             uColorGreen = (unsigned char)((uValueD & 0x00F0) >> 4);             // ne garde que le G et le décale en unitee
             uColorBlue = (unsigned char)(uValueD & 0x000F);                     // ne garde que le B deja en unitee
@@ -1050,6 +1052,10 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
     unsigned int uIndex;
     unsigned int uBorne = 0;
     unsigned int uCounter = 0;
+    unsigned char uRed = 0;
+    unsigned char uGreen = 0;
+    unsigned char uBlue = 0;
+    unsigned char uAlpha = 0;
 
     if ((pInputFileData) && (pFilePathname) && (inputFileSize >= sizeof( BMPHeader)))
     {
@@ -1125,26 +1131,68 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         switch (pBmpImage->Nbr_Bit_Par_Pixel)
         {
         case 1:
-            (void )printf( "La palette de 2 couleurs (noir et blanc)\n");
-            (void )printf( "#01 = %02X %02X %02X %02X %02X %02X %02X %02X\n",
-                (unsigned char)(pBmpImage->Couleur_Palette_0[0] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[0] & 0x0000FF00) >> 8),
-                (unsigned char)((pBmpImage->Couleur_Palette_0[0] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[0] & 0xFF000000) >> 24),
-                (unsigned char)(pBmpImage->Couleur_Palette_0[1] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[1] & 0x0000FF00) >> 8),
-                (unsigned char)((pBmpImage->Couleur_Palette_0[1] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[1] & 0xFF000000) >> 24));
+            {
+                (void )printf( "La palette de 2 couleurs ARGB\n");
+
+                for (uIndex = 0; uIndex < 2; uIndex++)
+                {
+                    uAlpha = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24);
+                    uRed   = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16);
+                    uGreen = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8);
+                    uBlue  = (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF);
+
+                    if (uIndex == uBorne)   // ARGB
+                    {
+                        (void )printf( "#01 - %02X %02X %02X %02X ", uAlpha, uRed, uGreen, uBlue);
+                    }
+                    else
+                    {
+                        (void )printf( "%02X %02X %02X %02X ", uAlpha, uRed, uGreen, uBlue);
+                    }
+                }
+                (void )printf( "\n");
+            }
+            break;
+        case 2:
+            {
+                (void )printf( "La palette de 4 couleurs ARGB\n");
+                for (uIndex = 0; uIndex < 4; uIndex++)
+                {
+                    uAlpha = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24);
+                    uRed   = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16);
+                    uGreen = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8);
+                    uBlue  = (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF);
+
+                    if (uIndex == uBorne)   // ARGB
+                    {
+                        (void )printf( "#01 - %02X %02X %02X %02X ", uAlpha, uRed, uGreen, uBlue);
+                    }
+                    else
+                    {
+                        (void )printf( "%02X %02X %02X %02X ", uAlpha, uRed, uGreen, uBlue);
+                    }
+                }
+                (void )printf( "\n");
+            }
             break;
         case 4:
             {
-                (void )printf( "La palette de 16 couleurs\n");
+                (void )printf( "La palette de 16 couleurs ARGB\n");
                 for (uIndex = 0; uIndex < 16; uIndex++)
                 {
-                    if (uIndex == uBorne)
-                        (void )printf( "#01 = %02X %02X %02X %02X ",
-                            (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
-                            (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
+                    uAlpha = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24);
+                    uRed   = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16);
+                    uGreen = (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8);
+                    uBlue  = (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF);
+
+                    if (uIndex == uBorne)   // ARGB
+                    {
+                        (void )printf( "#01 - %02X %02X %02X %02X ", uAlpha, uRed, uGreen, uBlue);
+                    }
                     else
-                        (void )printf( "%02X %02X %02X %02X ",
-                            (unsigned char)(pBmpImage->Couleur_Palette_0[uIndex] & 0x000000FF), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x0000FF00) >> 8),
-                            (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpImage->Couleur_Palette_0[uIndex] & 0xFF000000) >> 24));
+                    {
+                        (void )printf( "%02X %02X %02X %02X ", uAlpha, uRed, uGreen, uBlue);
+                    }
                 }
                 (void )printf( "\n");
             }
@@ -1152,17 +1200,22 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         case 8:
             {
                 FormatBMP256 *pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
-                (void )printf( "La palette de 256 couleurs\n");
+                (void )printf( "La palette de 256 couleurs ARGB (8 bits per colors)\n");
                 for (uIndex = 0; uIndex < 256; uIndex++)
                 {
-                    if (uIndex == uBorne)
-                        (void )printf( "#%02u = %02X %02X %02X %02X ", uCounter, 
-                            (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
-                            (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
+                    uAlpha = (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24);
+                    uRed   = (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16);
+                    uGreen = (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8);
+                    uBlue  = (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF);
+
+                    if (uIndex == uBorne)   // ARGB
+                    {
+                        (void )printf( "#%02u - %02X %02X %02X %02X ", uCounter, uAlpha, uRed, uGreen, uBlue);
+                    }
                     else
-                        (void )printf( "%02X %02X %02X %02X ",
-                            (unsigned char)(pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x000000FF), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x0000FF00) >> 8),
-                            (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0x00FF0000) >> 16), (unsigned char)((pBmpIn256ColorsImage->Couleur_Palettes[uIndex] & 0xFF000000) >> 24));
+                    {
+                        (void )printf( "%02X %02X %02X %02X ", uAlpha, uRed, uGreen, uBlue);
+                    }
 
                     if (uIndex == (uBorne + 15))
                     {

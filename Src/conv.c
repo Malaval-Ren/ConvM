@@ -590,12 +590,12 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, enum eCom
 */
 void moveCursorXY(int x, int y)
 {
-    COORD tCoord;
+    COORD tCoord = {0,0};
 
     tCoord.X = x;
     tCoord.Y = y;
 
-    SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE), tCoord);
+    (void )SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE), tCoord);
 }
 
 /**

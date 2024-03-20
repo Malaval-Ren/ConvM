@@ -620,7 +620,7 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
         {
             if (pContextArg->pFullFilename != NULL)
             {
-                pfullOutputFilename = (char *)calloc(1, strlen(pContextArg->pFullFilename) + 1);
+                pfullOutputFilename = (char *)calloc( 1, strlen(pContextArg->pFullFilename) + 1);
                 if (pfullOutputFilename)
                 {
                     (void )strncpy_s( pfullOutputFilename, strlen(pContextArg->pFullFilename) + 1, pContextArg->pFullFilename, strlen( (const char*)pContextArg->pFullFilename));
@@ -678,8 +678,8 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
 }
 
 /**
-* @fn int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
-* @brief Display the line with color index not used
+* @fn int doNumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief Display the line with color index not used in PIC
 *
 * @param[in]        pContextArg
 * @param[in]        pContextApp
@@ -687,7 +687,7 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
  *
  * @return 0 no error or exit program
 */
-int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+int doNumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char           *pInputRunner;
     FormatPIC      *pPicImage;
@@ -701,11 +701,11 @@ int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pCo
 
     if ((pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize))
     {
-        (void )printf( "\nDisplay line number with color(s) index not used :\n\n");
-        (void )printf( "Cursor colors        :                       C  C        C  C\n");
-
-        pPicImage = (FormatPIC *)pContextApp->pInputFileData;
+        (void)printf("\nDisplay line number with color(s) index not used :\n\n");
+        (void)printf("Cursor colors        :                       C  C        C  C\n");
+        pPicImage = (FormatPIC*)pContextApp->pInputFileData;
         pInputRunner = pContextApp->pInputFileData;
+
         for (uIndex = 0; uIndex < 200; uIndex++)
         {
             //if (uIndex == 51)
@@ -770,6 +770,58 @@ int doNumberOfColorNotUsePerLine( tConvmArguments *pContextArg, tContextApp *pCo
             uCounter = 0;
         }
     }
+    return 0;
+}
+
+
+/**
+* @fn int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief Display the line with color index not used in BMP
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
+int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand)
+{
+    char               *pInputRunner;
+    unsigned long int  *pInputColor;
+    BMPHeader          *pHeaderBmp;
+    FormatBMP256       *pBmp;
+    unsigned int        uIndex;
+    unsigned int        uTableNumberOfcolorIndex[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+    unsigned int        uCounter = 0;
+    unsigned int        uLessUsed = 0;
+    unsigned char       uColorRed = 0;
+    unsigned char       uColorGreen = 0;
+    unsigned char       uColorBlue = 0;
+
+    if ((pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize))
+    {
+        (void )printf( "\nDisplay line number with color(s) index not used :\n\n");
+        (void )printf( "Cursor colors        :                       C  C        C  C\n");
+
+        pInputRunner = pContextApp->pInputFileData;
+        pHeaderBmp = (BMPHeader *)pContextApp->pInputFileData;
+
+        if (pHeaderBmp->Nbr_Bit_Par_Pixel == 8)
+        {
+            pBmp = (FormatBMP256 *)pContextApp->pInputFileData;
+            pInputColor = pBmp->Couleur_Palettes;
+            for (uIndex = 0; uIndex < 256; uIndex++)
+            {
+                uColorRed   = (unsigned char)(((*pInputColor & 0x00FF0000) >> 16) / 16);
+                uColorGreen = (unsigned char)(((*pInputColor & 0x0000FF00) >> 8) / 16);
+                uColorBlue  = (unsigned char)((*pInputColor & 0x000000FF) / 16);
+
+                *pInputColor = (uColorRed << 16) + (uColorGreen << 8) + (uColorBlue);
+                pInputColor++;
+            }
+        }
+    }
+
     return 0;
 }
 

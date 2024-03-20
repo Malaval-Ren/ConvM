@@ -59,6 +59,7 @@
  * -dump ../../../Iron_Lord/dessin.bmp/enall2.bmp
  * -dump ../../../Iron_Lord/dessin.bmp/medite.ch.bmp 
  * -dump ../../../Iron_Lord/picks/iron.lord.256.bmp
+ * -dump G:\DEV\Python\scbeditorII\ironlord_test2.bmp
  * 
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/enall2.bmp
@@ -103,6 +104,8 @@
  *
  * -xtrspr 284 82 80 16 15 ../../../Iron_Lord/dessin.bmp/chevaux.bmp
  * 
+ * -ncpl ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
+ * -ncpl ../../../Iron_Lord/Flyer/ironlord_test2.bmp
  */
 
 /*
@@ -264,7 +267,7 @@ int checkFileExtension( char *pPathFilename, int eCommand)
                     }
                     else if (eCommand == eNUMCOLORPERLINE)
                     {
-                        if (strcmp( (const char*)pLastPointChar, "pic") != 0)
+                        if ((strcmp( (const char*)pLastPointChar, "pic") != 0) && (strcmp((const char*)pLastPointChar, "bmp") == 0))
                         {
                             bError = TRUE;
                         }
@@ -814,7 +817,7 @@ void doTest( void)
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.12.11.133, (c) R. Malaval & F. Mure 2022..24";
+    static const char   *pVersionStr = "v1.13.12.135, (c) 2022..2024 R. Malaval & F. Mure";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;
@@ -920,7 +923,18 @@ int main( int argc, char *argv[])
                 (void )doToPic( &contextArg, &contextApp, eCommand);
             break;
             case eNUMCOLORPERLINE:
-                (void )doNumberOfColorNotUsePerLine( &contextArg, &contextApp, eCommand);
+            {
+                (void )printf( "CONVM : Take care no fully tested\n");
+                pEndString = (const char *)strrchr((const char *)&(contextArg.pFullFilename), (int )'.');
+                if (strcmp((const char*)pEndString, ".bmp") == 0)
+                {
+                    (void )doBMP_NumberOfColor_NotUsePerLine( &contextArg, &contextApp, eCommand);
+                }
+                else
+                {
+                    (void )doNumberOfColor_NotUsePerLine( &contextArg, &contextApp, eCommand);
+                }
+            }
             break;
             case eADDPALBMP4:
                 (void )doAddPaletteToBmp4( &contextArg, &contextApp, eCommand);
@@ -938,6 +952,7 @@ int main( int argc, char *argv[])
                 (void )doCopyPalette( &contextArg, &contextApp, eCommand);
             break;
             case eEXTSPRITE:
+                (void )printf( "CONVM : Take care no fully tested\n");
                 (void )doExtSprite( &contextArg, &contextApp, eCommand);
             break;
             default:
