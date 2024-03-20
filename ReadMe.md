@@ -1,7 +1,7 @@
 
 # **ConvM**
 
-![Alt text](./MM_PowerUp_256x256.png "ConvM")
+![Alt text](./MM_PowerUp_256x256.png "ConvM") ![Alt text](./lgplv3-with-text-154x68.png "license") 
 
 ## Convert many stuff
 
