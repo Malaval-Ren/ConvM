@@ -131,6 +131,19 @@ echo
 
 if [[ -f "$originFolder""/""$project_Name"".sln" ]]
 then
+	echo -e $Green "Update versions" $Color_Off
+	if [[ -f "$originFolder""/x64/Release/""$project_Name"".exe" ]]
+	then
+		echo -e $Green "Copy release x64 to up directory" $Color_Off
+		cp -fp "$originFolder""/x64/Release/""$project_Name"".exe" "$originFolder""/../""$project_Name""_x64.exe"
+	fi
+	if [[ -f "$originFolder""/Release/""$project_Name"".exe" ]]
+	then
+		echo -e $Green "Copy release x86 to up directory" $Color_Off
+		cp -fp "$originFolder""/Release/""$project_Name"".exe" "$originFolder""/../""$project_Name""_x86.exe"
+	fi
+
+	echo
 	echo -e $Green "Deleting files" $Color_Off
 	if [[ -f "$originFolder""/"".data" ]]
 	then
@@ -152,13 +165,16 @@ then
 	then
 		rm -f "$originFolder""/"".text"
 	fi
-
-	echo
-	echo -e $Green "Deleting directories" $Color_Off
-	if [[ -d "$originFolder""/.vs/""$project_Name""/v16" ]]
+	if [[ -f "$originFolder""/""$project_Name""/Resource.aps" ]]
 	then
-		rm -frd "$originFolder""/.vs/""$project_Name""/v16"
+		rm -frd "$originFolder""/""$project_Name""/Resource.aps"
 	fi
+
+	echo -e $Green "Deleting directories" $Color_Off
+	if [[ -d "$originFolder""/.vs/" ]]
+	then
+		rm -frd "$originFolder""/.vs/"
+	fi   
 	if [[ -d "$originFolder""/""$project_Name""/Debug" ]]
 	then
 		rm -frd "$originFolder""/""$project_Name""/Debug"
@@ -183,13 +199,6 @@ then
 	then
 		rm -frd "$originFolder""/.rsrc"
 	fi
-
-	if [[ -f "$originFolder""/x64/Release/""$project_Name"".exe" ]]
-	then
-		echo -e $Green "Copy release to up directory" $Color_Off
-		cp -fp "$originFolder""/x64/Release/""$project_Name"".exe" "$originFolder""/../""$project_Name"".exe"
-	fi
-
 	if [[ -d "$originFolder""/x64" ]]
 	then
 		rm -frd "$originFolder""/x64"

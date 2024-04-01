@@ -22,6 +22,7 @@ x64/
 *.reloc
 *.text
 *.vcxproj.user
+*.aps
 
 helper_git.txt
 Finder.Data

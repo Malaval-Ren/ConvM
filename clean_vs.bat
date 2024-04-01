@@ -16,9 +16,19 @@
 
 @if exist "%currentdir%\%myfolder%.sln" ( 
 	@echo.
+	@echo Update versions
+	@if exist "%currentdir%\x64\Release\%myfolder%.exe" (	
+		@echo Copy release to up directory
+		@copy /Y "%currentdir%\x64\Release\%myfolder%.exe" /B "%currentdir%\..\%myfolder%_x64.exe" /B >nul
+	)
+	@if exist "%currentdir%\Release\%myfolder%.exe" (	
+		@echo Copy release to up directory
+		@copy /Y "%currentdir%\Release\%myfolder%.exe" /B "%currentdir%\..\%myfolder%_x86.exe" /B >nul
+	)
+	@echo.
 	@echo Deleting directories
-	@if exist "%currentdir%\.vs\%myfolder%\v16" (
-		@rmdir /s /q "%currentdir%\.vs\%myfolder%\v16"
+	@if exist "%currentdir%\.vs\%myfolder%\" (
+		@rmdir /s /q "%currentdir%\.vs\%myfolder%\"
 	)
 	@if exist "%currentdir%\%myfolder%\Debug" (
 		@rmdir /s /q "%currentdir%\%myfolder%\Debug"
@@ -35,12 +45,6 @@
 	@if exist "%currentdir%\Release" (
 		@rmdir /s /q "%currentdir%\Release"
 	)
-	@echo.
-	@if exist "%currentdir%\x64\Release\%myfolder%.exe" (	
-		@echo Copy release to up directory
-		@copy /Y "%currentdir%\x64\Release\%myfolder%.exe" /B "%currentdir%\..\%myfolder%.exe" /B >nul
-	)
-	@echo.
 	@if exist "%currentdir%\x64" (
 		@echo Delete directory
 		@rmdir /s /q "%currentdir%\x64"
