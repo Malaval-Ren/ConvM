@@ -351,7 +351,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
     return uBitmapSize;
 }
 
-#define NOUS "[ ConvM  (c) 2022..2024  Renaud Malaval AND Frederic Mure ]"
+#define NOUS "[ ConvM (c) 2022..2024 Renaud Malaval & Frederic Mure ]"
 
 /**
 * @fn static void add_signature( FormatPIC *pPicImage)
@@ -370,13 +370,13 @@ static void add_signature( FormatPIC *pPicImage)
         (void )printf( "pPicImage->Libre len = %llu\n", sizeof( pPicImage->Libre));
         (void )printf( "NOUS             len = %llu\n", sizeof( NOUS));
         */
-        if (sizeof( pPicImage->Libre) + 1 >= sizeof( NOUS))
+        if (sizeof( NOUS) == sizeof( pPicImage->Libre))
         {
             (void )memcpy( pFun, NOUS, sizeof( NOUS));
         }
         else
         {
-            exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to set NOUS", NULL, NULL, 1966);
+            exitOnError( (char*)__FUNCTION__, __LINE__, (char *)"Failed to set NOUS", NULL, NULL, 1966);
         }
     }
 }
