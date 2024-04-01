@@ -155,7 +155,7 @@
     <ClCompile Include="..\Src\convm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="convm.rc" />
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

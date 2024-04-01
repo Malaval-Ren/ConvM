@@ -53,9 +53,12 @@
     <ClInclude Include="version.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="convm.rc">
+    <ResourceCompile Include="Resource.rc">
       <Filter>Fichiers de ressources</Filter>
     </ResourceCompile>
   </ItemGroup>
