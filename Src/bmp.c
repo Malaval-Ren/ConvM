@@ -831,9 +831,9 @@ static unsigned int bmp_256_colors(char *pOutputFileData, unsigned int uOutputFi
         {
             uValueD = *pPicPalette;
 
-            uColorRed = (unsigned char)((  uValueD & 0x0F00) >> 8) + (unsigned char)((uValueD & 0x0F00) >> 4);
-            uColorGreen = (unsigned char)((uValueD & 0x00F0) >> 4) + (unsigned char)( uValueD & 0x00F0);
-            uColorBlue = (unsigned char)(  uValueD & 0x000F)       + (unsigned char)((uValueD & 0x000F) << 4);
+            uColorRed = (unsigned char)(unsigned char)((uValueD & 0x0F00) >> 4);
+            uColorGreen = (unsigned char)(unsigned char)( uValueD & 0x00F0);
+            uColorBlue = (unsigned char)(unsigned char)((uValueD & 0x000F) << 4);
 
             *pBmpPalette = (uColorRed << 16) + (uColorGreen << 8) + uColorBlue;
 
