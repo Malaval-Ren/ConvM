@@ -1,3 +1,22 @@
+/* SPDX - License - Identifier: GPL - 3.0 - or -later
+ *
+ * A tool to help cross dev for Apple II GS.
+ *
+ * Copyright(C) 2023 - 2024 Renaud Malaval <renaud.malaval@free.fr>.
+ *
+ * This program is free software : you can redistribute it and /or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ *  along with this program.If not, see < https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -351,7 +370,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
     return uBitmapSize;
 }
 
-#define NOUS "[ ConvM (c) 2022..2024 Renaud Malaval & Frederic Mure ]"
+#define NOUS "[ ConvM (c) 2022..2024  Renaud Malaval & Frederic Mure ]"
 
 /**
 * @fn static void add_signature( FormatPIC *pPicImage)
@@ -370,7 +389,7 @@ static void add_signature( FormatPIC *pPicImage)
         (void )printf( "pPicImage->Libre len = %llu\n", sizeof( pPicImage->Libre));
         (void )printf( "NOUS             len = %llu\n", sizeof( NOUS));
         */
-        if (sizeof( NOUS) == sizeof( pPicImage->Libre))
+        if (sizeof( NOUS) == sizeof( pPicImage->Libre) + 1)
         {
             (void )memcpy( pFun, NOUS, sizeof( NOUS));
         }
@@ -406,7 +425,7 @@ static unsigned int convert_to_2_pic( char *pOutputFileData, unsigned int uOutpu
     unsigned int        uIndex = 0;
     unsigned int        uLoop = 0;
     unsigned int        uExtented = 0;
-    unsigned int        uVarPicX = 0;
+    unsigned int        uVarPicX;
     int                 iVarBmpX;
     unsigned short int  uValueF = 0;
     unsigned char       uColorRedOne = 0;
@@ -420,7 +439,7 @@ static unsigned int convert_to_2_pic( char *pOutputFileData, unsigned int uOutpu
     unsigned char       uColorBlueMid = 0;
     unsigned char       uMask;
 
-    if ((pInputFileData) && (inputFileSize))
+    if ( (pInputFileData) && (inputFileSize) )
     {
         pBmpImage = (FormatBMP2 *)pInputFileData;
 
@@ -460,28 +479,30 @@ static unsigned int convert_to_2_pic( char *pOutputFileData, unsigned int uOutpu
         }
     }
 
-    if ((pOutputFileData) && (uOutputFileSize > 0) && (pDecompressedData))
+    if ( (pOutputFileData) && (uOutputFileSize > 0) && (pDecompressedData) )
     {
         pPicImage = (FormatPIC *)pOutputFileData;
 
         pBmpImage = (FormatBMP2 *)pDecompressedData;
 
         if (pBmpImage->Longueur_Image > 199)
-            uExtented = ((pBmpImage->Longueur_Image - 200) * 160);
+        {
+            uExtented = (pBmpImage->Longueur_Image - 200) * 160;
+        }
 
         // doDumpBmp( "encours", pInputFileData, inputFileSize);
 
         iVarBmpX = pBmpImage->Longueur_Image - 1;
-        for (uVarPicX = 0; uVarPicX < pBmpImage->Longueur_Image - 1; uVarPicX++)
+        for ( uVarPicX = 0; uVarPicX < pBmpImage->Longueur_Image - 1; uVarPicX++)
         {
             pBmpByteOfBits = pBmpImage->bitmap[iVarBmpX];
             pFun           = pPicImage->MonImage[uVarPicX];
 
             // Dans le cas des images codant les pixels sur 1 bit ou 4 bits, c'est-à-dire si plusieurs pixels sont codés dans un même octet, les bits de poids fort concernent le pixel le plus à gauche.
-            for (uLoop = 0; uLoop < 40; uLoop++)
+            for ( uLoop = 0; uLoop < 40; uLoop++)
             {
                 uMask = 0x80;
-                for (uIndex = 0; uIndex < 4; uIndex++)  // 8 pixels by byte -> 2 pixels by byte
+                for ( uIndex = 0; uIndex < 4; uIndex++)  // 8 pixels by byte -> 2 pixels by byte
                 {
                     uColorRedOne = ((*pBmpByteOfBits & uMask) == 0 ? 0 : 15) << 4;   // Left shifting
                     uMask = uMask >> 1;   // right shifting
@@ -500,24 +521,26 @@ static unsigned int convert_to_2_pic( char *pOutputFileData, unsigned int uOutpu
 
         // std SCB = 200 octets and 56 octets of free space
         if (uExtented)
+        {
             // if extented the SCB = 400 and 112 octets (2 * 56) of free space
             uExtented += 56;
+        }
 
         // compute color for index 0 and set it
         pPicPalette = (unsigned short int *) ((char *)&pPicImage->Couleur_Palette_0 + uExtented);
         uValueD = pBmpImage->Couleur_Palette_0[0];                        // 00 60 20 00 = 00206000     0=00 R=20 G=60 B=00
-        uColorRedOne = (unsigned char)((uValueD & 0x00F00000) / 1048576); // ne garde que le R et le décale en unité
-        uColorGreenOne = (unsigned char)((uValueD & 0x0000F000) / 4096);  // ne garde que le G et le décale en unité
-        uColorBlueOne = (unsigned char)((uValueD & 0x000000F0) / 16);     // ne garde que le B deja en unité
+        uColorRedOne = (unsigned char )((uValueD & 0x00F00000) / 1048576); // ne garde que le R et le décale en unité
+        uColorGreenOne = (unsigned char )((uValueD & 0x0000F000) / 4096);  // ne garde que le G et le décale en unité
+        uColorBlueOne = (unsigned char )((uValueD & 0x000000F0) / 16);     // ne garde que le B deja en unité
         uValueF = (uColorRedOne * 256) + (uColorGreenOne * 16) + (uColorBlueOne);  // transformation de 00R0G0B0 en 0=0 R=2 G=6 B=0 Passage niveau couleur FF en F
         *pPicPalette = uValueF;
         pPicPalette++;
 
         // compute color for index 15
         uValueD = pBmpImage->Couleur_Palette_0[1];                           // 00 60 20 00 = 00206000     0=00 R=20 G=60 B=00
-        uColorRedTwo = (unsigned char)((uValueD & 0x00F00000) / 1048576);    // ne garde que le R et le décale en unité
-        uColorGreenTwo = (unsigned char)((uValueD & 0x0000F000) / 4096);     // ne garde que le G et le décale en unité
-        uColorBlueTwo = (unsigned char)((uValueD & 0x000000F0) / 16);        // ne garde que le B deja en unité
+        uColorRedTwo = (unsigned char )((uValueD & 0x00F00000) / 1048576);    // ne garde que le R et le décale en unité
+        uColorGreenTwo = (unsigned char )((uValueD & 0x0000F000) / 4096);     // ne garde que le G et le décale en unité
+        uColorBlueTwo = (unsigned char )((uValueD & 0x000000F0) / 16);        // ne garde que le B deja en unité
 
         // compute medium color for index 1 to 14 and set it
         uColorRedMid = (uColorRedOne + uColorRedTwo) / 2;
@@ -534,7 +557,7 @@ static unsigned int convert_to_2_pic( char *pOutputFileData, unsigned int uOutpu
         uValueF = (uColorRedTwo * 256) + (uColorGreenTwo * 16) + (uColorBlueTwo);  // transformation de 00R0G0B0 en 0=0 R=2 G=6 B=0 Passage niveau couleur FF en F
         *pPicPalette = uValueF;
 
-        uOffset = (unsigned int)sizeof( FormatPIC) + uExtented;
+        uOffset = (unsigned int )sizeof( FormatPIC) + uExtented;
 
         pBmpImage = (FormatBMP2 *)pInputFileData;
         if (pBmpImage->Type_Compression == 2)
@@ -603,7 +626,7 @@ static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutp
 
             if (writeFileFromMemory( "encours.tmp.bmp", pDecompressedData, uDecompressedSize))
             {
-                exitOnError( (char *)__FUNCTION__, __LINE__,(char*)"failed to write output file", NULL, "encours.tmp.bmp", 4);
+                exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to write output file", NULL, "encours.tmp.bmp", 4);
             }
 
         }
@@ -686,7 +709,7 @@ static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOut
     unsigned int         uOffset = 0;
     int                  iVarPicX = 0;
     int                  iVarBmpX = 199;
-    unsigned int         uIndex = 0;
+    unsigned int         uIndex;
     unsigned int         uLoop;
     unsigned long int    uValueD = 0;
     unsigned char        uColorRed = 0;
@@ -714,7 +737,7 @@ static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOut
 
             if (pScbOngoin)     // palette management if a file exist with extension is .scb
             {
-                if ((iVarPicX >= pScbOngoin->uFromScbIndex) && (iVarPicX <= pScbOngoin->uToScbIndex))
+                if ( (iVarPicX >= pScbOngoin->uFromScbIndex) && (iVarPicX <= pScbOngoin->uToScbIndex) )
                 {
                     pPicImage->SCB[iVarPicX] = pScbOngoin->uPaletteIndex;
                 }
@@ -722,7 +745,7 @@ static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOut
 
             for (uLoop = 0; uLoop < 160; uLoop++)
             {
-                if ( (pScbOngoin == NULL) && (bPallette == FALSE) && ((pBmpImage->bitmap[iVarBmpX][uIndex] >> 4) > 0))
+                if ( (pScbOngoin == NULL) && (bPallette == FALSE) && ((pBmpImage->bitmap[iVarBmpX][uIndex] >> 4) > 0) )
                 {
                     pPicImage->SCB[iVarPicX] = pBmpImage->bitmap[iVarBmpX][uIndex] >> 4;    // x / 16
                     bPallette = TRUE;
@@ -751,9 +774,9 @@ static unsigned int convert_to_256_pic( char *pOutputFileData, unsigned int uOut
         {
             uValueD = *pBmpPalette;
 
-            uColorRed   = (unsigned char)(((uValueD & 0x00FF0000) >> 16) / 16);
-            uColorGreen = (unsigned char)(((uValueD & 0x0000FF00) >> 8) / 16);
-            uColorBlue  = (unsigned char)(( uValueD & 0x000000FF) / 16);
+            uColorRed   = (unsigned char )(((uValueD & 0x00FF0000) >> 16) >> 4);    // (x / 65535) / 16
+            uColorGreen = (unsigned char )(((uValueD & 0x0000FF00) >> 8) >> 4);     // (x / 256) / 16
+            uColorBlue  = (unsigned char )(( uValueD & 0x000000FF) >> 4);           // (x / 16)
 
             *pPicPalette = (uColorRed << 8) + (uColorGreen << 4) + uColorBlue;
             pPicPalette++;
@@ -794,7 +817,7 @@ static unsigned int bmp_256_colors(char *pOutputFileData, unsigned int uOutputFi
     unsigned char       uColorBlue;
     unsigned int        uPaletteOffset;
 
-    if ((pOutputFileData) && (uOutputFileSize > 0) && (pInputFileData))
+    if ( (pOutputFileData) && (uOutputFileSize > 0) && (pInputFileData) )
     {
         pPicImage = (FormatPIC *)pInputFileData;
 
@@ -857,7 +880,7 @@ static unsigned int bmp_256_colors(char *pOutputFileData, unsigned int uOutputFi
 *
 * @return size of data to save
 */
-static unsigned int bmp_16_colors(char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
+static unsigned int bmp_16_colors( char *pOutputFileData, unsigned int uOutputFileSize, char *pInputFileData, unsigned int inputFileSize)
 {
     FormatPIC          *pPicImage = NULL;
     FormatBMP          *pBmpImage = NULL;
@@ -870,7 +893,7 @@ static unsigned int bmp_16_colors(char *pOutputFileData, unsigned int uOutputFil
     unsigned char       uColorGreen = 0;
     unsigned char       uColorBlue = 0;
 
-    if ((pOutputFileData) && (uOutputFileSize > 0) && (pInputFileData))
+    if ( (pOutputFileData) && (uOutputFileSize > 0) && (pInputFileData) )
     {
         pPicImage = (FormatPIC *)pInputFileData;
 
@@ -899,14 +922,14 @@ static unsigned int bmp_16_colors(char *pOutputFileData, unsigned int uOutputFil
         {
             uValueD = pPicImage->Couleur_Palette_0[uIndex];                     // 0x60 0x02 = 0x0260     0=0 R=2 G=6 B=0
 
-            uColorRed = (unsigned char)((uValueD & 0x0F00) >> 8);               // ne garde que le R et le décale en unitee
-            uColorGreen = (unsigned char)((uValueD & 0x00F0) >> 4);             // ne garde que le G et le décale en unitee
-            uColorBlue = (unsigned char)(uValueD & 0x000F);                     // ne garde que le B deja en unitee
+            uColorRed = (unsigned char )((uValueD & 0x0F00) >> 8);               // ne garde que le R et le décale en unitee
+            uColorGreen = (unsigned char )((uValueD & 0x00F0) >> 4);             // ne garde que le G et le décale en unitee
+            uColorBlue = (unsigned char )(uValueD & 0x000F);                     // ne garde que le B deja en unitee
 
-            // transformation de 0RGB en 0=00 R=20 G=60 B=00 Passage niveau couleur F en FF
+            // transformation de ARGB en A=00 R=20 G=60 B=00 Passage niveau couleur F en FF
             pBmpImage->Couleur_Palette_0[uIndex] = (uColorRed * 1048576) + (uColorGreen * 4096) + (uColorBlue * 16);
         }
-        iOffset = (unsigned int)sizeof(FormatBMP);
+        iOffset = (unsigned int )sizeof( FormatBMP);
     }
 
     return iOffset;
@@ -937,7 +960,7 @@ static unsigned int countNumberOfScb( char *pInputFileData, unsigned int inputFi
         pScb = pInputRunner;
         for (uIndex = 0; uIndex < 200; uIndex++)
         {
-            if ((uPalette != *pInputRunner) || (uIndex == 199))
+            if ( (uPalette != *pInputRunner) || (uIndex == 199) )
             {
                 uScbNumber++;
                 uPalette = *pInputRunner;
@@ -1003,7 +1026,7 @@ static unsigned int convert_to_bmp( char *pOutputFileData, unsigned int uOutputF
     unsigned int    uScbNumber = 0;
     unsigned int    iOffset = 0;
 
-    if ((pOutputFileData) && (uOutputFileSize > 0) && (pInputFileData))
+    if ( (pOutputFileData) && (uOutputFileSize > 0) && (pInputFileData) )
     {
         uScbNumber = countNumberOfScb( pInputFileData, inputFileSize);
 
