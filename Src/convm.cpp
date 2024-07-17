@@ -1,5 +1,22 @@
-// convm.cpp : Ce fichier contient la fonction 'main'. L'exécution du programme commence et se termine à cet endroit.
-//
+/* SPDX - License - Identifier: GPL - 3.0 - or -later
+ *
+ * A tool to help cross dev for Apple II GS.
+ *
+ * Copyright(C) 2023 - 2024 Renaud Malaval <renaud.malaval@free.fr>.
+ *
+ * This program is free software : you can redistribute it and /or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ *  GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ *  along with this program.If not, see < https://www.gnu.org/licenses/>.
+ */
 
 #include <iostream>
 
@@ -67,6 +84,7 @@
  * -2pic +lower ../../../Iron_Lord/Olivier--Ren--Fred/enemyall_gimp.bmp
  * -2pic +lower ../../../Iron_Lord/dessin.bmp/tasetarc1.pic
  * -2pic +lower ../../../Iron_Lord/picks/Iron_Lord_2c.bmp
+ * -2pic +lower ../../../Iron_Lord/dessin.bmp/carte.bmp ../../../Iron_Lord/dessin/
  * 
  * -ncpl ../../../Iron_Lord/dessin/moine.ch.pic
  * 
@@ -106,6 +124,8 @@
  * 
  * -ncpl ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
  * -ncpl ../../../Iron_Lord/Flyer/ironlord_test2.bmp
+ * -ncpl ../../../Iron_Lord/dessin.bmp/wTerrain5.bmp
+ * -ncpl ../../../../../DEV/Python/scbeditorII/wlooser_dead3.pic
  */
 
 /*
@@ -199,18 +219,18 @@ int checkFileExtension( char *pPathFilename, int eCommand)
                 {
                     if (eCommand == eDUMP)
                     {
-                        if ((strcmp((const char *)pLastPointChar, "scr") != 0) && (strcmp((const char *)pLastPointChar, "pic") != 0) &&
-                            ((strcmp((const char *)pLastPointChar, "shr") != 0) && (strcmp((const char *)pLastPointChar, "pnt") != 0)) &&
-                             (strcmp((const char *)pLastPointChar, "bmp") != 0))
+                        if (  (strcmp( (const char *)pLastPointChar, "scr") != 0) && ( strcmp( (const char *)pLastPointChar, "pic") != 0) &&
+                            ( (strcmp( (const char *)pLastPointChar, "shr") != 0) && ( strcmp( (const char *)pLastPointChar, "pnt") != 0) ) &&
+                              (strcmp( (const char *)pLastPointChar, "bmp") != 0) )
                         {
                             bErrorExt = TRUE;
                         }
                     }
                     else if (eCommand == eRLE_DECO)
                     {
-                        if ((strcmp((const char *)pLastPointChar, "shr") != 0) && (strcmp((const char *)pLastPointChar, "pnt") != 0))
+                        if ( (strcmp( (const char *)pLastPointChar, "shr") != 0) && (strcmp( (const char *)pLastPointChar, "pnt") != 0))
                         {
-                            if ((strcmp((const char *)pLastPointChar, "scr") == 0) || (strcmp((const char *)pLastPointChar, "pic") == 0))
+                            if ( (strcmp( (const char *)pLastPointChar, "scr") == 0) || (strcmp( (const char *)pLastPointChar, "pic") == 0))
                             {
                                 bErrorCmd = TRUE;
                             }
@@ -267,7 +287,7 @@ int checkFileExtension( char *pPathFilename, int eCommand)
                     }
                     else if (eCommand == eNUMCOLORPERLINE)
                     {
-                        if ((strcmp( (const char*)pLastPointChar, "pic") != 0) && (strcmp((const char*)pLastPointChar, "bmp") == 0))
+                        if ( (strcmp( (const char *)pLastPointChar, "pic") != 0) && (strcmp( (const char *)pLastPointChar, "bmp") != 0) )
                         {
                             bError = TRUE;
                         }
@@ -285,19 +305,19 @@ int checkFileExtension( char *pPathFilename, int eCommand)
                 if (bError)
                 {
                     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file extension not supported", (char *)pCmdtext[eCommand], (char *)pEndString, 3);
-                    iError = 1;
+                    iError = 1; // fake value program has ended
                 }
 
                 if (bErrorCmd)
                 {
                     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"command already done on this file", (char *)pCmdtext[eCommand], (char *)pEndString, 3);
-                    iError = 1;
+                    iError = 1; // fake value program has ended
                 }
 
                 if (bErrorExt)
                 {
                     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible with command", (char *)pCmdtext[eCommand], (char *)pEndString, 5);
-                    iError = 1;
+                    iError = 1; // fake value program has ended
                 }
             }
             else
@@ -308,7 +328,7 @@ int checkFileExtension( char *pPathFilename, int eCommand)
             if (bErrorNoExt)
             {
                 exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file without extension", NULL, pPathFilename, 3);
-                iError = 1;
+                iError = 1; // fake value program has ended
             }
         }
     }
@@ -347,9 +367,9 @@ void pathanmeToLowerCase( char **pPathname)
     }
 }
 
-#define MAILR "renaud.malaval@free.fr"
-#define MAILE " "
-#define MAILF "frederic.mure@free.fr"
+const char *pGRen   = "renaud.malaval@free.fr";
+const char *pGSpace = " et ";
+const char *pGFred  = "frederic.mure@free.fr";
 
 /**
 * @fn static enum eCommandNumber parseArguments( int argc, char *argv[], ConvmArguments *pContext)
@@ -807,7 +827,7 @@ void doTest( void)
 
 /**
 * @fn int main( int argc, char *argv[])
-* @brief The entry point of the software
+* @brief The entry point of this software, content for the exit and in exitOnError() too.
 *
 * @param[in]        argc
 * @param[in]        argv[]
@@ -817,7 +837,7 @@ void doTest( void)
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.13.13.139, (c) 2022..2024 R. Malaval & F. Mure";
+    static const char   *pVersionStr = "v1.13.14.141, (c) 2022..2024 R. Malaval & F. Mure";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;
@@ -849,13 +869,13 @@ int main( int argc, char *argv[])
     {
         if ((argc == 2) && (argv[1]))
         {
-            if ( ( !strcmp( (const char *)argv[1], "-h")) || ( !strcmp( (const char *)argv[1], "-?")) || ( !strcmp( (const char*)argv[1], "-help") ) )
+            if ( ( !strcmp( (const char *)argv[1], "-h")) || ( !strcmp( (const char *)argv[1], "-?")) || ( !strcmp( (const char *)argv[1], "-help") ) )
             {
                 usage();
                 exitOnError( (char *)__FUNCTION__, __LINE__, NULL, NULL, NULL, 0);
             }
 
-            if ( ( !strcmp( (const char*)argv[1], "-v")) || ( !strcmp( (const char*)argv[1], "-V")) || ( !strcmp( (const char*)argv[1], "-version") ) )
+            if ( ( !strcmp( (const char *)argv[1], "-v")) || ( !strcmp( (const char *)argv[1], "-V")) || ( !strcmp( (const char *)argv[1], "-version") ) )
             {
                 (void )printf( "%s %s\n", pEndString, pVersionStr);
                 exitOnError( (char *)__FUNCTION__, __LINE__, NULL, NULL, NULL, 0);
@@ -925,14 +945,20 @@ int main( int argc, char *argv[])
             case eNUMCOLORPERLINE:
             {
                 (void )printf( "CONVM : Take care no fully tested\n");
-                pEndString = (const char *)strrchr((const char *)&(contextArg.pFullFilename), (int )'.');
-                if (strcmp((const char*)pEndString, ".bmp") == 0)
+                if (contextArg.pFullFilename)
                 {
-                    (void )doBMP_NumberOfColor_NotUsePerLine( &contextArg, &contextApp, eCommand);
-                }
-                else
-                {
-                    (void )doNumberOfColor_NotUsePerLine( &contextArg, &contextApp, eCommand);
+                    pEndString = (const char *)strrchr( (const char *)contextArg.pFullFilename, (int )'.');
+                    if (pEndString)
+                    {
+                        if (strcmp( (const char *)pEndString, ".bmp") == 0)
+                        {
+                            (void )doBMP_NumberOfColor_NotUsePerLine( &contextArg, &contextApp, eCommand);
+                        }
+                        else
+                        {
+                            (void )doPIC_NumberOfColor_NotUsePerLine( &contextArg, &contextApp, eCommand);
+                        }
+                    }
                 }
             }
             break;
