@@ -17,6 +17,14 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h
 #define HIBYTE(w)           ((BYTE)((((DWORD_PTR)(w)) >> 8) & 0xff))
 */
 
+#ifndef MAX
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#endif
+
+#ifndef MIN
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#endif
+
 #define BYTE_TO_BINARY( octet)  \
     ((octet) & 0x80 ? '1' : '0'), \
     ((octet) & 0x40 ? '1' : '0'), \
