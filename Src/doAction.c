@@ -156,6 +156,7 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
             // Change the extention of the output file
             if (pOutputPathname[strlen( pOutputPathname) - 4] == '.')
             {
+                // point to the last '.' of the file name to be able to mopdify it or just change extension
                 pEndString = &pOutputPathname[strlen( pOutputPathname) - 3];
             }
 
@@ -165,9 +166,14 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                 {
                     if (pEndString)
                     {
-                        pOutputPathname[strlen( pOutputPathname) - 3] = 'p';
-                        pOutputPathname[strlen( pOutputPathname) - 2] = 'n';
-                        pOutputPathname[strlen( pOutputPathname) - 1] = 't';
+                        *(char *)pEndString = 'p';
+                        pEndString++;
+                        *(char *)pEndString = 'n';
+                        pEndString++;
+                        *(char *)pEndString = 't';
+                        //pOutputPathname[strlen( pOutputPathname) - 3] = 'p';
+                        //pOutputPathname[strlen( pOutputPathname) - 2] = 'n';
+                        //pOutputPathname[strlen( pOutputPathname) - 1] = 't';
                     }
                     else
                     {
@@ -181,9 +187,14 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                 {
                     if (pEndString)
                     {
-                        pOutputPathname[strlen( pOutputPathname) - 3] = 'p';
-                        pOutputPathname[strlen( pOutputPathname) - 2] = 'i';
-                        pOutputPathname[strlen( pOutputPathname) - 1] = 'c';
+                        *(char *)pEndString = 'p';
+                        pEndString++;
+                        *(char *)pEndString = 'i';
+                        pEndString++;
+                        *(char *)pEndString = 'c';
+                        //pOutputPathname[strlen( pOutputPathname) - 3] = 'p';
+                        //pOutputPathname[strlen( pOutputPathname) - 2] = 'i';
+                        //pOutputPathname[strlen( pOutputPathname) - 1] = 'c';
                     }
                     else
                     {
@@ -195,9 +206,14 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                 {
                     if (pEndString)
                     {
-                        pOutputPathname[strlen( pOutputPathname) - 3] = 'b';
-                        pOutputPathname[strlen( pOutputPathname) - 2] = 'm';
-                        pOutputPathname[strlen( pOutputPathname) - 1] = 'p';
+                        *(char *)pEndString = 'b';
+                        pEndString++;
+                        *(char *)pEndString = 'm';
+                        pEndString++;
+                        *(char *)pEndString = 'p';
+                        //pOutputPathname[strlen( pOutputPathname) - 3] = 'b';
+                        //pOutputPathname[strlen( pOutputPathname) - 2] = 'm';
+                        //pOutputPathname[strlen( pOutputPathname) - 1] = 'p';
                     }
                     else
                     {
@@ -205,11 +221,42 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                     }
                 }
                 break;
+                case eREDUCECOLORCHART:
+                {
+                    if (pEndString)
+                    {
+                        pEndString--;
+                        *(char *)pEndString = '_';
+                        pEndString++;
+                        *(char*)pEndString = 'r';
+                        pEndString++;
+                        *(char*)pEndString = 'c';
+                        pEndString++;
+                        *(char*)pEndString = 'c';
+                        pEndString++;
+                        *(char*)pEndString = '.';
+                        pEndString++;
+                        *(char *)pEndString = 'b';
+                        pEndString++;
+                        *(char *)pEndString = 'm';
+                        pEndString++;
+                        *(char *)pEndString = 'p';
+                        pEndString++;
+                        *(char *)pEndString = '\0';
+                    }
+                    else
+                    {
+                        pOutputPathname = strcat(pOutputPathname, "_tmp.bmp");
+                    }
+                }
+                break;
                 case eSWAP2COLOR:
                 {
                     if (pEndString)
                     {
-                        pOutputPathname[strlen( pOutputPathname) - 4] = '\0';
+                        pEndString--;
+                        *(char*)pEndString = '\0';
+                        //pOutputPathname[strlen( pOutputPathname) - 4] = '\0';
                     }
                     pOutputPathname = strcat( pOutputPathname, "-s.bmp");
                 }
@@ -218,7 +265,9 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                 {
                     if (pEndString)
                     {
-                        pOutputPathname[strlen( pOutputPathname) - 4] = '\0';
+                        pEndString--;
+                        *(char*)pEndString = '\0';
+                        //pOutputPathname[strlen( pOutputPathname) - 4] = '\0';
                     }
                     pOutputPathname = strcat( pOutputPathname, ".aii");
                 }
@@ -232,7 +281,6 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
 
     return pOutputPathname;
 }
-
 
 
 /**
@@ -696,6 +744,72 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
     return 0;
 }
 
+
+/**
+* @fn int doBmp_reduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief Reduce th color chart from 0..256 of R G B (bmp) to 0..15 of RGB (pic)
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
+int doBmp_reduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+{
+    char               *pfullOutputFilename;
+    char               *pInputRunner;
+    BMPHeader          *pHeaderBmp;
+    FormatBMP256       *pBmpImage;
+    unsigned int        uIndex;
+    unsigned long int   uCouleur_Palett_tmp[256] = { 0 };
+
+    if ((pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize))
+    {
+        pInputRunner = pContextApp->pInputFileData;
+        pHeaderBmp = (BMPHeader *)pContextApp->pInputFileData;
+
+        if (pHeaderBmp->Nbr_Bit_Par_Pixel == 8)
+        {
+            pBmpImage = (FormatBMP256 *)pContextApp->pInputFileData;
+
+            // convert palett of BMP keep high 8 bit only low bits a set to 0
+            for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
+            {
+                uCouleur_Palett_tmp[uIndex] = pBmpImage->Couleur_Palettes[uIndex] & 0x00F0F0F0;
+            }
+
+            pfullOutputFilename = createOutputPathname( pContextArg->pFullFilename, pContextArg->pOutputPathname, eCommand);
+            if (pfullOutputFilename)
+            {
+                FormatBMP256 *pTmpBmpImage = (FormatBMP256 *)calloc( 1, pContextApp->uInputFileSize);
+
+                if (pTmpBmpImage)
+                {
+                    (void )memcpy( (char *)pTmpBmpImage, pContextApp->pInputFileData, pContextApp->uInputFileSize);
+                    (void )memcpy( (char *)&pTmpBmpImage->Couleur_Palettes, (char *)&uCouleur_Palett_tmp, sizeof( uCouleur_Palett_tmp));
+
+                    if (writeFileFromMemory( pfullOutputFilename, (char *)pTmpBmpImage, pContextApp->uInputFileSize))
+                    {
+                        exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                    }
+
+                    free( pTmpBmpImage);
+                    pTmpBmpImage = NULL;
+                }
+                free( pfullOutputFilename);
+                pfullOutputFilename = NULL;
+            }
+        }
+        else
+        {
+            exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Not implemented", NULL, NULL, 1964);
+        }
+    }
+
+    return 0;
+}
+
 /**
 * @fn int doPIC_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 * @brief Display the line with color index not used in PIC
@@ -814,7 +928,7 @@ static double rgbToGrayScale( unsigned char uRed, unsigned char uGreen, unsigned
 * @param[in]        uARGBcolorOne
 * @param[in]        uARGBcolorTwo
 *
-* @return return TRUE if uARGBcolorOne is the daker color; FALSE if fGrayScaleTow is thez darker color
+* @return return TRUE if uARGBcolorOne is the daker color; FALSE if fGrayScaleTow is the darker color
 */
 static BOOL isTheDarkColor( unsigned long int uARGBcolorOne, unsigned long int uARGBcolorTwo)
 {
@@ -844,7 +958,7 @@ static BOOL isTheDarkColor( unsigned long int uARGBcolorOne, unsigned long int u
  *
  * @return 0 no error or exit program
 */
-int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand)
+int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 {
     char               *pInputRunner;
     BMPHeader          *pHeaderBmp;
@@ -886,6 +1000,8 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments* pContextArg, tContextApp
                 uCouleur_Palett_trmp[uIndex] = pBmpImage->Couleur_Palettes[uIndex] & 0x00F0F0F0;
             }
 
+//            doBmp_reduceColorChart( pContextArg, pContextApp, eCommand);
+
             // detect colors present in the palett multiple times to remove it.
             for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image - 1; uIndex++)
             {
@@ -909,12 +1025,12 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments* pContextArg, tContextApp
 
                 if ((uMoreUsed + uCounter) == (pBmpImage->Nbr_Couleur_Image - 1))
                 {
-                    (void )printf( "Color ulColorToRemove %lu @ %d exist %d times\n", ulColorToRemove, uMoreUsed, uCounter);
+                    (void )printf( "Color ulColorToRemove %08lu @ %d exist %d times\n", ulColorToRemove, uMoreUsed, uCounter);
                     break;
                 }
                 else if (uCounter != 0)
                 {
-                    (void )printf( "Color ulColorToRemove %lu @ %d exist %d times. TODO : remove it\n", ulColorToRemove, uMoreUsed, uCounter);
+                    (void )printf( "Color ulColorToRemove %08lu @ %d exist %d times. TODO : remove it\n", ulColorToRemove, uMoreUsed, uCounter);
                     // in this case we can remove multiple usage
                 }
             }

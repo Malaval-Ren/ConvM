@@ -24,7 +24,8 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
    -rled                        - decompress with rle algorithms file
    -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp
    -2pic                        - convert .bmp to .pic
-   -ncpl                        - display tle line number with color index not used in .pic
+   -brcc                        - reduce color chart from 0..256 in R G B (bmp) to 0..15 in R G B (pic)
+   -ncpl                        - display tle line number with color index not used in .pic and .bmp
    -apbm4                       - add palette to .bmp 16 to 256 colors
    -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines
    -swap <col> <col>            - swap 2 colors in palette and bitmap
@@ -39,9 +40,10 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
    -crlf to -detab    : any type of text
    -dump              : any
    -rlec -rled        : .scr, .shr, .pnt, .pic
-   -ncpl              : .pic
+   -ncpl              : .pic, .bmp
    -apbm4 -ipbm8
-   -swap -cmpl -cppl  : .bmp
+   -swap -cmpl -cppl
+   -brcc              : .bmp
 ```
 
 ## Convmspec Details

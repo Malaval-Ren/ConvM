@@ -125,7 +125,8 @@
  * -ncpl ../../../Iron_Lord/dessin.bmp/medite.ch.bmp
  * -ncpl ../../../Iron_Lord/Flyer/ironlord_test2.bmp
  * -ncpl ../../../Iron_Lord/dessin.bmp/wTerrain5.bmp
- * -ncpl ../../../../../DEV/Python/scbeditorII/wlooser_dead3.pic
+ * -ncpl ../../../../../../DEV/Python/scbeditorII/wlooser_dead3.pic
+ * -ncpl ../../../../../../DEV/Python/scbeditorII/Chevalier_g2_256c.bmp
  */
 
 /*
@@ -148,7 +149,8 @@ void usage()
     (void )printf( "   -rled                        - decompress with rle algorithms file\n");
     (void )printf( "   -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp\n");
     (void )printf( "   -2pic                        - convert .bmp to .pic\n");
-    (void )printf( "   -ncpl                        - display tle line number with color index not used in .pic\n");
+    (void )printf( "   -brcc                        - reduce color chart from 0..256 in R G B (bmp) to 0..15 in R G B (pic)\n");
+    (void )printf( "   -ncpl                        - display tle line number with color index not used in .pic and .bmp\n");
     (void )printf( "   -apbm4                       - add palette to .bmp 16 to 256 colors\n");
     (void )printf( "   -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines\n");
     (void )printf( "   -swap <col> <col>            - swap 2 colors in palette and bitmap\n");
@@ -163,8 +165,8 @@ void usage()
     (void )printf( "   -crlf to -detab    : any type of text\n");
     (void )printf( "   -dump              : any\n");
     (void )printf( "   -rlec -rled        : .scr, .shr, .pnt, .pic\n");
-    (void )printf( "   -ncpl              : .pic\n");
-    (void )printf( "   -apbm4 -ipbm8\n   -swap -cmpl -cppl  : .bmp\n");
+    (void )printf( "   -ncpl              : .pic, .bmp\n");
+    (void )printf( "   -apbm4 -ipbm8\n   -swap -cmpl -cppl\n   -brcc  : .bmp\n");
 }
 
 /**
@@ -278,7 +280,7 @@ int checkFileExtension( char *pPathFilename, int eCommand)
                             }
                         }
                     }
-                    else if (eCommand == eTO_PIC)
+                    else if ( (eCommand == eTO_PIC) || (eCommand == eREDUCECOLORCHART) )
                     {
                         if (strcmp( (const char *)pLastPointChar, "bmp") != 0)
                         {
@@ -501,6 +503,10 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
             else if (!strcmp( (const char *)pConvmParam, "-2pic"))
             {
                 eCommand = eTO_PIC;
+            }
+            else if (!strcmp( (const char *)pConvmParam, "-brcc"))
+            {
+                eCommand = eREDUCECOLORCHART;
             }
             else if (!strcmp((const char*)pConvmParam, "-ncpl"))
             {
@@ -837,7 +843,7 @@ void doTest( void)
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.13.14.141, (c) 2022..2024 R. Malaval & F. Mure";
+    static const char   *pVersionStr = "v1.14.15.145, (c) 2022..2024 R. Malaval & F. Mure";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;
@@ -941,6 +947,9 @@ int main( int argc, char *argv[])
             break;
             case eTO_PIC:
                 (void )doToPic( &contextArg, &contextApp, eCommand);
+            break;
+            case eREDUCECOLORCHART:
+                (void )doBmp_reduceColorChart( &contextArg, &contextApp, eCommand);
             break;
             case eNUMCOLORPERLINE:
             {

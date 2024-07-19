@@ -17,6 +17,8 @@ extern "C" {
 
     extern int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
+    extern int doBmp_reduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
+
     extern int doPIC_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
     extern int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
