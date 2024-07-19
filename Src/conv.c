@@ -341,9 +341,9 @@ char *readFileToMemory( char *pPathname)
 {
     FILE       *pFile = NULL;
     char       *pCharData = NULL;
-    size_t      uNumberOfElementRead = 0;
+    size_t      uNumberOfElementRead;
     int         iFileSize = 0;
-    errno_t     iError = 0;
+    errno_t     iError;
 
     iFileSize = getMyFileSize( pPathname);
     if (iFileSize)
@@ -386,7 +386,7 @@ int writeFileFromMemory( char *pPathname, char *pCharData, unsigned int uDataSiz
 {
     errno_t     iError = 0;
     FILE       *pFile = NULL;
-    size_t      numberOfElementWrite = 0;
+    size_t      numberOfElementWrite;
 
     iError = fopen_s( &pFile, (const char *)pPathname, "wb");
     if ((iError == 0) && (pFile != NULL))
@@ -479,7 +479,7 @@ char *doConvertJob( char *pInputFileData, unsigned int uInputFileSize, enum eCom
     char           *pOutputRunner = NULL;
     unsigned int    uIndex = 0;
     unsigned int    uLoop = 0;
-    int             uCurcolumn = 0;
+    int             uCurcolumn;
     BOOL            bMultipleSupport = FALSE;
 
     if (uInputFileSize <= 524288)

@@ -914,7 +914,7 @@ int main( int argc, char *argv[])
 
     contextApp.uInputFileSize = getMyFileSize( contextArg.pFullFilename);
 
-    (void )printf("\n");
+    (void )printf( "\n");
     contextApp.pInputFileData = readFileToMemory( contextArg.pFullFilename);   // input file is in memory
     if (contextApp.pInputFileData)
     {

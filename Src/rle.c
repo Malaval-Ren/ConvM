@@ -225,7 +225,7 @@ static void DumpShrHeader(char* pInputFileData, unsigned int inputFileSize)
                     (void )printf( "\n");
                 }
 
-                (void )printf( "\n + offset            : %d = 0x%04X\n\n", (int )((char *)pColors - pInputFileData), (int)((char*)pColors - pInputFileData));
+                (void )printf( "\n + offset            : %d = 0x%04X\n\n", (int )((char *)pColors - pInputFileData), (int )((char *)pColors - pInputFileData));
 
                 if (pColors)
                 {
@@ -289,7 +289,7 @@ static unsigned int createPic( char *pOutputFileData, unsigned int uOutputFileSi
     unsigned int        iOffset = 0;
     HeaderSHR          *pShrHeaderStruct;
     DataSHR            *pShrDataStruct;
-    unsigned int        iHeaderSize = 0;
+    unsigned int        iHeaderSize;
     unsigned short int *pColors = NULL;
     unsigned int        colorLen;
     DirEntry           *pDirEntry = NULL;
@@ -356,10 +356,10 @@ static unsigned int createPic( char *pOutputFileData, unsigned int uOutputFileSi
 */
 BOOL CheckShrFileFormat(char* pInputFileData, unsigned int inputFileSize)
 {
-    HeaderSHR* pShrHeaderStruct = NULL;
-    DataSHR* pShrDataStruct = NULL;
-    unsigned int        iHeaderSize = 0;
-    unsigned int        colorLen = 0;
+    HeaderSHR          *pShrHeaderStruct = NULL;
+    DataSHR            *pShrDataStruct = NULL;
+    unsigned int        iHeaderSize;
+    unsigned int        colorLen;
     BOOL                bResult = FALSE;
 
     if (pInputFileData)
@@ -451,9 +451,9 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
     unsigned short *pColorRunning;
     unsigned int    uIndex;
     unsigned int    uLoop;
-    unsigned int    uBegin = 0;
-    unsigned int    uEnd = 0;
-    unsigned int    uPalette = 0;
+    unsigned int    uBegin;
+    unsigned int    uEnd;
+    unsigned int    uPalette;
     unsigned int    uOffsetPalette;
     unsigned int    uOffsetCouleur;
     unsigned int    uNextLine;
@@ -528,7 +528,7 @@ void doDumpPic( char *pFilePathname, char *pInputFileData, unsigned int inputFil
 
         (void )printf( "\n\n\t- PALETTE -\n");
 
-        (void )memset( &uColorUsed, 0xFFFF, sizeof(uColorUsed));
+        (void )memset( &uColorUsed, 0xFFFF, sizeof( uColorUsed));
 
         pColorRunning = (unsigned short *)(pInputFileData + 0x7E00);
         uLoop = 0;

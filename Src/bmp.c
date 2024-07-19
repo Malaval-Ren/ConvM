@@ -588,16 +588,16 @@ static unsigned int convert_to_16_pic( char *pOutputFileData, unsigned int uOutp
     char               *pDecompressedData = NULL;
     unsigned int        uDecompressedSize = 0;
     unsigned short int *pPicPalette;
-    unsigned long int   uValueD = 0;
+    unsigned long int   uValueD;
     unsigned int        iOffset = 0;
-    unsigned int        uIndex = 0;
+    unsigned int        uIndex;
     unsigned int        uExtented = 0;
-    unsigned int        uVarPicX = 0;
+    unsigned int        uVarPicX;
     int                 iVarBmpX;
-    unsigned short int  uValueF = 0;
-    unsigned char       uColorRed = 0;
-    unsigned char       uColorGreen = 0;
-    unsigned char       uColorBlue = 0;
+    unsigned short int  uValueF;
+    unsigned char       uColorRed;
+    unsigned char       uColorGreen;
+    unsigned char       uColorBlue;
 
     if ( (pInputFileData) && (inputFileSize) )
     {
@@ -1495,25 +1495,22 @@ void DoInsertPaletteToBmp( char *pInputFileData, unsigned int uInputFileSize, ch
             }
         }
 
-        if ((pOutputFileData) && (*pOutputFileData))
+        pBmpIn16ColorsImage = (FormatBMP *)pInputFileData;
+        if (pBmpIn16ColorsImage->Nbr_Bit_Par_Pixel == 4)
         {
-            pBmpIn16ColorsImage = (FormatBMP *)pInputFileData;
-            if (pBmpIn16ColorsImage->Nbr_Bit_Par_Pixel == 4)
-            {
-                pInputRunner = (char *)&pBmpIn16ColorsImage->Couleur_Palette_0[0];
-                pBmpIn256ColorsImage = (FormatBMP256 *)*pOutputFileData;
-                pOutputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uTo * 16];
-            }
-            else
-            {
-                pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
-                pInputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uFrom * 16];
-
-                pBmpIn256ColorsImage = (FormatBMP256 *)*pOutputFileData;
-                pOutputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uTo * 16];
-            }
-            (void )memcpy( pOutputRunner, pInputRunner, sizeof( unsigned long int) * 16);
+            pInputRunner = (char *)&pBmpIn16ColorsImage->Couleur_Palette_0[0];
+            pBmpIn256ColorsImage = (FormatBMP256 *)*pOutputFileData;
+            pOutputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uTo * 16];
         }
+        else
+        {
+            pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
+            pInputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uFrom * 16];
+
+            pBmpIn256ColorsImage = (FormatBMP256 *)*pOutputFileData;
+            pOutputRunner = (char *)&pBmpIn256ColorsImage->Couleur_Palettes[uTo * 16];
+        }
+        (void )memcpy( pOutputRunner, pInputRunner, sizeof( unsigned long int) * 16);
     }
 
     return;
