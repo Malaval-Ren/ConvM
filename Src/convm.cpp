@@ -29,6 +29,7 @@
 
 #include <windows.h>
 
+#include "../convm/version.h"       // create define for app info, version, ...
 #include "main.h"
 #include "conv.h"
 #include "rle.h"
@@ -843,18 +844,10 @@ void doTest( void)
 int main( int argc, char *argv[])
 {
     const char          *pEndString = NULL;
-    static const char   *pVersionStr = "v1.14.15.145, (c) 2022..2024 R. Malaval & F. Mure";
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;
     unsigned int         uDataSize = 0;
-
-/*
-    char                 ipconf[30] = {};
-    unsigned int         uLen;
-
-    uLen = sizeof( ipconf);
-*/
 
 /*
     for (int uIndex = 0; uIndex <= 10; uIndex++)
@@ -883,7 +876,7 @@ int main( int argc, char *argv[])
 
             if ( ( !strcmp( (const char *)argv[1], "-v")) || ( !strcmp( (const char *)argv[1], "-V")) || ( !strcmp( (const char *)argv[1], "-version") ) )
             {
-                (void )printf( "%s %s\n", pEndString, pVersionStr);
+                (void )printf( "%s v%s, %s\n", pEndString, FILEVER_TEXT, LEGAL_CORYRIGHT);
                 exitOnError( (char *)__FUNCTION__, __LINE__, NULL, NULL, NULL, 0);
             }
         }
@@ -893,7 +886,7 @@ int main( int argc, char *argv[])
     }
     else
     {
-        (void )printf( "\n%s %s\n", pEndString, pVersionStr);
+        (void )printf( "\n%s v%s, %s\n", pEndString, FILEVER_TEXT, LEGAL_CORYRIGHT);
         pEndString = NULL;
     }
 
@@ -949,7 +942,7 @@ int main( int argc, char *argv[])
                 (void )doToPic( &contextArg, &contextApp, eCommand);
             break;
             case eREDUCECOLORCHART:
-                (void )doBmp_reduceColorChart( &contextArg, &contextApp, eCommand);
+                (void )doBmp_ReduceColorChart( &contextArg, &contextApp, eCommand);
             break;
             case eNUMCOLORPERLINE:
             {

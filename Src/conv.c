@@ -100,9 +100,9 @@ void exitOnError( char *pFunctionName, unsigned int uLineNumber, char *pExplain,
 
             (void )printf( "ConvM : %s() at %d - %s\n", pFunctionName, uLineNumber, pMessage);
 
-            (void )printf( "\nConvM : Press any key to continue...\n");
+//            (void )printf( "\nConvM : Press any key to continue...\n");
 //            (void )fflush( stdout);
-            (void )getchar();
+//            (void )getchar();
 
             free( pMessage);
         }
