@@ -139,25 +139,26 @@ void usage()
 {
     (void )printf( "Usage: convm <convmspec> <option> \"<filespec>\" \"<output folder or file>\"\n");
     (void )printf( "\n  <convmspec> is one of the following:\n");
-    (void )printf( "   -crlf                        - convert CR to LF\n");
-    (void )printf( "   -lfcr                        - convert LF to CR\n");
-    (void )printf( "   -dblf                        - replace 2 first $0A (LF) by one in a serie\n");
-    (void )printf( "   -dbcr                        - replace 2 first $0D (CR) by one in a serie\n");
-    (void )printf( "   -detab <col>                 - convert tabs to spaces (tab stop every COL columns)\n");
-    (void )printf( "   -dump                        - dump content of a supported file format\n");
-    (void )printf( "   -extxt <minlen>              - extract string of minlen from a binary file\n");
-    (void )printf( "   -rlec                        - not implemented\n");
-    (void )printf( "   -rled                        - decompress with rle algorithms file\n");
-    (void )printf( "   -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp\n");
-    (void )printf( "   -2pic                        - convert .bmp to .pic\n");
-    (void )printf( "   -brcc                        - reduce color chart from 0..256 in R G B (bmp) to 0..15 in R G B (pic)\n");
-    (void )printf( "   -ncpl                        - display tle line number with color index not used in .pic and .bmp\n");
-    (void )printf( "   -apbm4                       - add palette to .bmp 16 to 256 colors\n");
-    (void )printf( "   -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines\n");
-    (void )printf( "   -swap <col> <col>            - swap 2 colors in palette and bitmap\n");
-    (void )printf( "   -cmpl                        - compare palette of bmp 4 bits per pixel\n");
-    (void )printf( "   -cppl                        - copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel\n");
-    (void )printf( "   -xtrspr <col> <lin> <lin> <col> <lin> - extract sprite form BMP (4 bits per pixel) to text to .aii\n");
+    (void )printf( "   -crlf                        - Convert CR to LF\n");
+    (void )printf( "   -lfcr                        - Convert LF to CR\n");
+    (void )printf( "   -dblf                        - Replace 2 first $0A (LF) by one in a serie\n");
+    (void )printf( "   -dbcr                        - Replace 2 first $0D (CR) by one in a serie\n");
+    (void )printf( "   -detab <col>                 - Convert tabs to spaces (tab stop every COL columns)\n");
+    (void )printf( "   -dump                        - Dump content of a supported file format\n");
+    (void )printf( "   -extxt <minlen>              - Extract string of minlen from a binary file\n");
+    (void )printf( "   -rlec                        - Not implemented\n");
+    (void )printf( "   -rled                        - Decompress with rle algorithms file\n");
+    (void )printf( "   -2bmp                        - Convert .scr, .shr, .pnt, .pic to .bmp\n");
+    (void )printf( "   -2pic                        - Convert .bmp to .pic\n");
+    (void )printf( "   -brcc                        - Reduce color chart from 0..256 in R G B (bmp) to 0..15 in R G B (pic)\n");
+    (void )printf( "   -rdic                        - Remove duplicate index to the same color\n");
+    (void )printf( "   -ncpl                        - Display tle line number with color index not used in .pic and .bmp\n");
+    (void )printf( "   -apbm4                       - Add palette to .bmp 16 to 256 colors\n");
+    (void )printf( "   -ipbm8 <lin> <lin>           - Insert palette 16 colors to .bmp 256 colors at lines\n");
+    (void )printf( "   -swap <col> <col>            - Swap 2 colors in palette and bitmap\n");
+    (void )printf( "   -cmpl                        - Compare palette of bmp 4 bits per pixel\n");
+    (void )printf( "   -cppl                        - Copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel\n");
+    (void )printf( "   -xtrspr <col> <lin> <lin> <col> <lin> - Extract sprite form BMP (4 bits per pixel) to text to .aii\n");
 
     (void )printf( "\n  <option> is one of the following:\n");
     (void )printf( "   +lower             - the output file name is in lower case\n");
@@ -167,7 +168,7 @@ void usage()
     (void )printf( "   -dump              : any\n");
     (void )printf( "   -rlec -rled        : .scr, .shr, .pnt, .pic\n");
     (void )printf( "   -ncpl              : .pic, .bmp\n");
-    (void )printf( "   -apbm4 -ipbm8\n   -swap -cmpl -cppl\n   -brcc  : .bmp\n");
+    (void )printf( "   -apbm4 -ipbm8\n   -swap -cmpl -cppl\n   -brcc -rdic : .bmp\n");
 }
 
 /**
@@ -281,7 +282,7 @@ int checkFileExtension( char *pPathFilename, int eCommand)
                             }
                         }
                     }
-                    else if ( (eCommand == eTO_PIC) || (eCommand == eREDUCECOLORCHART) )
+                    else if ( (eCommand == eTO_PIC) || (eCommand == eREDUCECOLORCHART) || (eCommand == eREMOVEDUPLICATEINDEX) )
                     {
                         if (strcmp( (const char *)pLastPointChar, "bmp") != 0)
                         {
@@ -508,6 +509,10 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
             else if (!strcmp( (const char *)pConvmParam, "-brcc"))
             {
                 eCommand = eREDUCECOLORCHART;
+            }
+            else if (!strcmp((const char*)pConvmParam, "-rdic"))
+            {
+                eCommand = eREMOVEDUPLICATEINDEX;
             }
             else if (!strcmp((const char*)pConvmParam, "-ncpl"))
             {
@@ -943,6 +948,9 @@ int main( int argc, char *argv[])
             break;
             case eREDUCECOLORCHART:
                 (void )doBmp_ReduceColorChart( &contextArg, &contextApp, eCommand);
+            break;
+            case eREMOVEDUPLICATEINDEX:
+                (void )doBmp_RemoveDuplicateIndexToSameColor( &contextArg, &contextApp, eCommand);
             break;
             case eNUMCOLORPERLINE:
             {

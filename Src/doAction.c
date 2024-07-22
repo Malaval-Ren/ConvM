@@ -228,13 +228,13 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                         pEndString--;
                         *(char *)pEndString = '_';
                         pEndString++;
-                        *(char*)pEndString = 'r';
+                        *(char *)pEndString = 'r';
                         pEndString++;
-                        *(char*)pEndString = 'c';
+                        *(char *)pEndString = 'c';
                         pEndString++;
-                        *(char*)pEndString = 'c';
+                        *(char *)pEndString = 'c';
                         pEndString++;
-                        *(char*)pEndString = '.';
+                        *(char *)pEndString = '.';
                         pEndString++;
                         *(char *)pEndString = 'b';
                         pEndString++;
@@ -246,7 +246,38 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                     }
                     else
                     {
-                        pOutputPathname = strcat(pOutputPathname, "_tmp.bmp");
+                        pOutputPathname = strcat( pOutputPathname, "_rcc.bmp");
+                    }
+                }
+                break;
+                case eREMOVEDUPLICATEINDEX:
+                {
+                    if (pEndString)
+                    {
+                        pEndString--;
+                        *(char *)pEndString = '_';
+                        pEndString++;
+                        *(char *)pEndString = 'r';
+                        pEndString++;
+                        *(char *)pEndString = 'd';
+                        pEndString++;
+                        *(char *)pEndString = 'i';
+                        pEndString++;
+                        *(char *)pEndString = 'c';
+                        pEndString++;
+                        *(char *)pEndString = '.';
+                        pEndString++;
+                        *(char *)pEndString = 'b';
+                        pEndString++;
+                        *(char *)pEndString = 'm';
+                        pEndString++;
+                        *(char *)pEndString = 'p';
+                        pEndString++;
+                        *(char *)pEndString = '\0';
+                    }
+                    else
+                    {
+                        pOutputPathname = strcat( pOutputPathname, "_rdic.bmp");
                     }
                 }
                 break;
@@ -560,7 +591,7 @@ int doExt2Txt( tConvmArguments *pContextArg, tContextApp *pContextApp)
 *
 * @param[in]        pContextArg
 * @param[in]        pContextApp
-* @param[in]        eCommand
+* @param[in]        eCommand        : used to call createOutputPathname() to create the output name
  *
  * @return 0 no error or exit program
 */
@@ -610,7 +641,7 @@ int doRleComDecom( tConvmArguments *pContextArg, tContextApp *pContextApp, enum 
 *
 * @param[in]        pContextArg
 * @param[in]        pContextApp
-* @param[in]        eCommand
+* @param[in]        eCommand        : used to call createOutputPathname() to create the output name
  *
  * @return 0 no error or exit program
 */
@@ -671,7 +702,7 @@ int doToBmp( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
 *
 * @param[in]        pContextArg
 * @param[in]        pContextApp
-* @param[in]        eCommand
+* @param[in]        eCommand        : used to call createOutputPathname() to create the output name
  *
  * @return 0 no error or exit program
 */
@@ -746,77 +777,12 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
 
 
 /**
-* @fn int doBmp_reduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
-* @brief Reduce th color chart from 0..256 of R G B (bmp) to 0..15 of RGB (pic)
-*
-* @param[in]        pContextArg
-* @param[in]        pContextApp
-* @param[in]        eCommand
- *
- * @return 0 no error or exit program
-*/
-int doBmp_reduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
-{
-    char               *pfullOutputFilename;
-    char               *pInputRunner;
-    BMPHeader          *pHeaderBmp;
-    FormatBMP256       *pBmpImage;
-    unsigned int        uIndex;
-    unsigned long int   uCouleur_Palett_tmp[256] = { 0 };
-
-    if ((pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize))
-    {
-        pInputRunner = pContextApp->pInputFileData;
-        pHeaderBmp = (BMPHeader *)pContextApp->pInputFileData;
-
-        if (pHeaderBmp->Nbr_Bit_Par_Pixel == 8)
-        {
-            pBmpImage = (FormatBMP256 *)pContextApp->pInputFileData;
-
-            // convert palett of BMP keep high 8 bit only low bits a set to 0
-            for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
-            {
-                uCouleur_Palett_tmp[uIndex] = pBmpImage->Couleur_Palettes[uIndex] & 0x00F0F0F0;
-            }
-
-            pfullOutputFilename = createOutputPathname( pContextArg->pFullFilename, pContextArg->pOutputPathname, eCommand);
-            if (pfullOutputFilename)
-            {
-                FormatBMP256 *pTmpBmpImage = (FormatBMP256 *)calloc( 1, pContextApp->uInputFileSize);
-
-                if (pTmpBmpImage)
-                {
-                    (void )memcpy( (char *)pTmpBmpImage, pContextApp->pInputFileData, pContextApp->uInputFileSize);
-                    (void )memcpy( (char *)&pTmpBmpImage->Couleur_Palettes, (char *)&uCouleur_Palett_tmp, sizeof( uCouleur_Palett_tmp));
-
-                    if (writeFileFromMemory( pfullOutputFilename, (char *)pTmpBmpImage, pContextApp->uInputFileSize))
-                    {
-                        exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
-                    }
-
-                    free( pTmpBmpImage);
-                    pTmpBmpImage = NULL;
-                }
-                free( pfullOutputFilename);
-                pfullOutputFilename = NULL;
-            }
-        }
-        else
-        {
-            exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Not implemented", NULL, NULL, 1964);
-        }
-    }
-
-    return 0;
-}
-
-/**
 * @fn int doPIC_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
 * @brief Display the line with color index not used in PIC
 *
 * @param[in]        pContextArg
 * @param[in]        pContextApp
-* @param[in]        eCommand
+* @param[in]        eCommand        : used to call createOutputPathname() to create the output name
  *
  * @return 0 no error or exit program
 */
@@ -834,9 +800,9 @@ int doPIC_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
 
     if ((pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize))
     {
-        (void)printf("\nDisplay line number with color(s) index not used :\n\n");
-        (void)printf("Cursor colors        :                       C  C        C  C\n");
-        pPicImage = (FormatPIC*)pContextApp->pInputFileData;
+        (void )printf( "\nDisplay line number with color(s) index not used :\n\n");
+        (void )printf( "Cursor colors        :                       C  C        C  C\n");
+        pPicImage = (FormatPIC *)pContextApp->pInputFileData;
         pInputRunner = pContextApp->pInputFileData;
 
         for (uIndex = 0; uIndex < 200; uIndex++)
@@ -906,6 +872,138 @@ int doPIC_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
     return 0;
 }
 
+
+/**
+* @fn int doBmp_ReduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief Reduce th color chart from 0..256 of R G B (bmp) to 0..15 of RGB (pic)
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand        : used to call createOutputPathname() to create the output name
+ *
+ * @return 0 no error or exit program
+*/
+int doBmp_ReduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+{
+    char               *pfullOutputFilename;
+    BMPHeader          *pHeaderBmp;
+    FormatBMP256       *pBmpImage;
+    unsigned int        uIndex;
+
+    if ( (pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize) )
+    {
+        pHeaderBmp = (BMPHeader *)pContextApp->pInputFileData;
+
+        if (pHeaderBmp->Nbr_Bit_Par_Pixel == 8)
+        {
+            pBmpImage = (FormatBMP256 *)pContextApp->pInputFileData;
+
+            // convert palett of BMP keep high 8 bit only low bits a set to 0
+            for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
+            {
+                pBmpImage->Couleur_Palettes[uIndex] = pBmpImage->Couleur_Palettes[uIndex] & 0x00F0F0F0;
+            }
+
+            pfullOutputFilename = createOutputPathname( pContextArg->pFullFilename, pContextArg->pOutputPathname, eCommand);
+            if (pfullOutputFilename)
+            {
+                if (writeFileFromMemory( pfullOutputFilename, (char *)pBmpImage, pContextApp->uInputFileSize))
+                {
+                    exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                }
+
+                free( pfullOutputFilename);
+                pfullOutputFilename = NULL;
+            }
+        }
+        else
+        {
+            exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Support only 8 bits per pxiels", NULL, NULL, 1964);
+        }
+    }
+
+    return 0;
+}
+
+
+/**
+* @fn int doBmp_RemoveDuplicateIndexToSameColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief Remove duplicate index to the same color to reduce palett size
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand        : used to call createOutputPathname() to create the output name
+ *
+ * @return 0 no error or exit program
+*/
+int doBmp_RemoveDuplicateIndexToSameColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+{
+    char               *pfullOutputFilename;
+    char               *pInputRunner;
+    BMPHeader          *pHeaderBmp;
+    FormatBMP256       *pBmpImage;
+    unsigned int        uIndex;
+    unsigned int        uLoop;
+    unsigned int        uCounter;
+    unsigned int        uMoreUsed;
+
+    if ( (pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize) )
+    {
+        pHeaderBmp = (BMPHeader *)pContextApp->pInputFileData;
+
+        if (pHeaderBmp->Nbr_Bit_Par_Pixel == 8)
+        {
+            pBmpImage = (FormatBMP256 *)pContextApp->pInputFileData;
+
+            for (uCounter = 0; uCounter < pBmpImage->Nbr_Couleur_Image; uCounter++)
+            {
+                uMoreUsed = uCounter;
+
+                for (uIndex = uCounter; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
+                {
+                    if (pBmpImage->Couleur_Palettes[uCounter] == pBmpImage->Couleur_Palettes[uIndex])
+                    {
+                        pInputRunner = (char *)pBmpImage->bitmap;
+                        for (uLoop = 0; uLoop < sizeof( pBmpImage->bitmap); uLoop++)
+                        {
+                            if (*pInputRunner == uIndex)
+                            {
+                                *pInputRunner = uCounter;
+                            }
+                            pInputRunner++;
+                        }
+                        // pBmpImage->Couleur_Palettes[uIndex] = 0x00FFFFFF;
+                        uMoreUsed++;
+                    }
+                }
+                if (uMoreUsed > uCounter)
+                    (void )printf( "\nFor color index= %d  duplicate value= %d\n", uCounter, uMoreUsed);
+                if (uMoreUsed >= pBmpImage->Nbr_Couleur_Image)
+                    break;
+            }
+
+            pfullOutputFilename = createOutputPathname( pContextArg->pFullFilename, pContextArg->pOutputPathname, eCommand);
+            if (pfullOutputFilename)
+            {
+                if (writeFileFromMemory( pfullOutputFilename, (char *)pBmpImage, pContextApp->uInputFileSize))
+                {
+                    exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                }
+
+                free( pfullOutputFilename);
+                pfullOutputFilename = NULL;
+            }
+        }
+        else
+        {
+            exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Support only 8 bits per pxiels", NULL, NULL, 1964);
+        }
+    }
+
+    return 0;
+}
+
+
 /**
 * @fn static double rgbToGrayScale( unsigned char uRed, unsigned char uGreen, unsigned char uBlue)
 * @brief Convert RGB color in gray
@@ -974,20 +1072,22 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
     unsigned int        uCounter;
     unsigned int        uMoreUsed;
     unsigned short      uTableNumberOfcolor[200] = { 0 };
-    unsigned short      uTableNumberOfcolorIndex[200][16] = { 0xFFFF };
+    unsigned short      uTableNumberOfcolorByline[256] = { 0 };
     unsigned long int   uARGBcolorCurrent;
     unsigned long int   uARGBcolorMini = 0;
-    unsigned long int   uCouleur_Palett_trmp[256] = { 0 };
+    unsigned long int   uCouleur_Palett_tmp[256] = { 0 };
     unsigned long int   ulColorToRemove = 0;
     unsigned char       uDarkColorIndex = 0;
     unsigned short      uTableSCB[200] = { 0 };
     unsigned int        uFirstDiff;
 
+    //unsigned short      uTableNumberOfcolorIndex[200][64] = { 0xFFFF };
+    unsigned short( *uTableNumberOfcolorIndex)[200][64] = calloc( 1, sizeof( * uTableNumberOfcolorIndex));
+
     if ( (pContextArg) && (pContextApp) && (pContextApp->pInputFileData) && (pContextApp->uInputFileSize) )
     {
-        (void )printf( "\nDisplay 16 1st colors used by line\n\n");
+        (void )printf( "\nDisplay 64 1st colors used by line\n\n");
 
-        pInputRunner = pContextApp->pInputFileData;
         pHeaderBmp = (BMPHeader *)pContextApp->pInputFileData;
 
         if (pHeaderBmp->Nbr_Bit_Par_Pixel == 8)
@@ -997,10 +1097,182 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
             // convert palett of BMP keep high 8 bit only low bits a set to 0
             for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
             {
-                uCouleur_Palett_trmp[uIndex] = pBmpImage->Couleur_Palettes[uIndex] & 0x00F0F0F0;
+                uCouleur_Palett_tmp[uIndex] = pBmpImage->Couleur_Palettes[uIndex] & 0x00F0F0F0;
             }
 
-//            doBmp_reduceColorChart( pContextArg, pContextApp, eCommand);
+//            doBmp_ReduceColorChart( pContextArg, pContextApp, eCommand);
+
+            // build table of color index by line
+            uCounter = 0;
+            uMoreUsed = 0;
+            for (iVarPicX = (int )pBmpImage->Longueur_Image - 1; iVarPicX >= 0; iVarPicX--)
+            {
+                (void )memset( &(* uTableNumberOfcolorIndex)[iVarPicX][0], 0xFFFF, 64);
+
+                for (uVarPicY = 0; uVarPicY < (pBmpImage->Longueur_Image - 1); uVarPicY++)
+                {
+                    if (uCounter == 0)
+                    {
+                        ( * uTableNumberOfcolorIndex )[iVarPicX][uCounter] = pBmpImage->bitmap[iVarPicX][uVarPicY];
+                        uCounter++;
+                    }
+                    else if (uCounter < 64)
+                    {
+                        bFound = FALSE;
+                        for (uIndex = 0; uIndex < uCounter; uIndex++)   // Search if color index is already in table
+                        {
+                            if ( ( * uTableNumberOfcolorIndex)[iVarPicX][uIndex] == pBmpImage->bitmap[iVarPicX][uVarPicY])
+                            {
+                                bFound = TRUE;
+                            }
+                        }
+
+                        if ( (bFound == FALSE) && (( * uTableNumberOfcolorIndex)[iVarPicX][uIndex] != pBmpImage->bitmap[iVarPicX][uVarPicY]) )
+                        {
+                            ( * uTableNumberOfcolorIndex)[iVarPicX][uIndex] = pBmpImage->bitmap[iVarPicX][uVarPicY];
+                            uCounter++;
+                        }
+                    }
+                    else
+                    {
+                        uMoreUsed++;
+                    }
+                }
+                uCounter = 0;
+                uMoreUsed = 0;
+            }
+
+            // Display original table
+            (void )printf( "\nDisplay original table :\n");
+            uCounter = 0;
+            for (iVarPicX = (int )pBmpImage->Longueur_Image - 1; iVarPicX >= 0; iVarPicX--)
+            {
+                for (uLoop = 0; uLoop < 64; uLoop++)
+                {
+                    if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == 0xFFFF)
+                    {
+                        break;
+                    }
+
+                    if (uLoop == 0)
+                    {
+                        (void )printf( "#%03u: %03u", uCounter, ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
+                    }
+                    else
+                    {
+                        (void )printf( " %03u", ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
+                    }
+                }
+                whereCursorXY( &tCoord);        // get cursor position in windows console
+                moveCursorXY( 65, tCoord.Y);    // shift position X of the cursor in windows console
+                (void )printf( "\n");
+                uCounter++;
+            }
+
+            (void )printf( "\nShow duplicate index color :\n");
+            for (uCounter = 0; uCounter < pBmpImage->Nbr_Couleur_Image; uCounter++)
+            {
+                uMoreUsed = uCounter;
+
+                //uCouleur_Palett_count[uCounter] = uCouleur_Palett_tmp[uCounter];
+                for (uIndex = uCounter; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
+                {
+                    if (pBmpImage->Couleur_Palettes[uCounter] == pBmpImage->Couleur_Palettes[uIndex])
+                    {
+                        if (uMoreUsed == uCounter)
+                        {
+                            (void )printf( "#%03u: %03u", uCounter, uIndex);
+                        }
+                        else
+                        {
+                            (void )printf( " %03u", uIndex);
+                        }
+
+                        pInputRunner = (char *)&pBmpImage->bitmap[0][0];
+                        for (uLoop = 0; uLoop < sizeof( pBmpImage->bitmap); uLoop++)
+                        {
+                            if (*pInputRunner == uIndex)
+                            {
+                                *pInputRunner = uCounter;
+                            }
+                            pInputRunner++;
+                        }
+
+                        uMoreUsed++;
+                    }
+                }
+                whereCursorXY( &tCoord);        // get cursor position in windows console
+                moveCursorXY( 65, tCoord.Y);    // shift position X of the cursor in windows console
+                (void )printf( "\n");
+
+                if (uMoreUsed >= 256)
+                    break;
+            }
+
+            (void )printf( "\nShow poor color used in palett :\n\n");
+            pInputRunner = (char*)&pBmpImage->bitmap[0][0];
+            for (uLoop = 0; uLoop < sizeof( pBmpImage->bitmap); uLoop++)
+            {
+                uTableNumberOfcolorByline[*pInputRunner] += 1;
+                pInputRunner++;
+            }
+
+            for (uLoop = 0; uLoop < 16; uLoop++)
+            {
+                if (uLoop == 0)
+                {
+                    (void )printf( "      %02u", uLoop);
+                }
+                else
+                {
+                    (void )printf( " %02u", uLoop);
+                }
+            }
+            (void )printf( "\n\n");
+
+            uCounter = 0;
+            uMoreUsed = 0;
+            for (uLoop = 0; uLoop < 256; uLoop++)
+            {
+                if (uMoreUsed == 0)
+                {
+                    if (uTableNumberOfcolorByline[uLoop] < 9)
+                    {
+                        (void )printf( "#%03u: %02u", uCounter, uTableNumberOfcolorByline[uLoop]);
+                    }
+                    else
+                    {
+                        (void )printf( "#%03u:   ", uCounter);
+                    }
+                    uCounter++;
+                }
+                else
+                {
+                    if (uTableNumberOfcolorByline[uLoop] < 9)
+                    {
+                        (void )printf( " %02u", uTableNumberOfcolorByline[uLoop]);
+                    }
+                    else
+                    {
+                        (void )printf( "   ");
+                    }
+                }
+                uMoreUsed++;
+                if (uMoreUsed >= 16)
+                {
+                    (void )printf( "\n");
+                    uMoreUsed = 0;
+                }
+            }
+
+            free( uTableNumberOfcolorIndex);
+            return 0;
+
+//            pInputRunner = pContextApp->pInputFileData;
+
+
+
+
 
             // detect colors present in the palett multiple times to remove it.
             for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image - 1; uIndex++)
@@ -1008,16 +1280,16 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                 uMoreUsed = 0;
                 uCounter = 0;
                 bFound = FALSE;
-                ulColorToRemove = uCouleur_Palett_trmp[uIndex];
+                ulColorToRemove = uCouleur_Palett_tmp[uIndex];
                 for (uLoop = uIndex + 1; uLoop < pBmpImage->Nbr_Couleur_Image; uLoop++)
                 {
-                    if ( (bFound == FALSE) && (ulColorToRemove == uCouleur_Palett_trmp[uLoop]) )
+                    if ( (bFound == FALSE) && (ulColorToRemove == uCouleur_Palett_tmp[uLoop]) )
                     {
                         uCounter++;
                         bFound = TRUE;
                         uMoreUsed = uIndex;
                     }
-                    else if ( (bFound == TRUE) && (ulColorToRemove == uCouleur_Palett_trmp[uLoop]) )
+                    else if ( (bFound == TRUE) && (ulColorToRemove == uCouleur_Palett_tmp[uLoop]) )
                     {
                         uCounter++;
                     }
@@ -1057,13 +1329,13 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
             uMoreUsed = 0;
             for (iVarPicX = (int)pBmpImage->Longueur_Image - 1; iVarPicX >= 0; iVarPicX--)
             {
-                (void )memset( uTableNumberOfcolorIndex[iVarPicX], 0xFFFF, 32);
+                (void )memset(&(*uTableNumberOfcolorIndex)[iVarPicX][0], 0xFFFF, 64);
 
                 for (uVarPicY = 0; uVarPicY < (pBmpImage->Longueur_Image - 1); uVarPicY++)
                 {
                     if (uCounter == 0)
                     {
-                        uTableNumberOfcolorIndex[iVarPicX][uCounter] = pBmpImage->bitmap[iVarPicX][uVarPicY];
+                        ( * uTableNumberOfcolorIndex )[iVarPicX][uCounter] = pBmpImage->bitmap[iVarPicX][uVarPicY];
                         uCounter++;
                     }
                     else if (uCounter < 16)
@@ -1071,15 +1343,15 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                         bFound = FALSE;
                         for (uIndex = 0; uIndex < uCounter; uIndex++)   // Search if color index is already in table
                         {
-                            if (uTableNumberOfcolorIndex[iVarPicX][uIndex] == pBmpImage->bitmap[iVarPicX][uVarPicY])
+                            if ( ( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] == pBmpImage->bitmap[iVarPicX][uVarPicY] )
                             {
                                 bFound = TRUE;
                             }
                         }
 
-                        if ( (bFound == FALSE) && (uTableNumberOfcolorIndex[iVarPicX][uIndex] != pBmpImage->bitmap[iVarPicX][uVarPicY]) )
+                        if ( (bFound == FALSE) && (( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] != pBmpImage->bitmap[iVarPicX][uVarPicY]) )
                         {
-                            uTableNumberOfcolorIndex[iVarPicX][uIndex] = pBmpImage->bitmap[iVarPicX][uVarPicY];
+                            ( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] = pBmpImage->bitmap[iVarPicX][uVarPicY];
                             uCounter++;
                         }
                     }
@@ -1098,18 +1370,18 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
             {
                 for (uLoop = 0; uLoop < 16; uLoop++)
                 {
-                    if (uTableNumberOfcolorIndex[iVarPicX][uLoop] == 0xFFFF)
+                    if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == 0xFFFF)
                     {
                         break;
                     }
 
                     if (uLoop == 0)
                     {
-                        (void )printf( "#%03u: %03u", iVarPicX, uTableNumberOfcolorIndex[iVarPicX][uLoop]);
+                        (void )printf( "#%03u: %03u", iVarPicX, ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
                     }
                     else
                     {
-                        (void )printf( " %03u", uTableNumberOfcolorIndex[iVarPicX][uLoop]);
+                        (void )printf( " %03u", ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
                     }
                 }
                 whereCursorXY( &tCoord);        // get cursor position in windows console
@@ -1123,11 +1395,11 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                 bSwapWasDone = FALSE;
                 for ( uLoop = 0; uLoop < 15; uLoop++)
                 {
-                    if ( uTableNumberOfcolorIndex[iVarPicX][uLoop] == 0xFFFF)
+                    if ( ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == 0xFFFF)
                     {
                         break;
                     }
-                    if ( uTableNumberOfcolorIndex[iVarPicX][uLoop] == uDarkColorIndex)
+                    if ( ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == uDarkColorIndex)
                     {
                         bSwapWasDone = TRUE;
                         break;
@@ -1136,7 +1408,7 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
 
                 if ( ( !bSwapWasDone) && (uLoop < 15) )
                 {
-                    uTableNumberOfcolorIndex[iVarPicX][uLoop] = uDarkColorIndex;
+                    ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] = uDarkColorIndex;
                 }
             }
 
@@ -1148,18 +1420,18 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                 {
                     for (uLoop = 0; uLoop < 15; uLoop++)
                     {
-                        if (uTableNumberOfcolorIndex[iVarPicX][uLoop] == 0xFFFF)
+                        if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == 0xFFFF)
                         {
                             uTableNumberOfcolor[iVarPicX] = uLoop;
                             bSwapWasDone = TRUE;
                             break;
                         }
 
-                        if (uTableNumberOfcolorIndex[iVarPicX][uLoop] > uTableNumberOfcolorIndex[iVarPicX][uLoop + 1])
+                        if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] > ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop + 1])
                         {
-                            uTemp = uTableNumberOfcolorIndex[iVarPicX][uLoop];
-                            uTableNumberOfcolorIndex[iVarPicX][uLoop] = uTableNumberOfcolorIndex[iVarPicX][uLoop + 1];
-                            uTableNumberOfcolorIndex[iVarPicX][uLoop + 1] = uTemp;
+                            uTemp = ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop];
+                            ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] = ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop + 1];
+                            ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop + 1] = uTemp;
                             break;
                         }
                     }
@@ -1171,7 +1443,7 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
             }
 
             // Add missing color to have 12 color by line
-//            (void )memset( uCouleur_Palett_trmp, 0, sizeof( uCouleur_Palett_trmp));
+            // (void )memset( uCouleur_Palett_tmp, 0, sizeof( uCouleur_Palett_tmp));
             (void )printf( "\n");
             iVarPicX = (int)pBmpImage->Longueur_Image - 1;
             while (iVarPicX != 0)
@@ -1191,14 +1463,14 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                     // Here add color from after line
                     for (uIndex = 0; uIndex < 12; uIndex++)
                     {
-                        if (uTableNumberOfcolorIndex[iVarPicX][uIndex] != uTableNumberOfcolorIndex[uTemp][uIndex])
+                        if (( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] != ( * uTableNumberOfcolorIndex )[uTemp][uIndex])
                         {
                             uTableNumberOfcolor[iVarPicX]++;
                             for (uLoop = uTableNumberOfcolor[iVarPicX]; uLoop > uIndex; uLoop--)
                             {
-                                uTableNumberOfcolorIndex[iVarPicX][uLoop] = uTableNumberOfcolorIndex[iVarPicX][uLoop - 1];
+                                ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] = ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop - 1];
                             }
-                            uTableNumberOfcolorIndex[iVarPicX][uIndex] = uTableNumberOfcolorIndex[uTemp][uIndex];
+                            ( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] = ( * uTableNumberOfcolorIndex )[uTemp][uIndex];
                         }
                     }
                 }
@@ -1206,13 +1478,13 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                 {
                     for (uIndex = 0; uIndex < 12; uIndex++)
                     {
-                        if (uTableNumberOfcolorIndex[iVarPicX][uIndex] != uTableNumberOfcolorIndex[uTemp][uIndex])
+                        if (( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] != ( * uTableNumberOfcolorIndex )[uTemp][uIndex])
                         {
                             // check if color already exist
                             bSwapWasDone = FALSE;
                             for (uLoop = uIndex + 1; uLoop < 15; uLoop++)
                             {
-                                if (uTableNumberOfcolorIndex[uTemp][uLoop] == uTableNumberOfcolorIndex[iVarPicX][uIndex])
+                                if (( * uTableNumberOfcolorIndex )[uTemp][uLoop] == ( * uTableNumberOfcolorIndex )[iVarPicX][uIndex])
                                 {
                                     bSwapWasDone = TRUE;
                                     break;
@@ -1226,15 +1498,15 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
 
                             if (bSwapWasDone == FALSE)
                             {
-                                if ((uTableNumberOfcolorIndex[iVarPicX][uIndex] == 0xFFFF) && (uTableNumberOfcolorIndex[uTemp][uIndex] != 0xFFFF))
+                                if ((( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] == 0xFFFF) && (( * uTableNumberOfcolorIndex )[uTemp][uIndex] != 0xFFFF))
                                 {
                                     // Here add color from current line
                                     uIndex = uIndex;
                                 }
-                                else if ((uTableNumberOfcolorIndex[iVarPicX][uIndex] != 0xFFFF) && (uTableNumberOfcolorIndex[uTemp][uIndex] == 0xFFFF))
+                                else if ((( * uTableNumberOfcolorIndex )[iVarPicX][uIndex] != 0xFFFF) && (( * uTableNumberOfcolorIndex )[uTemp][uIndex] == 0xFFFF))
                                 {
                                     // Add last color
-                                    uTableNumberOfcolorIndex[uTemp][uIndex] = uTableNumberOfcolorIndex[iVarPicX][uIndex];
+                                    ( * uTableNumberOfcolorIndex )[uTemp][uIndex] = ( * uTableNumberOfcolorIndex )[iVarPicX][uIndex];
                                     uTableNumberOfcolor[uTemp]++;
                                 }
                                 else
@@ -1243,9 +1515,9 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                                     uTableNumberOfcolor[uTemp]++;
                                     for (uLoop = uTableNumberOfcolor[uTemp]; uLoop > uIndex; uLoop--)
                                     {
-                                        uTableNumberOfcolorIndex[uTemp][uLoop] = uTableNumberOfcolorIndex[uTemp][uLoop - 1];
+                                        ( * uTableNumberOfcolorIndex )[uTemp][uLoop] = ( * uTableNumberOfcolorIndex )[uTemp][uLoop - 1];
                                     }
-                                    uTableNumberOfcolorIndex[uTemp][uIndex] = uTableNumberOfcolorIndex[iVarPicX][uIndex];
+                                    ( * uTableNumberOfcolorIndex )[uTemp][uIndex] = ( * uTableNumberOfcolorIndex )[iVarPicX][uIndex];
                                 }
                             }
                         }
@@ -1283,18 +1555,18 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                 {
                     for (uLoop = 0; uLoop < 15; uLoop++)
                     {
-                        if (uTableNumberOfcolorIndex[iVarPicX][uLoop] == 0xFFFF)
+                        if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == 0xFFFF)
                         {
                             uTableNumberOfcolor[iVarPicX] = uLoop;
                             bSwapWasDone = TRUE;
                             break;
                         }
 
-                        if (uTableNumberOfcolorIndex[iVarPicX][uLoop] > uTableNumberOfcolorIndex[iVarPicX][uLoop + 1])
+                        if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] > ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop + 1])
                         {
-                            uTemp = uTableNumberOfcolorIndex[iVarPicX][uLoop];
-                            uTableNumberOfcolorIndex[iVarPicX][uLoop] = uTableNumberOfcolorIndex[iVarPicX][uLoop + 1];
-                            uTableNumberOfcolorIndex[iVarPicX][uLoop + 1] = uTemp;
+                            uTemp = ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop];
+                            ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] = ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop + 1];
+                            ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop + 1] = uTemp;
                             break;
                         }
                     }
@@ -1311,18 +1583,18 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
             {
                 for (uLoop = 0; uLoop < 16; uLoop++)
                 {
-                    if (uTableNumberOfcolorIndex[iVarPicX][uLoop] == 0xFFFF)
+                    if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == 0xFFFF)
                     {
                         break;
                     }
 
                     if (uLoop == 0)
                     {
-                        (void )printf( "#%03u: %03u", iVarPicX, uTableNumberOfcolorIndex[iVarPicX][uLoop]);
+                        (void )printf( "#%03u: %03u", iVarPicX, ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
                     }
                     else
                     {
-                        (void )printf( " %03u", uTableNumberOfcolorIndex[iVarPicX][uLoop]);
+                        (void )printf( " %03u", ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
                     }
                 }
                 whereCursorXY( &tCoord);        // get cursor position in windows console
@@ -1345,7 +1617,7 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                     bSwapWasDone = FALSE;
                     for (uIndex = 0; uIndex < 12; uIndex++)
                     {
-                        if (uTableNumberOfcolorIndex[uCounter][uIndex] != uTableNumberOfcolorIndex[iVarPicX][uIndex])
+                        if (( * uTableNumberOfcolorIndex )[uCounter][uIndex] != ( * uTableNumberOfcolorIndex )[iVarPicX][uIndex])
                         {
                             if (uFirstDiff == 0xFFFF)
                             {
@@ -1419,18 +1691,18 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
             {
                 for (uLoop = 0; uLoop < 16; uLoop++)
                 {
-                    if (uTableNumberOfcolorIndex[iVarPicX][uLoop] == 0xFFFF)
+                    if (( * uTableNumberOfcolorIndex )[iVarPicX][uLoop] == 0xFFFF)
                     {
                         break;
                     }
 
                     if (uLoop == 0)
                     {
-                        (void )printf( "#%03u: %03u", iVarPicX, uTableNumberOfcolorIndex[iVarPicX][uLoop]);
+                        (void )printf( "#%03u: %03u", iVarPicX, ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
                     }
                     else
                     {
-                        (void )printf( " %03u", uTableNumberOfcolorIndex[iVarPicX][uLoop]);
+                        (void )printf( " %03u", ( * uTableNumberOfcolorIndex )[iVarPicX][uLoop]);
                     }
                 }
                 whereCursorXY( &tCoord);        // get cursor position in windows console
@@ -1443,6 +1715,8 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
         {
             exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Not implemented", NULL, NULL, 1964);
         }
+
+        free( uTableNumberOfcolorIndex);
     }
 
     return 0;

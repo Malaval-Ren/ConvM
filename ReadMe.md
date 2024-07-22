@@ -25,6 +25,7 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
    -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp
    -2pic                        - convert .bmp to .pic
    -brcc                        - reduce color chart from 0..256 in R G B (bmp) to 0..15 in R G B (pic)
+   -rdic                        - Remove duplicate index to the same color
    -ncpl                        - display tle line number with color index not used in .pic and .bmp
    -apbm4                       - add palette to .bmp 16 to 256 colors
    -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines
@@ -43,7 +44,7 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
    -ncpl              : .pic, .bmp
    -apbm4 -ipbm8
    -swap -cmpl -cppl
-   -brcc              : .bmp
+   -brcc -rdic        : .bmp
 ```
 
 ## Convmspec Details

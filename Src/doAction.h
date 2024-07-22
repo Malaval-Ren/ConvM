@@ -17,23 +17,25 @@ extern "C" {
 
     extern int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
-    extern int doBmp_reduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
-
     extern int doPIC_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
-    extern int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
+    extern int doBmp_ReduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
+
+    extern int doBmp_RemoveDuplicateIndexToSameColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
+
+    extern int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
     extern int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
-    extern int doInsertPaletteToBmp8(tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
+    extern int doInsertPaletteToBmp8(tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
     extern int doSwapTwoColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
     extern int doComparePalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
-    extern int doCopyPalette(tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
+    extern int doCopyPalette( tConvmArguments *pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
 
-    extern int doExtSprite(tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
+    extern int doExtSprite( tConvmArguments *pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
 
 
 #ifdef __cplusplus
