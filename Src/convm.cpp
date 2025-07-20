@@ -142,9 +142,9 @@
  *
  * @param[in]        pAboutString
  */
-static void usage( char* pAboutString)
+static void usage( char *pAboutString)
 {
-    if (pAboutString)
+    if ( pAboutString)
     {
         (void )printf( "\n%s\n\n", pAboutString);
     }
@@ -179,7 +179,9 @@ static void usage( char* pAboutString)
     (void )printf( "   -dump              : any\n");
     (void )printf( "   -rlec -rled        : .scr, .shr, .pnt, .pic\n");
     (void )printf( "   -ncpl              : .pic, .bmp\n");
-    (void )printf( "   -apbm4 -ipbm8\n   -swap -cmpl -cppl\n   -brcc -rdic : .bmp\n");
+    (void )printf( "   -apbm4 -ipbm8\n");
+    (void )printf( "   -swap -cmpl -cppl\n");
+    (void )printf( "   -brcc -rdic        : .bmp\n");
 }
 
 /**
@@ -267,7 +269,7 @@ static int checkFileExtension( char *pPathFilename, int eCommand)
                             {
                                 bErrorCmd = TRUE;
                             }
-                            else if (strcmp((const char *)pLastPointChar, "bmp") == 0)
+                            else if (strcmp( (const char *)pLastPointChar, "bmp") == 0)
                             {
                                 bErrorExt = TRUE;
                             }

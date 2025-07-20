@@ -370,7 +370,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
     return uBitmapSize;
 }
 
-#define NOUS "[ ConvM (c) 2022..2024  Renaud Malaval & Frederic Mure ]"
+#define NOUS "[ ConvM (c) 2022..2025  Renaud Malaval & Frederic Mure ]"
 
 /**
 * @fn static void add_signature( FormatPIC *pPicImage)
