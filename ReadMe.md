@@ -3,11 +3,18 @@
 
 ![Alt text](./MM_PowerUp_256x256.png "ConvM")    ![Alt text](./gplv3-127x51.png "license GPL v3") 
 
+_Creation: September 3rd, 2022..2025, by Renaud Malaval_  
+_Last review: July 20th, 2025, by Renaud Malaval_
+
 ## Convert many stuff
 
 Just a little software to help cross dev for **Apple IIGS**
 
-## help usage :
+## Build
+
+Open the project file **convm.sln** with **Visual Studio Community 2022** and build
+
+## Help usage
 
 ```bash
 Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
