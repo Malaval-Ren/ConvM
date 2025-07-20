@@ -10,6 +10,10 @@ _Last review: July 20th, 2025, by Renaud Malaval_
 
 Just a little software to help cross dev for **Apple IIGS**
 
+## License
+
+This software is under the **GPL v3** license
+
 ## Build
 
 Open the project file **convm.sln** with **Visual Studio Community 2022** and build
