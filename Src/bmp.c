@@ -2,7 +2,7 @@
  *
  * A tool to help cross dev for Apple II GS.
  *
- * Copyright(C) 2023 - 2024 Renaud Malaval <renaud.malaval@free.fr>.
+ * Copyright(C) 2023 - 2025 Renaud Malaval <renaud.malaval@free.fr>.
  *
  * This program is free software : you can redistribute it and /or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1086,20 +1086,20 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         (void )printf( "\nDisplay content of bmp header\n\n");
         (void )printf( "%s\n\n", pFilePathname);
 
-        (void )printf( "Signature          = %c%c\n", (char)(pBmpImage->Signature & 0x00FF), (char)((pBmpImage->Signature & 0xFF00) >> 8));
-        (void )printf( "Taille_Image       = %lu\n", pBmpImage->Taille_Image);
-        (void )printf( "Offset_Image       = %lu\n", pBmpImage->Offset_Image);
+        (void )printf( "Signature              = %c%c\n", (char)(pBmpImage->Signature & 0x00FF), (char)((pBmpImage->Signature & 0xFF00) >> 8));
+        (void )printf( "Taille_Image           = %lu\n", pBmpImage->Taille_Image);
+        (void )printf( "Offset_Image           = %lu\n", pBmpImage->Offset_Image);
         if (pBmpImage->Reserves != 0)
         {
-            (void )printf( "Reserves           = %c%c%c%c\n",
+            (void )printf( "Reserves               = %c%c%c%c\n",
                 (char)(pBmpImage->Reserves & 0x000000FF), (char)((pBmpImage->Reserves & 0x0000FF00) >> 8),
                 (char)((pBmpImage->Reserves & 0x00FF0000) >> 16), (char)((pBmpImage->Reserves & 0xFF000000) >> 24));
         }
-        (void )printf( "Entete2            = %lu\n", pBmpImage->Entete2);
-        (void )printf( "Largeur_Image      = %lu\n", pBmpImage->Largeur_Image);
-        (void )printf( "Longueur_Image     = %lu\n", pBmpImage->Longueur_Image);
-        (void )printf( "Nbr_Plan           = %d\n", pBmpImage->Nbr_Plan);
-        (void )printf( "Nbr_Bit_Par_Pixel  = %d\n", pBmpImage->Nbr_Bit_Par_Pixel);
+        (void )printf( "Entete2                = %lu\n", pBmpImage->Entete2);
+        (void )printf( "Largeur_Image          = %lu\n", pBmpImage->Largeur_Image);
+        (void )printf( "Longueur_Image         = %lu\n", pBmpImage->Longueur_Image);
+        (void )printf( "Nbr_Plan               = %d\n", pBmpImage->Nbr_Plan);
+        (void )printf( "Nbr_Bit_Par_Pixel      = %d\n", pBmpImage->Nbr_Bit_Par_Pixel);
 
         if ((pBmpImage->Type_Compression >= 0) && (pBmpImage->Type_Compression <= 7))
         {
@@ -1119,9 +1119,11 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         else
             (void )printf( "Type_Compression   = %lu\n", pBmpImage->Type_Compression);
 
-        (void )printf( "Taille_Map         = %lu\n", pBmpImage->Taille_Map);
-        (void )printf( "Resolution_H       = %lu\n", pBmpImage->Resolution_H);
-        (void )printf( "Resolution_V       = %lu\n", pBmpImage->Resolution_V);
+        (void )printf( "Taille_Map             = %lu\n", pBmpImage->Taille_Map);
+        (void )printf( "Resolution_H           = %lu\n", pBmpImage->Resolution_H);
+        (void )printf( "Resolution_V           = %lu\n", pBmpImage->Resolution_V);
+        (void )printf( "Nbr_Couleur_Image      = %lu\n", pBmpImage->Nbr_Couleur_Image);
+        (void )printf( "Nbr_Couleur_Importante = %lu\n", pBmpImage->Nbr_Couleur_Importante);
         (void )printf( "\n");
 
         /*
@@ -1130,7 +1132,8 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
         (void )printf( "\n");
         */
 
-        (void )printf( "BMP header size    = %d 0x%04X\n", (int )sizeof( BMPHeader), (int )sizeof( BMPHeader));
+        (void )printf( "Nbr_Couleur_Importante = %lu\n", pBmpImage->Nbr_Couleur_Importante);
+        (void )printf( "BMP header size        = %d 0x%04X\n", (int )sizeof( BMPHeader), (int )sizeof( BMPHeader));
 
         switch (pBmpImage->Nbr_Bit_Par_Pixel)
         {
@@ -1146,9 +1149,9 @@ void doDumpBmp( char *pFilePathname, char *pInputFileData, unsigned int inputFil
                 uIndex = 0;
                 break;
         }
-        (void )printf( "palette size       = %u 0x%04X\n", uIndex, uIndex);
-        (void )printf( "data index         = %u 0x%04X\n", uIndex + (int )sizeof( BMPHeader), uIndex + (int )sizeof( BMPHeader));
-        (void )printf( "data index line 56 = %u 0x%04X\n", uIndex + (int )sizeof( BMPHeader) + (56 * 320), uIndex + (int )sizeof( BMPHeader) + (56 * 320));
+        (void )printf( "palette size           = %u 0x%04X\n", uIndex, uIndex);
+        (void )printf( "data index             = %u 0x%04X\n", uIndex + (int )sizeof( BMPHeader), uIndex + (int )sizeof( BMPHeader));
+        (void )printf( "data index line 56     = %u 0x%04X\n", uIndex + (int )sizeof( BMPHeader) + (56 * 320), uIndex + (int )sizeof( BMPHeader) + (56 * 320));
         (void )printf( "\n");
 
         switch (pBmpImage->Nbr_Bit_Par_Pixel)

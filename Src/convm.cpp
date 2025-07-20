@@ -2,7 +2,7 @@
  *
  * A tool to help cross dev for Apple II GS.
  *
- * Copyright(C) 2023 - 2024 Renaud Malaval <renaud.malaval@free.fr>.
+ * Copyright(C) 2023 - 2025 Renaud Malaval <renaud.malaval@free.fr>.
  *
  * This program is free software : you can redistribute it and /or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
  *  along with this program.If not, see < https://www.gnu.org/licenses/>.
  */
 
+// convm.cpp : Ce fichier contient la fonction 'main'. L'exécution du programme commence et se termine à cet endroit.
+
 #include <iostream>
 
 #include <stdio.h>
@@ -29,13 +31,17 @@
 
 #include <windows.h>
 
-#include "../convm/version.h"       // create define for app info, version, ...
 #include "main.h"
 #include "conv.h"
 #include "rle.h"
 #include "bmp.h"
 #include "doAction.h"
 
+#define noIA_REDUCENBRCOLORS
+
+#ifdef IA_REDUCENBRCOLORS
+    #include "reducenbrcolors.h"
+#endif
 
 // _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable : 4996)
@@ -131,12 +137,17 @@
  */
 
 /*
- * @fn void usage()
+ * @fn static void usage()
  * @brief Show how to use soft
  *
+ * @param[in]        pAboutString
  */
-void usage()
+static void usage( char* pAboutString)
 {
+    if (pAboutString)
+    {
+        (void )printf( "\n%s\n\n", pAboutString);
+    }
     (void )printf( "Usage: convm <convmspec> <option> \"<filespec>\" \"<output folder or file>\"\n");
     (void )printf( "\n  <convmspec> is one of the following:\n");
     (void )printf( "   -crlf                        - Convert CR to LF\n");
@@ -180,7 +191,7 @@ void usage()
 *
 * @return 0 if ok, or 3 on error but never return the software exit
 */
-int checkFileExtension( char *pPathFilename, int eCommand)
+static int checkFileExtension( char *pPathFilename, int eCommand)
 {
     const char  *pEndString = NULL;
     char        *pRunning = NULL;
@@ -341,12 +352,12 @@ int checkFileExtension( char *pPathFilename, int eCommand)
 }
 
 /**
-* @fn void pathanmeToLowerCase( char **pPathname)
+* @fn static void pathanmeToLowerCase( char **pPathname)
 * @brief parse the pathname and set only the file name in lower case
 *
 * @param[in]        pPathname
 */
-void pathanmeToLowerCase( char **pPathname)
+static void pathanmeToLowerCase( char **pPathname)
 {
     char        *pRunning;
     const char  *pEndString;
@@ -828,13 +839,128 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
 }
 
 /**
-* @fn void doTest( void)
-* @brief a test function in case of study rapidly something
+* @fn static char *myGetFileName( char *pFilePath)
+* @brief extrat the file name in pFilePath
 *
+* @param[in]        pFilePath
+*
+* @return file name if success, or pFilePath in case of error
 */
-void doTest( void)
+static char* myGetFileName(char* pFilePath)
 {
+    char* pFileName = NULL;
 
+    if (pFilePath)
+    {
+        pFileName = (char*)strrchr(pFilePath, '\\');
+        if (!pFileName)
+        {
+            pFileName = (char*)strrchr(pFilePath, '/');
+        }
+    }
+    return pFileName ? pFileName + 1 : pFilePath;
+}
+
+/**
+* @fn static char *myBuidAboutString( void)
+* @brief built the about string using resources fields LegalCopyright and ProductVersion
+*
+* @return the about string if success, or NULL in case of error
+*/
+static char* myBuidAboutString(void)
+{
+    char                filePath[MAX_PATH];
+    unsigned long       ulSize;
+    unsigned long       ulHandle;
+    UINT                uLen;
+    char* pResourceBuffer = NULL;
+    char* pApplicationName;
+    char* pLegalCopyright = NULL;
+    char* pVersion = NULL;
+    char* pfileVersionInformation = NULL;
+
+    ulSize = GetModuleFileNameA(NULL, filePath, MAX_PATH);
+    if (ulSize == 0 || ulSize == MAX_PATH)
+    {
+        (void)printf("Error lors de la récupération du chemin du fichier.\n");
+    }
+    else
+    {
+        // ulHandle is set to zero
+        ulSize = GetFileVersionInfoSizeA(filePath, &ulHandle);
+        if (ulSize == 0)
+        {
+            (void)printf("Error lors de la récupération de la taille des informations de version.\n");
+        }
+        else
+        {
+            pResourceBuffer = (char*)malloc(ulSize);
+            if (!pResourceBuffer)
+            {
+                (void)printf("Error d'allocation de mémoire.\n");
+            }
+            else
+            {
+                ulHandle = 0;
+                if (!GetFileVersionInfoA((const char*)filePath, ulHandle, ulSize, pResourceBuffer))
+                {
+                    (void)printf("Error lors de la récupération des informations de version.\n");
+                }
+                else
+                {
+                    pApplicationName = myGetFileName(filePath);
+                    if (pApplicationName)
+                    {
+                        ulSize = (unsigned long)strlen(pApplicationName) + 16;
+                    }
+                    else
+                    {
+                        ulSize = 16;
+                    }
+                    // Retrieve the LegalCopyright field
+                    if (!VerQueryValueA(pResourceBuffer, "\\StringFileInfo\\040904b0\\LegalCopyright", (LPVOID*)&pLegalCopyright, &uLen))
+                    {
+                        (void)printf("Erreur lors de la récupération du champ LegalCopyright.\n");
+                    }
+                    else
+                    {
+                        ulSize += uLen;
+                        // Retrieve the ProductVersion field
+                        if (!VerQueryValueA(pResourceBuffer, "\\StringFileInfo\\040904b0\\ProductVersion", (LPVOID*)&pVersion, &uLen))
+                        {
+                            (void)printf("Erreur lors de la récupération du champ LegalCopyright.\n");
+                        }
+                        else
+                        {
+                            ulSize += uLen;
+                            pfileVersionInformation = (char*)malloc(ulSize);
+                            if (!pfileVersionInformation)
+                            {
+                                (void)printf("Erreur d'allocation de mémoire.\n");
+                            }
+                            else
+                            {
+                                (void)sprintf(pfileVersionInformation, "%s v%s, %s", pApplicationName ? pApplicationName : "", pVersion, pLegalCopyright);
+                            }
+                        }
+                    }
+                }
+                free(pResourceBuffer);
+            }
+        }
+    }
+
+    return pfileVersionInformation;
+}
+
+/**
+* @fn static void doTest( void)
+* @brief a test function in case of study rapidly something
+*/
+static void doTest( void)
+{
+    //printf("Enter a character: ");
+    //aChar = getchar();
 }
 
 /**
@@ -848,19 +974,26 @@ void doTest( void)
 */
 int main( int argc, char *argv[])
 {
+    char                *pAboutString = NULL;
     const char          *pEndString = NULL;
     tConvmArguments      contextArg = { NULL, NULL, 0, 0, 0, 0, 0, 0, 0};
     tContextApp          contextApp = { NULL, 0, NULL, 0};
     enum eCommandNumber  eCommand = eNONE;
     unsigned int         uDataSize = 0;
 
-/*
-    for (int uIndex = 0; uIndex <= 10; uIndex++)
+    // Message Information Get the verion and copyright from the file convm.rc
+    pAboutString = myBuidAboutString();
+
+    doTest();
+
+#ifdef IA_REDUCENBRCOLORS
+    for (int uIndex = 0; uIndex <= 1; uIndex++)
     {
-        doTest();
+        reducenbrcolors( argc, argv);
     }
     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"Success !", NULL, NULL, 0);
-*/
+#endif
+
     /* Message Information */
     pEndString = getFileName(argv[0]);
     if (!pEndString)
@@ -875,23 +1008,33 @@ int main( int argc, char *argv[])
         {
             if ( ( !strcmp( (const char *)argv[1], "-h")) || ( !strcmp( (const char *)argv[1], "-?")) || ( !strcmp( (const char *)argv[1], "-help") ) )
             {
-                usage();
+                usage( pAboutString);
+                if (pAboutString)
+                {
+                    free( pAboutString);
+                    pAboutString = NULL;
+                }
                 exitOnError( (char *)__FUNCTION__, __LINE__, NULL, NULL, NULL, 0);
             }
 
             if ( ( !strcmp( (const char *)argv[1], "-v")) || ( !strcmp( (const char *)argv[1], "-V")) || ( !strcmp( (const char *)argv[1], "-version") ) )
             {
-                (void )printf( "%s v%s, %s\n", pEndString, FILEVER_TEXT, LEGAL_CORYRIGHT);
+                (void )printf( "\n%s\n\n", pAboutString);
+                if (pAboutString)
+                {
+                    free( pAboutString);
+                    pAboutString = NULL;
+                }
                 exitOnError( (char *)__FUNCTION__, __LINE__, NULL, NULL, NULL, 0);
             }
         }
-        usage();
+        usage( NULL);
         (void )printf( "\n");
         exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"not enough parameters", NULL, NULL, 1);
     }
     else
     {
-        (void )printf( "\n%s v%s, %s\n", pEndString, FILEVER_TEXT, LEGAL_CORYRIGHT);
+        (void )printf( "\n%s\n\n", pAboutString);
         pEndString = NULL;
     }
 

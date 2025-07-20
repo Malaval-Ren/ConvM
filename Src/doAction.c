@@ -2,7 +2,7 @@
  *
  * A tool to help cross dev for Apple II GS.
  *
- * Copyright(C) 2023 - 2024 Renaud Malaval <renaud.malaval@free.fr>.
+ * Copyright(C) 2023 - 2025 Renaud Malaval <renaud.malaval@free.fr>.
  *
  * This program is free software : you can redistribute it and /or modify
  *  it under the terms of the GNU General Public License as published by
@@ -925,10 +925,40 @@ int doBmp_ReduceColorChart( tConvmArguments *pContextArg, tContextApp *pContextA
     return 0;
 }
 
+static void showColorPalett( FormatBMP256 *pBmpImage)
+{
+    unsigned int        uIndex;
+    unsigned int        uCounter;
+    unsigned int        uMoreUsed;
+
+    (void )printf( "\nShow color palett :\n\n");
+    uCounter = 0;
+    uMoreUsed = 0;
+    for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
+    {
+        if (uMoreUsed == 0)
+        {
+            (void )printf( "#%03u: $%06lx", uCounter, pBmpImage->Couleur_Palettes[uIndex]);
+            uCounter++;
+        }
+        else
+        {
+            (void )printf( " $%06lx", pBmpImage->Couleur_Palettes[uIndex]);
+        }
+        uMoreUsed++;
+        if (uMoreUsed >= 16)
+        {
+            (void )printf( "\n");
+            uMoreUsed = 0;
+        }
+    }
+
+    (void )printf( "\n");
+}
 
 /**
 * @fn int doBmp_RemoveDuplicateIndexToSameColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
-* @brief Remove duplicate index to the same color to reduce palett size
+* @brief -rdic : Remove duplicate index to the same color to reduce palett size
 *
 * @param[in]        pContextArg
 * @param[in]        pContextApp
@@ -959,8 +989,9 @@ int doBmp_RemoveDuplicateIndexToSameColor( tConvmArguments *pContextArg, tContex
             {
                 uMoreUsed = uCounter;
 
-                for (uIndex = uCounter; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
+                for (uIndex = uCounter + 1; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
                 {
+                    // Check if color are equal at index uCounter and uIndex
                     if (pBmpImage->Couleur_Palettes[uCounter] == pBmpImage->Couleur_Palettes[uIndex])
                     {
                         pInputRunner = (char *)pBmpImage->bitmap;
@@ -972,14 +1003,19 @@ int doBmp_RemoveDuplicateIndexToSameColor( tConvmArguments *pContextArg, tContex
                             }
                             pInputRunner++;
                         }
-                        // pBmpImage->Couleur_Palettes[uIndex] = 0x00FFFFFF;
+                        pBmpImage->Couleur_Palettes[uIndex] = 0x00000000;
                         uMoreUsed++;
                     }
                 }
                 if (uMoreUsed > uCounter)
+                {
                     (void )printf( "\nFor color index= %d  duplicate value= %d\n", uCounter, uMoreUsed);
+                    showColorPalett( pBmpImage);
+                }
                 if (uMoreUsed >= pBmpImage->Nbr_Couleur_Image)
+                {
                     break;
+                }
             }
 
             pfullOutputFilename = createOutputPathname( pContextArg->pFullFilename, pContextArg->pOutputPathname, eCommand);
@@ -1072,7 +1108,7 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
     unsigned int        uCounter;
     unsigned int        uMoreUsed;
     unsigned short      uTableNumberOfcolor[200] = { 0 };
-    unsigned short      uTableNumberOfcolorByline[256] = { 0 };
+    unsigned int        uTableNumberOfcolorByline[256] = { 0 };
     unsigned long int   uARGBcolorCurrent;
     unsigned long int   uARGBcolorMini = 0;
     unsigned long int   uCouleur_Palett_tmp[256] = { 0 };
@@ -1169,7 +1205,7 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                 uCounter++;
             }
 
-            (void )printf( "\nShow duplicate index color :\n");
+            (void )printf( "\nShow duplicate color :\n");
             for (uCounter = 0; uCounter < pBmpImage->Nbr_Couleur_Image; uCounter++)
             {
                 uMoreUsed = uCounter;
@@ -1232,6 +1268,7 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
 
             uCounter = 0;
             uMoreUsed = 0;
+            uARGBcolorCurrent = 0;
             for (uLoop = 0; uLoop < 256; uLoop++)
             {
                 if (uMoreUsed == 0)
@@ -1257,6 +1294,35 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                         (void )printf( "   ");
                     }
                 }
+                if (uTableNumberOfcolorByline[uLoop] > uARGBcolorCurrent)
+                {
+                    uARGBcolorCurrent = uTableNumberOfcolorByline[uLoop];
+                }
+
+                uMoreUsed++;
+                if (uMoreUsed >= 16)
+                {
+                    (void )printf( "\n");
+                    uMoreUsed = 0;
+                }
+            }
+            (void )printf( "\nThe color the most used is %lu times\n", uARGBcolorCurrent);
+
+            (void )printf( "\nShow all color used in palett :\n\n");
+            uCounter = 0;
+            uMoreUsed = 0;
+            for (uLoop = 0; uLoop < 256; uLoop++)
+            {
+                if (uMoreUsed == 0)
+                {
+                    (void )printf( "#%03u: %05u", uCounter, uTableNumberOfcolorByline[uLoop]);
+                    uCounter++;
+                }
+                else
+                {
+                    (void )printf( " %04u", uTableNumberOfcolorByline[uLoop]);
+                }
+
                 uMoreUsed++;
                 if (uMoreUsed >= 16)
                 {
@@ -1265,12 +1331,35 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
                 }
             }
 
+            (void )printf( "\nShow color palett :\n\n");
+            uCounter = 0;
+            uMoreUsed = 0;
+            for (uIndex = 0; uIndex < pBmpImage->Nbr_Couleur_Image; uIndex++)
+            {
+                if (uMoreUsed == 0)
+                {
+                    (void )printf( "#%03u: $%06lx", uCounter, pBmpImage->Couleur_Palettes[uIndex]);
+                    uCounter++;
+                }
+                else
+                {
+                    (void )printf( " $%06lx", pBmpImage->Couleur_Palettes[uIndex]);
+                }
+                uMoreUsed++;
+                if (uMoreUsed >= 16)
+                {
+                    (void )printf( "\n");
+                    uMoreUsed = 0;
+                }
+            }
+
+            (void )printf( "\n");
             free( uTableNumberOfcolorIndex);
             return 0;
 
 //            pInputRunner = pContextApp->pInputFileData;
 
-
+            uDarkColorIndex = 0;
 
 
 
@@ -1308,6 +1397,11 @@ int doBMP_NumberOfColor_NotUsePerLine( tConvmArguments *pContextArg, tContextApp
             }
             pBmpImage->Nbr_Couleur_Importante = uMoreUsed;
             (void )printf( "The important color are %d\n", uMoreUsed);
+
+
+
+
+
 
             // Find the dark color index
             uARGBcolorMini = pBmpImage->Couleur_Palettes[0];

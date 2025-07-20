@@ -1,7 +1,7 @@
 
 # **ConvM**
 
-![Alt text](./MM_PowerUp_256x256.png "ConvM") ![Alt text](./gplv3-127x51.png "license") 
+![Alt text](./MM_PowerUp_256x256.png "ConvM")    ![Alt text](./gplv3-127x51.png "license GPL v3") 
 
 ## Convert many stuff
 
