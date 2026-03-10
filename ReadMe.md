@@ -3,8 +3,8 @@
 
 ![Alt text](./MM_PowerUp_256x256.png "ConvM")    ![Alt text](./gplv3-127x51.png "license GPL v3") 
 
-_Creation: September 3rd, 2022..2025, by Renaud Malaval_  
-_Last review: July 20th, 2025, by Renaud Malaval_
+_Creation: September 3rd, 2022..2026, by Renaud Malaval_  
+_Last review: March 11th, 2026, by Renaud Malaval_
 
 ## Convert many stuff
 

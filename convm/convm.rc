@@ -24,7 +24,7 @@ BEGIN
             VALUE "FileDescription", "Converter to help in cross dev for Apple IIGS\0"
             VALUE "FileVersion", FILE_VERSION_DOT
             VALUE "InternalName", "convm\0"
-            VALUE "LegalCopyright", "Copyright (c) 2022...2025 R. Malaval & F. Mure\0"
+            VALUE "LegalCopyright", "Copyright (c) 2022...2026 R. Malaval & F. Mure\0"
             VALUE "OriginalFilename", "convm.exe\0"
             VALUE "ProductName", "ConvM\0"
             VALUE "ProductVersion", PRODUCT_VERSION_DOT

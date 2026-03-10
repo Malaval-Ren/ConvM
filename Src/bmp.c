@@ -2,7 +2,7 @@
  *
  * A tool to help cross dev for Apple II GS.
  *
- * Copyright(C) 2023 - 2025 Renaud Malaval <renaud.malaval@free.fr>.
+ * Copyright(C) 2023 - 2026 Renaud Malaval <renaud.malaval@free.fr>.
  *
  * This program is free software : you can redistribute it and /or modify
  *  it under the terms of the GNU General Public License as published by
@@ -370,7 +370,7 @@ static unsigned int bmp_rle4_decode( char *pOutputFileData, unsigned int uOutput
     return uBitmapSize;
 }
 
-#define NOUS "[ ConvM (c) 2022..2025  Renaud Malaval & Frederic Mure ]"
+#define NOUS "[ ConvM (c) 2022..2026  Renaud Malaval & Frederic Mure ]"
 
 /**
 * @fn static void add_signature( FormatPIC *pPicImage)
