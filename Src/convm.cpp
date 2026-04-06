@@ -134,6 +134,8 @@
  * -ncpl ../../../Iron_Lord/dessin.bmp/wTerrain5.bmp
  * -ncpl ../../../../../../DEV/Python/scbeditorII/wlooser_dead3.pic
  * -ncpl ../../../../../../DEV/Python/scbeditorII/Chevalier_g2_256c.bmp
+ * 
+ * -repr 3 144 194 G:\DEV\Python\scbeditorII\tacadre.bmp
  */
 
 /*
@@ -170,6 +172,7 @@ static void usage( char *pAboutString)
     (void )printf( "   -cmpl                        - Compare palette of bmp 4 bits per pixel\n");
     (void )printf( "   -cppl                        - Copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel\n");
     (void )printf( "   -xtrspr <col> <lin> <lin> <col> <lin> - Extract sprite form BMP (4 bits per pixel) to text to .aii\n");
+    (void )printf( "   -repr <pal> <lin> <lin>      - force usage of pal number from line begin to line end\n");
 
     (void )printf( "\n  <option> is one of the following:\n");
     (void )printf( "   +lower             - the output file name is in lower case\n");
@@ -181,19 +184,19 @@ static void usage( char *pAboutString)
     (void )printf( "   -ncpl              : .pic, .bmp\n");
     (void )printf( "   -apbm4 -ipbm8\n");
     (void )printf( "   -swap -cmpl -cppl\n");
-    (void )printf( "   -brcc -rdic        : .bmp\n");
+    (void )printf( "   -brcc -rdic -repr  : .bmp\n");
 }
 
 /**
-* @fn int checkFileExtension( char *pPathFilename, int eCommand)
+* @fn int checkFileExtension( char *pPathFilename, enum eCommandNumber eCommand)
 * @brief Check the 4 last char of file name to be .scr, .shr, .pnt, .pic
 *
 * @param[in]        pPathFilename
-* @param[in]        eCommand
+* @param[in]        enum eCommandNumber eCommand
 *
 * @return 0 if ok, or 3 on error but never return the software exit
 */
-static int checkFileExtension( char *pPathFilename, int eCommand)
+static int checkFileExtension( char *pPathFilename, enum eCommandNumber eCommand)
 {
     const char  *pEndString = NULL;
     char        *pRunning = NULL;
@@ -203,9 +206,16 @@ static int checkFileExtension( char *pPathFilename, int eCommand)
     BOOL         bError = FALSE;
     BOOL         bErrorCmd = FALSE;
     BOOL         bErrorExt = FALSE;
-    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic", "-ncpl", "-apbm4", "-ipbm8", "-swap", "-cmpl", "-cppl", "-xtrspr"};
+    const char  *pCmdtext[] = { "none", "-crlf", "-lfcr", "-dblf", "-dbcr", "-detab", "-dump", "-extxt", "-rlec", "-rled", "-2bmp", "-2pic", "-brcc", "-rdic", "-ncpl", "-apbm4", "-ipbm8", "-swap", "-cmpl", "-cppl", "-xtrspr", "-repr" };
 
-    if ((eCommand == eCRLF) || (eCommand == eLFCR) || (eCommand == eDOUBLE_0A) || (eCommand == eDOUBLE_0D) || (eCommand == eDETAB) || (eCommand == eEXT_TXT) || (eCommand == eADDPALBMP4) || (eCommand == eINSERTPALBMP8) || (eCommand == eSWAP2COLOR) || (eCommand == eCOMPPALET) || (eCommand == eCOPYPALET) || (eCommand == eEXTSPRITE))
+    if (eCommand >= eLast)
+    {
+        exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"invalid command", NULL, NULL, 2);
+        iError = 1; // fake value program has ended
+        return iError;
+    }
+
+    if ((eCommand == eCRLF) || (eCommand == eLFCR) || (eCommand == eDOUBLE_0A) || (eCommand == eDOUBLE_0D) || (eCommand == eDETAB) || (eCommand == eEXT_TXT) || (eCommand == eADDPALBMP4) || (eCommand == eINSERTPALBMP8) || (eCommand == eSWAP2COLOR) || (eCommand == eCOMPPALET) || (eCommand == eCOPYPALET) || (eCommand == eEXTSPRITE) )
     {
         iError = 0;
     }
@@ -232,7 +242,7 @@ static int checkFileExtension( char *pPathFilename, int eCommand)
                 {
                     bErrorNoExt = TRUE;
                 }
-                else if (strlen(pLastPointChar) == 3)
+                else if (strlen( pLastPointChar) == 3)
                 {
                     if (eCommand == eDUMP)
                     {
@@ -295,7 +305,7 @@ static int checkFileExtension( char *pPathFilename, int eCommand)
                             }
                         }
                     }
-                    else if ( (eCommand == eTO_PIC) || (eCommand == eREDUCECOLORCHART) || (eCommand == eREMOVEDUPLICATEINDEX) )
+                    else if ( (eCommand == eTO_PIC) || (eCommand == eREDUCECOLORCHART) || (eCommand == eREMOVEDUPLICATEINDEX) || (eCommand == eREPAIRPALET) )
                     {
                         if (strcmp( (const char *)pLastPointChar, "bmp") != 0)
                         {
@@ -471,7 +481,7 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
             else if (!strcmp( (const char *)pConvmParam, "-detab"))
             {
                 eCommand = eDETAB;
-                if (sscanf( (const char *)argv[++uIndex], "%d", (int*)&pContext->uTabColumns) == 1)
+                if (sscanf( (const char *)argv[++uIndex], "%d", (int *)&pContext->uTabColumns) == 1)
                 {
                     if (pContext->uTabColumns < 2)
                     {
@@ -490,7 +500,7 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
             else if (!strcmp( (const char *)pConvmParam, "-extxt"))
             {
                 eCommand = eEXT_TXT;
-                if (sscanf( (const char *)argv[++uIndex], "%d", (int*)&pContext->uMinSentenseLen) == 1)
+                if (sscanf( (const char *)argv[++uIndex], "%d", (int *)&pContext->uMinSentenseLen) == 1)
                 {
                     if (pContext->uMinSentenseLen < 1)
                     {
@@ -539,9 +549,9 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
             {
                 eCommand = eINSERTPALBMP8;
                 uIndex++;
-                pContext->uSwapColumnA = (unsigned int)atoi( (const char *)argv[uIndex]);
+                pContext->uSwapColumnA = (unsigned int )atoi( (const char *)argv[uIndex]);
                 uIndex++;
-                pContext->uSwapColumnB = (unsigned int)atoi( (const char *)argv[uIndex]);
+                pContext->uSwapColumnB = (unsigned int )atoi( (const char *)argv[uIndex]);
                 if ((pContext->uSwapColumnA > 15) || (pContext->uSwapColumnB > 15))
                 {
                     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"illegal convmspec parameter", pConvmParam, NULL, 2);
@@ -600,6 +610,35 @@ static enum eCommandNumber parseArguments( int argc, char *argv[], tConvmArgumen
                 }
                 uIndex++;
                 pContext->uHauteur = (unsigned int )atoi( (const char *)argv[uIndex]);       // uHauteur
+            }
+            else if (!strcmp( (const char *)pConvmParam, "-repr"))
+            {
+                eCommand = eREPAIRPALET;
+                uIndex++;
+                pContext->uPaletteNumber = (unsigned int )atoi( (const char *)argv[uIndex]);    // pal
+                uIndex++;
+                pContext->uHauteurBegin = (unsigned int )atoi( (const char *)argv[uIndex]);     // from line
+                uIndex++;
+                pContext->uHauteurEnd = (unsigned int )atoi( (const char *)argv[uIndex]);       // to line
+                if (pContext->uPaletteNumber > 15)
+                {
+                    exitOnError((char*)__FUNCTION__, __LINE__, (char*)"palette number should be between 0 and 15", pConvmParam, NULL, 5);
+                }
+                if (pContext->uHauteurBegin > 200)
+                {
+                    exitOnError((char*)__FUNCTION__, __LINE__, (char*)"from line should be between 0 and 200", pConvmParam, NULL, 5);
+                }
+                if (pContext->uHauteurEnd > 200)
+                {
+                    exitOnError((char*)__FUNCTION__, __LINE__, (char*)"from line should be between 0 and 200", pConvmParam, NULL, 5);
+                }
+                if (pContext->uHauteurBegin > pContext->uHauteurEnd)
+                {
+                    exitOnError((char*)__FUNCTION__, __LINE__, (char*)"from line should be less than to line", pConvmParam, NULL, 5);
+                }
+                // Reverse valuie to be compliant with the BMP format of pixels stored from the bottom to the top
+                pContext->uHauteurBegin = 200 - pContext->uHauteurBegin;
+                pContext->uHauteurEnd = 200 - pContext->uHauteurEnd;
             }
             else
             {
@@ -869,85 +908,85 @@ static char* myGetFileName(char* pFilePath)
 *
 * @return the about string if success, or NULL in case of error
 */
-static char* myBuidAboutString(void)
+static char * myBuidAboutString(void)
 {
     char                filePath[MAX_PATH];
     unsigned long       ulSize;
     unsigned long       ulHandle;
     UINT                uLen;
-    char* pResourceBuffer = NULL;
-    char* pApplicationName;
-    char* pLegalCopyright = NULL;
-    char* pVersion = NULL;
-    char* pfileVersionInformation = NULL;
+    char               *pApplicationName;
+    char               *pResourceBuffer = NULL;
+    char               *pLegalCopyright = NULL;
+    char               *pVersion = NULL;
+    char               *pfileVersionInformation = NULL;
 
-    ulSize = GetModuleFileNameA(NULL, filePath, MAX_PATH);
+    ulSize = GetModuleFileNameA( NULL, filePath, MAX_PATH);
     if (ulSize == 0 || ulSize == MAX_PATH)
     {
-        (void)printf("Error lors de la récupération du chemin du fichier.\n");
+        (void )printf( "Error lors de la récupération du chemin du fichier.\n");
     }
     else
     {
         // ulHandle is set to zero
-        ulSize = GetFileVersionInfoSizeA(filePath, &ulHandle);
+        ulSize = GetFileVersionInfoSizeA( filePath, &ulHandle);
         if (ulSize == 0)
         {
-            (void)printf("Error lors de la récupération de la taille des informations de version.\n");
+            (void )printf( "Error lors de la récupération de la taille des informations de version.\n");
         }
         else
         {
-            pResourceBuffer = (char*)malloc(ulSize);
-            if (!pResourceBuffer)
+            pResourceBuffer = (char *)malloc( ulSize);
+            if (! pResourceBuffer)
             {
-                (void)printf("Error d'allocation de mémoire.\n");
+                (void )printf( "Error d'allocation de mémoire.\n");
             }
             else
             {
                 ulHandle = 0;
-                if (!GetFileVersionInfoA((const char*)filePath, ulHandle, ulSize, pResourceBuffer))
+                if (! GetFileVersionInfoA( (const char *)filePath, ulHandle, ulSize, pResourceBuffer))
                 {
-                    (void)printf("Error lors de la récupération des informations de version.\n");
+                    (void )printf( "Error lors de la récupération des informations de version.\n");
                 }
                 else
                 {
-                    pApplicationName = myGetFileName(filePath);
+                    pApplicationName = myGetFileName( filePath);
                     if (pApplicationName)
                     {
-                        ulSize = (unsigned long)strlen(pApplicationName) + 16;
+                        ulSize = (unsigned long )strlen( pApplicationName) + 16;
                     }
                     else
                     {
                         ulSize = 16;
                     }
                     // Retrieve the LegalCopyright field
-                    if (!VerQueryValueA(pResourceBuffer, "\\StringFileInfo\\040904b0\\LegalCopyright", (LPVOID*)&pLegalCopyright, &uLen))
+                    if (! VerQueryValueA( pResourceBuffer, "\\StringFileInfo\\040904b0\\LegalCopyright", (LPVOID *)&pLegalCopyright, &uLen))
                     {
-                        (void)printf("Erreur lors de la récupération du champ LegalCopyright.\n");
+                        (void )printf( "Erreur lors de la récupération du champ LegalCopyright.\n");
                     }
                     else
                     {
                         ulSize += uLen;
                         // Retrieve the ProductVersion field
-                        if (!VerQueryValueA(pResourceBuffer, "\\StringFileInfo\\040904b0\\ProductVersion", (LPVOID*)&pVersion, &uLen))
+                        if (! VerQueryValueA( pResourceBuffer, "\\StringFileInfo\\040904b0\\ProductVersion", (LPVOID *)&pVersion, &uLen))
                         {
-                            (void)printf("Erreur lors de la récupération du champ LegalCopyright.\n");
+                            (void )printf( "Erreur lors de la récupération du champ LegalCopyright.\n");
                         }
                         else
                         {
                             ulSize += uLen;
-                            pfileVersionInformation = (char*)malloc(ulSize);
-                            if (!pfileVersionInformation)
+                            pfileVersionInformation = (char *)malloc(ulSize);
+                            if (! pfileVersionInformation)
                             {
-                                (void)printf("Erreur d'allocation de mémoire.\n");
+                                (void )printf( "Erreur d'allocation de mémoire.\n");
                             }
                             else
                             {
-                                (void)sprintf(pfileVersionInformation, "%s v%s, %s", pApplicationName ? pApplicationName : "", pVersion, pLegalCopyright);
+                                (void )sprintf( pfileVersionInformation, "%s v%s, %s", pApplicationName ? pApplicationName : "", pVersion, pLegalCopyright);
                             }
                         }
                     }
                 }
-                free(pResourceBuffer);
+                free( pResourceBuffer);
             }
         }
     }
@@ -1135,6 +1174,9 @@ int main( int argc, char *argv[])
             case eEXTSPRITE:
                 (void )printf( "CONVM : Take care no fully tested\n");
                 (void )doExtSprite( &contextArg, &contextApp, eCommand);
+            break;
+            case eREPAIRPALET:
+                (void )doRepairPalet( &contextArg, &contextApp, eCommand);
             break;
             default:
                 (void )printf( "CONVM : parameter not supported\n");

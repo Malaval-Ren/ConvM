@@ -21,6 +21,9 @@ extern "C" {
 
     char   *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pTheSprite, unsigned int *pDataSize);
 
+    char   *DoRepairBmpPalette( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pContextArg, tContextApp *pContextApp);
+
+
 #ifdef __cplusplus
 }
 #endif

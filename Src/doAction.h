@@ -33,10 +33,11 @@ extern "C" {
 
     extern int doComparePalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
-    extern int doCopyPalette( tConvmArguments *pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
+    extern int doCopyPalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
-    extern int doExtSprite( tConvmArguments *pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
+    extern int doExtSprite( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand);
 
+    extern int doRepairPalet(tConvmArguments* pContextArg, tContextApp* pContextApp, enum eCommandNumber eCommand);
 
 #ifdef __cplusplus
 }

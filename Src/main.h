@@ -58,6 +58,7 @@ enum eCommandNumber
     eCOMPPALET,
     eCOPYPALET,
     eEXTSPRITE,
+    eREPAIRPALET,
 
     eLast               // max value never used
 };
@@ -243,6 +244,9 @@ typedef struct _tConvmArguments
     unsigned int    uNumerOfLine;
     unsigned int    uLargeur;
     unsigned int    uHauteur;
+    unsigned int    uPaletteNumber;
+    unsigned int    uHauteurBegin;
+    unsigned int    uHauteurEnd;
 } tConvmArguments;
 
 #endif

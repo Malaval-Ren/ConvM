@@ -303,6 +303,33 @@ static char *createOutputPathname( char *pFullFilename, char *pOutPathname, enum
                     pOutputPathname = strcat( pOutputPathname, ".aii");
                 }
                 break;
+                case eREPAIRPALET:
+                    if (pEndString)
+                    {
+                        pEndString--;
+                        *(char*)pEndString = '_';
+                        pEndString++;
+                        *(char*)pEndString = 'f';
+                        pEndString++;
+                        *(char*)pEndString = 'i';
+                        pEndString++;
+                        *(char*)pEndString = 'x';
+                        pEndString++;
+                        *(char*)pEndString = '.';
+                        pEndString++;
+                        *(char*)pEndString = 'b';
+                        pEndString++;
+                        *(char*)pEndString = 'm';
+                        pEndString++;
+                        *(char*)pEndString = 'p';
+                        pEndString++;
+                        *(char*)pEndString = '\0';
+                    }
+                    else
+                    {
+                        pOutputPathname = strcat(pOutputPathname, "_fix.bmp");
+                    }
+                break;
                 default:
                     // Not possible to pass here
                 break;
@@ -374,7 +401,7 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
             }
             else
             {
-                free(pShortPathname);
+                free( pShortPathname);
                 pShortPathname = strdup( pfullOutputFilename);
             }
 
@@ -438,13 +465,13 @@ static void updateFileType( tConvmArguments * pContext, enum eCommandNumber eCom
         }
         if (pDuplicateString)
         {
-            free(pDuplicateString);
+            free( pDuplicateString);
             pDuplicateString = NULL;
         }
 
         if (pShortPathname)
         {
-            free(pShortPathname);
+            free( pShortPathname);
             pShortPathname = NULL;
         }
     }
@@ -490,8 +517,10 @@ int doDetab( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
 
             free( pfullOutputFilename);
             free( pContextApp->pOutputFileData);
+            pContextApp->pOutputFileData = NULL;
         }
         free( pContextApp->pInputFileData);
+        pContextApp->pInputFileData = NULL;
     }
 
     return 0;
@@ -519,6 +548,7 @@ int doDump( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComman
             if (pContextApp->pOutputFileData)
             {
                 free( pContextApp->pOutputFileData);
+                pContextApp->pOutputFileData = NULL;
             }
         }
         else
@@ -579,6 +609,7 @@ int doExt2Txt( tConvmArguments *pContextArg, tContextApp *pContextApp)
                 exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file too big", NULL, pContextArg->pFullFilename, 5);
             }
             free( pContextApp->pOutputFileData);
+            pContextApp->pOutputFileData = NULL;
         }
 
     }
@@ -624,12 +655,14 @@ int doRleComDecom( tConvmArguments *pContextArg, tContextApp *pContextApp, enum 
             }
 
             free( pContextApp->pOutputFileData);
+            pContextApp->pOutputFileData = NULL;
         }
         else
         {
             exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
         }
         free( pContextApp->pInputFileData);
+        pContextApp->pInputFileData = NULL;
     }
 
     return 0;
@@ -685,12 +718,14 @@ int doToBmp( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
                 exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
             }
             free( pContextApp->pOutputFileData);
+            pContextApp->pOutputFileData = NULL;
         }
         else
         {
             exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
         }
         free( pContextApp->pInputFileData);
+        pContextApp->pInputFileData = NULL;
     }
 
     return 0;
@@ -758,6 +793,7 @@ int doToPic( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eComma
                     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
                 }
                 free( pContextApp->pOutputFileData);
+                pContextApp->pOutputFileData = NULL;
             }
 
             if (pScbFileData)
@@ -1855,6 +1891,7 @@ int doAddPaletteToBmp4( tConvmArguments *pContextArg, tContextApp *pContextApp, 
                         free( pfullOutputFilename);
                     }
                     free( pContextApp->pOutputFileData);
+                    pContextApp->pOutputFileData = NULL;
                 }
             }
             else
@@ -1907,6 +1944,7 @@ int doInsertPaletteToBmp8( tConvmArguments *pContextArg, tContextApp *pContextAp
                             free( pfullOutputFilename);
                         }
                         free( pContextApp->pOutputFileData);
+                        pContextApp->pOutputFileData = NULL;
                     }
                 }
             }
@@ -1954,6 +1992,7 @@ int doSwapTwoColor( tConvmArguments *pContextArg, tContextApp *pContextApp, enum
                             free( pfullOutputFilename);
                         }
                         free( pContextApp->pOutputFileData);
+                        pContextApp->pOutputFileData = NULL;
                     }
                 }
                 else
@@ -2014,6 +2053,7 @@ int doComparePalette( tConvmArguments *pContextArg, tContextApp *pContextApp, en
                     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
                 }
                 free( pContextApp->pOutputFileData);
+                pContextApp->pOutputFileData = NULL;
             }
         }
     }
@@ -2079,6 +2119,7 @@ int doCopyPalette( tConvmArguments *pContextArg, tContextApp *pContextApp, enum 
                     exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
                 }
                 free( pContextApp->pOutputFileData);
+                pContextApp->pOutputFileData = NULL;
             }
         }
     }
@@ -2124,6 +2165,7 @@ int doExtSprite( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eC
                             free( pfullOutputFilename);
                         }
                         free( pContextApp->pOutputFileData);
+                        pContextApp->pOutputFileData = NULL;
                     }
                 }
                 else
@@ -2138,5 +2180,59 @@ int doExtSprite( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eC
         }
     }
 
+    return 0;
+}
+
+/**
+* @fn int doRepairPalet( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+* @brief
+*
+* @param[in]        pContextArg
+* @param[in]        pContextApp
+* @param[in]        eCommand
+ *
+ * @return 0 no error or exit program
+*/
+int doRepairPalet( tConvmArguments *pContextArg, tContextApp *pContextApp, enum eCommandNumber eCommand)
+{
+    char            *pfullOutputFilename = NULL;
+    const char      *pEndString = NULL;
+
+    if ((pContextArg) && (pContextApp))
+    {
+        if (pContextArg->pFullFilename)
+        {
+            pEndString = (const char *)strrchr( (const char *)pContextArg->pFullFilename, '.');
+            if (strcmp( (const char *)pEndString, ".bmp") == 0)
+            {
+                if (CheckBmpFileFormat( pContextApp->pInputFileData, pContextApp->uInputFileSize))
+                {
+                    pContextApp->pOutputFileData = DoRepairBmpPalette( pContextApp->pInputFileData, pContextApp->uInputFileSize, pContextArg, pContextApp);
+                    if ((pContextApp->pOutputFileData) && (pContextArg->pFullFilename) && (pContextApp->uInputFileSize > 0))
+                    {
+                        pfullOutputFilename = createOutputPathname( pContextArg->pFullFilename, pContextArg->pOutputPathname, eCommand);
+                        if (pfullOutputFilename)
+                        {
+                            if (writeFileFromMemory( pfullOutputFilename, pContextApp->pOutputFileData, pContextApp->uInputFileSize))
+                            {
+                                exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"failed to write output file", NULL, pfullOutputFilename, 4);
+                            }
+                            free( pfullOutputFilename);
+                        }
+                        free( pContextApp->pOutputFileData);
+                        pContextApp->pOutputFileData = NULL;
+                    }
+                }
+                else
+                {
+                    exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
+                }
+            }
+            else
+            {
+                exitOnError( (char *)__FUNCTION__, __LINE__, (char *)"file not compatible", NULL, pContextArg->pFullFilename, 5);
+            }
+        }
+    }
     return 0;
 }

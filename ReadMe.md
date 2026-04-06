@@ -3,8 +3,8 @@
 
 ![Alt text](./MM_PowerUp_256x256.png "ConvM")    ![Alt text](./gplv3-127x51.png "license GPL v3") 
 
-_Creation: September 3rd, 2022..2026, by Renaud Malaval_  
-_Last review: March 11th, 2026, by Renaud Malaval_
+_Creation: September 3rd, 2022 .. 2026, by Renaud Malaval_  
+_Last review: April 7 th, 2026, by Renaud Malaval_
 
 ## Convert many stuff
 
@@ -44,6 +44,7 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
    -cmpl                        - compare palette of bmp 4 bits per pixel
    -cppl                        - copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel
    -xtrspr <col> <lin> <lin> <col> <lin> - extract sprite form BMP (4 bits per pixel) to text to .aii
+   -repr <pal> <lin> <lin>      - force usage of pal number from line begin to line end
 
   <option> is one of the following:
    +lower             - the output file name is in lower case
@@ -115,12 +116,19 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
 
 ### -xtrspr <col> <lin> <lin> <col> <lin> <file>
 
+### -repr <pal> <lin> <lin>
+
+  if problem is to many color by line in a .bmp file, you can force usage of a palette number for a line range. 
+   - pal is the palette number to use for the line range (from 0 to 15)
+   - lin is the line number of the line range (from 0 to 199) (here from 0 to 194)
+  ```bash
+  ../../tools/convm.exe -repr 3 144 194 ../../../Iron_Lord/dessin.bmp/tacadre.bmp
+  ```
+  The ouptut file name is "tacadre_fix.bmp"
 
 ## Special thank's to :
 
 co worker - **Frédéric Mure**
-
-[Apple2Infinitum](https://app.slack.com/) - Digarok
 
 [Brutal Deluxe](https://www.brutaldeluxe.fr/) - Antoine VIGNAU & Olivier ZARDINI
 
@@ -128,5 +136,10 @@ co worker - **Frédéric Mure**
 
 [GoldenGate](https://goldengate.gitlab.io/) - Kelvin W Sherlock
 
+[GSPLUS](https://apple2.gs/plus/) - Digarok
+
+[Ninja Force](https://www.ninjaforce.com/html/news.html) - Jesse Blue
+
+[Kegs](https://kegs.sourceforge.net/) - Kent Dickey
 
 Have Fun :exclamation:

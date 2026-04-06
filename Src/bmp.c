@@ -24,7 +24,6 @@
 #include <direct.h>
 #include <conio.h>
 #include <malloc.h>
-#include <direct.h>
 
 #include <windows.h>
 
@@ -1901,6 +1900,79 @@ char *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, tConvmA
         {
             pBmpIn16ColorsImage = NULL;
             pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
+        }
+    }
+
+    return pOutputFileData;
+}
+
+/**
+* @fn char *DoRepairBmpPalette( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pContextArg, tContextApp *pContextApp)
+* @brief update color index to be in uPaletteNumber from line uFromLine to line uToLine
+*
+* @param[in]        pContextArg
+* @param[in,out]    pContextApp
+*
+* @return A new pointer pOutputFileData
+*/
+char *DoRepairBmpPalette( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pContextArg, tContextApp *pContextApp)
+{
+    char            *pOutputFileData = NULL;
+    FormatBMP       *pBmpIn16ColorsImage = NULL;
+    FormatBMP256    *pBmpIn256ColorsImage = NULL;
+    FormatBMP256    *pBmpIn256ColorsImageOne = NULL;
+    unsigned char   *pInputRunner = NULL;
+    unsigned char   *pOutputRunner = NULL;
+    unsigned int     uLine;
+    unsigned int     uColumn;
+    unsigned int     uindexPremiereCouleurDUneLigne;
+    unsigned int     uColorIndexFixed = 0;
+    unsigned int     uColorIndexnothing = 0;
+
+    pBmpIn16ColorsImage = (FormatBMP *)pInputFileData;
+
+    if (pBmpIn16ColorsImage->Nbr_Bit_Par_Pixel != 8)
+    {
+        (void )printf( "BMP : Nbr_Bit_Par_Pixel is wrong, only 8 is supported\n");
+    }
+    else
+    {
+        pBmpIn16ColorsImage = NULL;
+        pBmpIn256ColorsImage = (FormatBMP256 *)pInputFileData;
+
+        if (pBmpIn256ColorsImage->Nbr_Bit_Par_Pixel == 8)
+        {
+            pOutputFileData = calloc( 1, (size_t )(inputFileSize));
+            if ((pOutputFileData) && (pInputFileData))
+            {
+                (void )memcpy( pOutputFileData, pInputFileData, inputFileSize);
+
+                uindexPremiereCouleurDUneLigne = pContextArg->uPaletteNumber * 16;
+
+                for (uLine = pContextArg->uHauteurEnd; uLine <= pContextArg->uHauteurBegin; uLine++)
+                {
+                    pInputRunner = pOutputFileData + pBmpIn256ColorsImage->Offset_Image + (pBmpIn256ColorsImage->Largeur_Image * uLine);
+                    for (uColumn = 0; uColumn < pBmpIn256ColorsImage->Largeur_Image; uColumn++)
+                    {
+                        if ((*pInputRunner < uindexPremiereCouleurDUneLigne) || (*pInputRunner >= (uindexPremiereCouleurDUneLigne + 16)))
+                        {
+                            if (*pInputRunner < 16)
+                            {
+                                *pInputRunner = *pInputRunner + uindexPremiereCouleurDUneLigne;
+                                uColorIndexFixed++;
+                            }
+                            else
+                            {
+                                uColorIndexnothing++;
+                            }
+                        }
+                        pInputRunner++;
+                    }
+                }
+
+                // (void )printf( "Color index fixed   : %u\n", uColorIndexFixed);
+                // (void )printf( "Color index nothing : %u\n", uColorIndexnothing);
+            }
         }
     }
 
