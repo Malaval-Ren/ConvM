@@ -1906,6 +1906,19 @@ char *DoExtractSprite( char *pInputFileData, unsigned int inputFileSize, tConvmA
     return pOutputFileData;
 }
 
+// **********************************************************************************
+//  https://manytools.org/hacker-tools/ascii-banner/
+// 
+//   ######         ######                                ######                ######                                          
+//   #     #  ####  #     # ###### #####    ##   # #####  #     # #    # #####  #     #   ##   #      ###### ##### ##### ###### 
+//   #     # #    # #     # #      #    #  #  #  # #    # #     # ##  ## #    # #     #  #  #  #      #        #     #   #      
+//   #     # #    # ######  #####  #    # #    # # #    # ######  # ## # #    # ######  #    # #      #####    #     #   #####  
+//   #     # #    # #   #   #      #####  ###### # #####  #     # #    # #####  #       ###### #      #        #     #   #      
+//   #     # #    # #    #  #      #      #    # # #   #  #     # #    # #      #       #    # #      #        #     #   #      
+//   ######   ####  #     # ###### #      #    # # #    # ######  #    # #      #       #    # ###### ######   #     #   ######
+// 
+// **********************************************************************************
+
 /**
 * @fn char *DoRepairBmpPalette( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pContextArg, tContextApp *pContextApp)
 * @brief update color index to be in uPaletteNumber from line uFromLine to line uToLine

@@ -173,6 +173,7 @@ exit 0</Command>
     <ClInclude Include="..\Src\doAction.h" />
     <ClInclude Include="..\Src\reducenbrcolors.h" />
     <ClInclude Include="..\Src\rle.h" />
+    <ClInclude Include="..\Src\midisynth.h" />
     <ClInclude Include="..\Src\main.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -182,6 +183,7 @@ exit 0</Command>
     <ClCompile Include="..\Src\doAction.c" />
     <ClCompile Include="..\Src\reducenbrcolors.c" />
     <ClCompile Include="..\Src\rle.c" />
+    <ClCompile Include="..\Src\midisynth.c" />
     <ClCompile Include="..\Src\convm.cpp" />
   </ItemGroup>
   <ItemGroup>

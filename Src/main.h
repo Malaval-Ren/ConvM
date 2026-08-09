@@ -59,6 +59,7 @@ enum eCommandNumber
     eCOPYPALET,
     eEXTSPRITE,
     eREPAIRPALET,
+    eDUMPSEQ,
 
     eLast               // max value never used
 };

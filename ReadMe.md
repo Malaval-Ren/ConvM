@@ -1,10 +1,9 @@
-
 # **ConvM**
 
 ![Alt text](./MM_PowerUp_256x256.png "ConvM")    ![Alt text](./gplv3-127x51.png "license GPL v3") 
 
 _Creation: September 3rd, 2022 .. 2026, by Renaud Malaval_  
-_Last review: April 7 th, 2026, by Renaud Malaval_
+_Last review: August 9 th, 2026, by Renaud Malaval_
 
 ## Convert many stuff
 
@@ -24,27 +23,28 @@ Open the project file **convm.sln** with **Visual Studio Community 2022** and bu
 Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
 
   <convmspec> is one of the following:
-   -crlf                        - convert CR to LF
-   -lfcr                        - convert LF to CR
-   -dblf                        - replace 2 first $0A (LF) by one in a serie
-   -dbcr                        - replace 2 first $0D (CR) by one in a serie
-   -detab <col>                 - convert tabs to spaces (tab stop every COL columns)
-   -dump                        - dump content of a supported file format
-   -extxt <minlen>              - extract string of minlen from a binary file
+   -crlf <file>                 - convert CR to LF
+   -lfcr <file>                 - convert LF to CR
+   -dblf <file>                 - replace 2 first $0A (LF) by one in a serie
+   -dbcr <file>                 - replace 2 first $0D (CR) by one in a serie
+   -detab <col> <file>          - convert tabs to spaces (tab stop every COL columns)
+   -dump <file>                 - dump content of a supported file format
+   -extxt <minlen> <file>       - extract string of minlen from a binary file
    -rlec                        - not implemented
-   -rled                        - decompress with rle algorithms file
+   -rled <file>                 - decompress with rle algorithms file
    -2bmp                        - convert .scr, .shr, .pnt, .pic to .bmp
    -2pic                        - convert .bmp to .pic
    -brcc                        - reduce color chart from 0..256 in R G B (bmp) to 0..15 in R G B (pic)
-   -rdic                        - Remove duplicate index to the same color
-   -ncpl                        - display tle line number with color index not used in .pic and .bmp
+   -rdic                        - remove duplicate index to the same color
+   -ncpl <file>                 - display tle line number with color index not used in .pic and .bmp
    -apbm4                       - add palette to .bmp 16 to 256 colors
-   -ipbm8 <lin> <lin>           - insert palette 16 colors to .bmp 256 colors at lines
+   -ipbm8 <lin> <lin> <files>   - insert palette 16 colors to .bmp 256 colors at lines
    -swap <col> <col>            - swap 2 colors in palette and bitmap
-   -cmpl                        - compare palette of bmp 4 bits per pixel
-   -cppl                        - copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel
+   -cmpl <file> <file>          - compare palette of bmp 4 bits per pixel
+   -cppl <file> <file>          - copy the 16 colors of bmp 4 bits per pixel and fist 16 colors of bmp 8 bits per pixel
    -xtrspr <col> <lin> <lin> <col> <lin> - extract sprite form BMP (4 bits per pixel) to text to .aii
    -repr <pal> <lin> <lin>      - force usage of pal number from line begin to line end
+   -dpseq <file>                - dump the content of .seq files, and files used by .seq files .bnk and .wav
 
   <option> is one of the following:
    +lower             - the output file name is in lower case
@@ -57,6 +57,7 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
    -apbm4 -ipbm8
    -swap -cmpl -cppl
    -brcc -rdic        : .bmp
+   -dpseq             : .seq
 ```
 
 ## Convmspec Details
@@ -65,7 +66,7 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
 
   Display help usage 
 
-### -h
+### -v
 
   Display version
 
@@ -83,32 +84,34 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
 
 ### -extxt <minlen> <file>
 
-### -rled
+### -rled <file>
 
 ### -2bmp
 
 ### -2pic
 
-### -ncpl
+### -ncpl <file>
 
-### -ipbm4 
+### -ipbm4
 
 ### -ipbm8 <lin> <lin> <file> <file>
 
   Copy 16 colors from the input file to the output file.
   if output file is a 4 bits per pixel convert it to 8 bits per pixel.
-  ```bash
-  ../../tools/convm.exe -ipbm8 1 2 ../dessin.bmp/tacadre.bmp ../dessin.bmp/tasetarc111.bmp
-  ../../tools/convm.exe -ipbm8 1 3 ../dessin.bmp/tacadre.bmp ../dessin.bmp/tasetarc111.bmp
-  ```
+
+```bash
+../../tools/convm.exe -ipbm8 1 2 ../dessin.bmp/tacadre.bmp ../dessin.bmp/tasetarc111.bmp
+../../tools/convm.exe -ipbm8 1 3 ../dessin.bmp/tacadre.bmp ../dessin.bmp/tasetarc111.bmp
+```
 
 ### -swap <col> <col> <file>
 
   Exchange 2 colors in the palette <col> <-> <col> and update offsets in bitmap
   The name of the output file the name is the input file name plus "-s.bmp"
-  ```bash
-  ../../tools/convm.exe -swap 17 26 ../../../Iron_Lord/dessin.bmp/tasetarc1.bmp
-  ```
+
+```bash
+../../tools/convm.exe -swap 17 26 ../../../Iron_Lord/dessin.bmp/tasetarc1.bmp
+```
 
 ### -cmpl <file> <file>
 
@@ -116,15 +119,28 @@ Usage: convm <convmspec> <option> "<filespec>" "<output folder or file>"
 
 ### -xtrspr <col> <lin> <lin> <col> <lin> <file>
 
-### -repr <pal> <lin> <lin>
+### -repr <pal> <lin> <lin> <file>
 
   if problem is to many color by line in a .bmp file, you can force usage of a palette number for a line range. 
-   - pal is the palette number to use for the line range (from 0 to 15)
-   - lin is the line number of the line range (from 0 to 199) (here from 0 to 194)
+
+- pal is the palette number to use for the line range (from 0 to 15)
+- lin is the line number of the line range (from 0 to 199) (here from 0 to 194)
+  
   ```bash
   ../../tools/convm.exe -repr 3 144 194 ../../../Iron_Lord/dessin.bmp/tacadre.bmp
   ```
+  
   The ouptut file name is "tacadre_fix.bmp"
+
+### -dpseq <file>
+
+  dump the content of .seq files, and files used by .seq files .bnk and .wav  
+  Name of .bnk file is extract from .seq file (error if is empty or not found) 
+  Name of .wav file is extract from .bnk file (error if is empty or not found)
+  some check are done:
+    size of .seq < 131072
+    end of .seq is 0xFFFF
+    .wav don't have in samples iqual to 0x00
 
 ## Special thank's to :
 

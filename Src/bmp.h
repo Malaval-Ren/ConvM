@@ -23,7 +23,6 @@ extern "C" {
 
     char   *DoRepairBmpPalette( char *pInputFileData, unsigned int inputFileSize, tConvmArguments *pContextArg, tContextApp *pContextApp);
 
-
 #ifdef __cplusplus
 }
 #endif

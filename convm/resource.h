@@ -1,3 +1,4 @@
+
 #define IDS_APP_TITLE           103
 
 #define IDR_MAINFRAME           128
@@ -25,7 +26,7 @@
     #endif
 #endif
 
-#define FILE_VERSION_COMMA      1,17,18,157
+#define FILE_VERSION_COMMA      1,19,18,169
 #define PRODUCT_VERSION_COMMA   FILE_VERSION_COMMA
-#define FILE_VERSION_DOT        "1.17.18.157\0"
+#define FILE_VERSION_DOT        "1.19.18.169\0"
 #define PRODUCT_VERSION_DOT     FILE_VERSION_DOT

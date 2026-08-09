@@ -73,7 +73,7 @@ void exitOnError( char *pFunctionName, unsigned int uLineNumber, char *pExplain,
         {
             uLen += strlen( (const char *)pInfo);
         }
-        uLen += (size_t )32;    // a marge for char ' '; '"'
+        uLen += (size_t )64;    // a marge for char ' '; '"'
 
         pMessage = (char *)calloc( 1, uLen);
         if (pMessage)
@@ -633,4 +633,92 @@ void whereCursorXY( COORD *ptCoord)
     GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE), &tWinInfo);
 
     *ptCoord = tWinInfo.dwCursorPosition;
+}
+
+/**
+ * @fn void DbgDumpBuffer_8bits( FILE *pDebugLogFile, char *pFormat, ...)
+ * @brief display a buffer in 8 bits mode
+ *
+ * @param[in]       pInfo
+ * @param[in]       pDataBuffer
+ * @param[in]       uBufferLen
+ */
+void DbgDumpBuffer_8bits( char *pInfo, char *pDataBuffer, unsigned int uBufferLen)
+{
+#define numberOfValueByLine     96
+
+    char                pErrorString[numberOfValueByLine];
+    unsigned char      *pRuning;
+    unsigned char      *pRuningTxt;
+    unsigned int        uIndex;
+    unsigned int        uCounter = 0;
+    unsigned int        uLoop = 0;
+    unsigned int        uLength = 0;
+
+    if (pDataBuffer != NULL)
+    {
+        // Display the title
+        (void )printf( "Dump ptr = 0x%p len = %u is %s\n", pDataBuffer, uBufferLen, pInfo);
+
+        pRuning = (unsigned char *)pDataBuffer;
+        pRuningTxt = (unsigned char *)&pErrorString[57];
+        for ( uIndex = 0; uIndex < uBufferLen; uIndex++)
+        {
+            if ( (pRuningTxt - pErrorString) >= (numberOfValueByLine - 1) )
+                break;  // Prevent buffer overflow
+
+            if ( uLoop == 0)
+            {
+                uLength = snprintf( pErrorString, numberOfValueByLine, "0x%04X: %02X", uCounter, *pRuning);
+            }
+            else
+            {
+                uLength += snprintf( pErrorString + uLength, numberOfValueByLine - uLength, " %02X", *pRuning);
+            }
+
+            if ( (*pRuning >= 32) && (*pRuning <= (numberOfValueByLine - 1)) )
+                *pRuningTxt = *pRuning;
+            else
+                *pRuningTxt = '.';
+
+            pRuning++;
+            pRuningTxt++;
+            uCounter++;
+            uLoop++;
+            if (uLoop == 16)
+            {
+                *pRuningTxt = '\0';
+                pRuningTxt = (unsigned char * )&pErrorString[55];
+                *pRuningTxt = ' ';
+                pRuningTxt++;
+                *pRuningTxt = ' ';
+                pRuningTxt++;
+                (void )printf( "%s\n", pErrorString);
+                uLoop = 0;
+                uLength = 0;
+                pRuningTxt = (unsigned char *)&pErrorString[57];
+            }
+        }
+
+        if (uLoop != 0)
+        {
+            for ( uIndex = uLoop; uIndex < 16; uIndex++)
+            {
+                uLength += snprintf( pErrorString + uLength, numberOfValueByLine - uLength, "   ");
+            }
+            *pRuningTxt = '\0';
+            pRuningTxt = (unsigned char * )&pErrorString[55];
+            *pRuningTxt = ' ';
+            pRuningTxt++;
+            *pRuningTxt = ' ';
+            pRuningTxt++;
+            (void )printf( "%s\n", pErrorString);
+        }
+        else
+        {
+            (void )printf( "\n");
+        }
+    }
+
+#undef numberOfValueByLine
 }

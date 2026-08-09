@@ -23,6 +23,8 @@ extern "C" {
     extern void             moveCursorXY( int x, int y);
     extern void             whereCursorXY( COORD *ptCoord);
 
+    extern void             DbgDumpBuffer_8bits( char *pInfo, char *pDataBuffer, unsigned int uBufferLen);
+
 #ifdef __cplusplus
 }
 #endif
